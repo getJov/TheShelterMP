@@ -122,7 +122,10 @@ function Panel({ data, onGoToLot }: { data: MapData; onGoToLot: (id: LotId) => v
           value={viewMode}
           onValueChange={(v) => setViewMode(v as MapViewMode)}
         >
-          <SelectTrigger aria-label="Colour by" className="h-9 w-full bg-surface text-[13px]">
+          <SelectTrigger
+            aria-label="Colour by"
+            className="h-auto min-h-9 w-full bg-surface py-2.5 text-[13px] *:data-[slot=select-value]:line-clamp-none"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

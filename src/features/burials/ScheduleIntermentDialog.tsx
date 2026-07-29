@@ -210,8 +210,8 @@ export function ScheduleIntermentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[88vh] gap-0 overflow-hidden p-0 sm:max-w-[640px]">
-        <DialogHeader className="border-b border-line px-5 pb-4 pt-5">
+      <DialogContent className="flex max-h-[88vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[640px]">
+        <DialogHeader className="shrink-0 border-b border-line px-5 pb-4 pt-5">
           <DialogTitle className="font-display text-[21px] font-semibold">
             Schedule a burial
           </DialogTitle>
@@ -223,7 +223,7 @@ export function ScheduleIntermentDialog({
           <Stepper step={step} onStep={setStep} valid={stepValid} />
         </DialogHeader>
 
-        <div className="min-h-[330px] overflow-y-auto px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
@@ -287,7 +287,7 @@ export function ScheduleIntermentDialog({
           </AnimatePresence>
         </div>
 
-        <DialogFooter className="items-center gap-2 border-t border-line bg-surface-2 px-5 py-3.5 sm:justify-between">
+        <DialogFooter className="shrink-0 items-center gap-2 border-t border-line bg-surface-2 px-5 py-3.5 sm:justify-between">
           <span className="text-[12px] text-muted">
             Step {step + 1} of 3 · {STEPS[step]}
           </span>
@@ -300,7 +300,7 @@ export function ScheduleIntermentDialog({
             </Button>
             {step < 2 ? (
               <Button disabled={!stepValid[step]} onClick={() => setStep(step + 1)}>
-                Continue
+                Next
               </Button>
             ) : (
               <Button disabled={!stepValid[2]} onClick={submit} className="gap-2">

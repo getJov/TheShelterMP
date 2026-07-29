@@ -83,6 +83,14 @@ export class LotCanvas extends L.Layer {
   private _hoverFrame: number | null = null
   private _lastHoverEvent: L.LeafletMouseEvent | null = null
 
+  /**
+   * View the canvas bitmap was last drawn for. Continuous zoom (`flyTo`,
+   * pinch) never fires `zoomanim` — we CSS-transform from this origin until
+   * `_reset` redraws at the settled zoom (same idea as Leaflet `L.Renderer`).
+   */
+  private _originZoom = Number.NaN
+  private _originNw: L.LatLng | null = null
+
   constructor(handlers: LotCanvasHandlers = {}) {
     super()
     this._handlers = handlers
@@ -129,10 +137,13 @@ export class LotCanvas extends L.Layer {
     return {
       // Deliberately NOT 'move' — during a pan Leaflet translates the canvas
       // element with a CSS transform, which is free and looks correct.
+      // Continuous zoom (`flyTo`) does NOT fire `zoomanim`; listen to `zoom`
+      // and CSS-scale from the last `_reset` origin until settle.
       viewreset: this._reset as L.LeafletEventHandlerFn,
       zoomend: this._reset as L.LeafletEventHandlerFn,
       moveend: this._reset as L.LeafletEventHandlerFn,
       resize: this._reset as L.LeafletEventHandlerFn,
+      zoom: this._onZoom as L.LeafletEventHandlerFn,
       zoomanim: this._animateZoom as L.LeafletEventHandlerFn,
       mousemove: this._onMouseMove as L.LeafletEventHandlerFn,
       mouseout: this._onMouseOut as L.LeafletEventHandlerFn,
@@ -196,20 +207,34 @@ export class LotCanvas extends L.Layer {
       // setPosition rewrites the transform, clearing any zoom-animation scale.
       L.DomUtil.setPosition(c, map.containerPointToLayerPoint([0, 0]))
     }
+    this._originZoom = map.getZoom()
+    this._originNw = map.getBounds().getNorthWest()
     this._draw()
   }
 
+  /** CSS zoom animation (wheel / ± buttons) — Leaflet fires `zoomanim` frames. */
   private _animateZoom = (e: L.ZoomAnimEvent) => {
-    const map = this._map as unknown as {
+    this._syncTransform(e.center, e.zoom)
+  }
+
+  /**
+   * Continuous zoom (`flyTo`, pinch). Leaflet updates center/zoom every frame
+   * and fires `zoom`, not `zoomanim` — without this the basemap flies while
+   * the lot bitmap stays frozen until `moveend` → `_reset` snaps.
+   */
+  private _onZoom = () => {
+    const map = this._map
+    if (!map) return
+    this._syncTransform(map.getCenter(), map.getZoom())
+  }
+
+  private _syncTransform = (center: L.LatLng, zoom: number) => {
+    const map = this._map as (L.Map & {
       _latLngToNewLayerPoint: (ll: L.LatLng, zoom: number, center: L.LatLng) => L.Point
-    }
-    if (!this._map || !this._canvas) return
-    const scale = this._map.getZoomScale(e.zoom, this._map.getZoom())
-    const offset = map._latLngToNewLayerPoint(
-      this._map.getBounds().getNorthWest(),
-      e.zoom,
-      e.center,
-    )
+    }) | null
+    if (!map || !this._canvas || !this._originNw || !Number.isFinite(this._originZoom)) return
+    const scale = map.getZoomScale(zoom, this._originZoom)
+    const offset = map._latLngToNewLayerPoint(this._originNw, zoom, center)
     L.DomUtil.setTransform(this._canvas, offset, scale)
     if (this._fade) L.DomUtil.setTransform(this._fade, offset, scale)
   }
@@ -270,6 +295,10 @@ export class LotCanvas extends L.Layer {
     const ctx = this._ctx
     const canvas = this._canvas
     if (!map || !ctx || !canvas || !this._active) return
+
+    // Bitmap is locked to `_originZoom`. Mid-`flyTo` redraws would project at
+    // a fractional zoom into a canvas that still has a CSS scale applied.
+    if (Number.isFinite(this._originZoom) && map.getZoom() !== this._originZoom) return
 
     const t0 = performance.now()
     const zoom = map.getZoom()

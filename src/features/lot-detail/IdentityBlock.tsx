@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   ASSUMPTIONS,
-  HOLD_DURATION_DAYS,
   INTERMENT_TYPE_LABEL,
   NEED_TYPE_LABEL,
   clientFullName,
@@ -115,36 +114,11 @@ function AvailableIdentity({ model }: { model: LotModel }) {
         <PriceColumn label={NEED_TYPE_LABEL.at_need} resolved={model.atNeed} />
       </div>
 
-      {model.preNeedInstallment.amountCentavos !== null && (
-        <p className="mt-2.5 border-t border-line pt-2 text-[11.5px] text-muted">
-          Installment{' '}
-          <MoneyText
-            centavos={model.preNeedInstallment.amountCentavos}
-            className="text-ink"
-          />{' '}
-          over up to 60 months, no downpayment and no interest
-          <AssumedChip why={ASSUMPTIONS.downpayment.why} className="ml-1.5" />
-        </p>
-      )}
-
-      {model.preNeed.entry && (
-        <p className="mt-1.5 text-[11px] leading-snug text-muted">
-          Priced from “{model.preNeed.entry.label ?? 'unlabelled entry'}”, effective{' '}
-          {fmtDate(model.preNeed.entry.effectiveFrom)}.
-        </p>
-      )}
-
       {canHold && (
-        <>
-          <Button className="mt-3 w-full gap-1.5" onClick={() => setHoldOpen(true)}>
-            <Icon icon={IconHold} size={15} />
-            Request hold
-          </Button>
-          <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted">
-            {HOLD_DURATION_DAYS}-day hold, approved by a manager
-            <AssumedChip why={ASSUMPTIONS.holdDurationDays.why} />
-          </p>
-        </>
+        <Button className="mt-3 w-full gap-1.5" onClick={() => setHoldOpen(true)}>
+          <Icon icon={IconHold} size={15} />
+          Request hold
+        </Button>
       )}
 
       <RequestHoldDialog lotId={model.lot.id} open={holdOpen} onOpenChange={setHoldOpen} />

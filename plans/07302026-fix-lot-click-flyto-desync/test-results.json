@@ -1,0 +1,38 @@
+{
+  "plan": "plans/07302026-fix-lot-click-flyto-desync",
+  "generatedAt": "2026-07-30",
+  "status": "Not Run",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Lot overlays track basemap during lot-click flyTo",
+      "surface": "ui",
+      "precondition": "Map page open at default park zoom (lots visible, zoom < 19 preferred so fly includes zoom).",
+      "steps": [
+        "1. Open Park Map.",
+        "2. Click a lot that is not already selected.",
+        "3. Watch the 0.7s fly animation until the drawer finishes opening."
+      ],
+      "expected": "Lot rectangles stay locked to the satellite/plain imagery for the whole flight. No frozen grid sliding over the map, and no snap/glitch when the animation ends.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Drag pan still smooth without lot snap",
+      "surface": "ui",
+      "precondition": "Lots visible on the map.",
+      "steps": [
+        "1. Drag-pan the map slowly.",
+        "2. Release and confirm settle."
+      ],
+      "expected": "Lots move with the basemap during drag with no flicker or delayed snap.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "",
+      "waiver": ""
+    }
+  ]
+}

@@ -56,6 +56,7 @@ import { formatPeso, parsePeso, pctOf } from '@/lib/money'
 import { TODAY } from '@/mock'
 import { fmtDate } from '@/lib/dates'
 import { LotCombobox } from './LotCombobox'
+import { AgentCombobox } from './AgentCombobox'
 import { ClientCombobox, type BuyerValue } from './ClientCombobox'
 import { DateField } from './DateField'
 import { PriceCard } from './PriceCard'
@@ -288,24 +289,7 @@ export function ContractBuilder({
                     <Label htmlFor="cb-agent" className="text-[12.5px] text-muted">
                       Selling agent
                     </Label>
-                    <Select value={agentId} onValueChange={setAgentId}>
-                      <SelectTrigger id="cb-agent" className="w-full">
-                        <SelectValue placeholder="Select an agent" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {activeAgents.map((a) => {
-                          const u = indexes().usersById.get(a.userId)
-                          return (
-                            <SelectItem key={a.id} value={a.id}>
-                              {u?.fullName ?? a.agentCode}
-                              <span className="ml-2 font-mono text-[11px] text-muted">
-                                {a.agentCode}
-                              </span>
-                            </SelectItem>
-                          )
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <AgentCombobox id="cb-agent" value={agentId} onChange={setAgentId} />
                     <p className="text-[11.5px] text-muted">
                       Archived agents are excluded — attribution is preserved on their
                       existing contracts.
