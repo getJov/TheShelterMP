@@ -1,0 +1,219 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'leaflet/dist/leaflet.css';
+
+/* Dark mode is driven by a class on <html>, not the media query,
+   because we ship a manual toggle and default to light. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ── type ─────────────────────────────────────────────── */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ── brand constants — identical in both themes ───────── */
+  --color-gold: #c9a962;
+  --color-gold-soft: #a98f52;
+  --color-gold-deep: #8a6d34;
+  --color-green: #4a7c59;
+  --color-green-light: #6fa87d;
+
+  /* ── lot status — data colours, identical in both themes ─ */
+  --color-status-available: #4a7c59;
+  --color-status-held: #c9a962;
+  --color-status-sold: #9a7b4f;
+  --color-status-occupied: #6b5b7a;
+  --color-status-notforsale: #9a978e;
+
+  /* ── tier fills ───────────────────────────────────────── */
+  --color-tier-lawn-standard: #e8dcc0;
+  --color-tier-lawn-plus: #dccda4;
+  --color-tier-lawn-prime: #ccb884;
+  --color-tier-fg-standard: #cdd9c2;
+  --color-tier-fg-prime: #b3c8a6;
+  --color-tier-mausoleum: #d5c9d6;
+
+  /* ── semantic — remapped by .dark below ───────────────── */
+  --color-bg: #f4efe4;
+  --color-surface: #fffdf8;
+  --color-surface-2: #faf6ec;
+  --color-ink: #1c1a15;
+  --color-muted: #6b665c;
+  --color-line: #e2d9c4;
+  --color-line-soft: #efe8d8;
+  --color-danger: #a8443a;
+  --color-info: #5b8fd4;
+
+  --radius-card: 12px;
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── shadcn/ui token bridge ───────────────────────────────
+   shadcn primitives reference these names. Rebinding them to our
+   brand tokens means every primitive inherits the palette without
+   per-component overrides. */
+:root {
+  --radius: 0.625rem;
+  --background: var(--color-bg);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-gold-deep);
+  --primary-foreground: #fffdf8;
+  --secondary: var(--color-surface-2);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-surface-2);
+  --muted-foreground: var(--color-muted);
+  --accent: var(--color-surface-2);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-danger);
+  --destructive-foreground: #fffdf8;
+  --border: var(--color-line);
+  --input: var(--color-line);
+  --ring: var(--color-gold);
+  --chart-1: var(--color-green);
+  --chart-2: var(--color-gold);
+  --chart-3: var(--color-info);
+  --chart-4: var(--color-status-sold);
+  --chart-5: var(--color-status-occupied);
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-gold-deep);
+  --sidebar-primary-foreground: #fffdf8;
+  --sidebar-accent: var(--color-surface-2);
+  --sidebar-accent-foreground: var(--color-ink);
+  --sidebar-border: var(--color-line);
+  --sidebar-ring: var(--color-gold);
+}
+
+.dark {
+  --color-bg: #070d0b;
+  --color-surface: #0a1310;
+  --color-surface-2: #0e1a15;
+  --color-ink: #e8e4dc;
+  --color-muted: #9aa89e;
+  --color-line: #2a3a30;
+  --color-line-soft: #1a2620;
+  --color-danger: #c25f53;
+  --color-info: #6b9de0;
+  color-scheme: dark;
+
+  --primary: var(--color-gold);
+  --primary-foreground: #070d0b;
+  --destructive-foreground: #fffdf8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-fg: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    margin: 0;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
+  }
+  /* Figures must not jitter between rows. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-serif);
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
+
+/* Leaflet needs a little help fitting into the brand. */
+.leaflet-container {
+  background: var(--color-surface-2);
+  font-family: var(--font-sans);
+  outline: none;
+}
+.leaflet-container a {
+  color: var(--color-gold-deep);
+}
+.leaflet-control-attribution {
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent) !important;
+  color: var(--color-muted) !important;
+  font-size: 10px !important;
+  border-radius: 4px 0 0 0;
+}
+.dark .leaflet-tile {
+  filter: brightness(0.82) saturate(0.85);
+}
+
+/* Reduced motion: keep layout changes, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+}

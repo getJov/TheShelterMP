@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <g fill="#8a6d34">
+    <path d="M4 40V22.5L10 17.5V40H4Z" opacity="0.72"/>
+    <path d="M11.5 40V15L17.5 9V40h-6Z" opacity="0.84"/>
+    <path d="M19 40V7.5L25 2v38h-6Z"/>
+    <path d="M26.5 40V12l6 5.5V40h-6Z" opacity="0.84"/>
+    <path d="M34 40V20l6 5.5V40h-6Z" opacity="0.72"/>
+  </g>
+  <rect x="2" y="42" width="40" height="2.4" rx="0.6" fill="#8a6d34"/>
+</svg>

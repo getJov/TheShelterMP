@@ -1,0 +1,128 @@
+/*
+ * Map chrome that has to live inside Leaflet's own panes, where Tailwind
+ * classes on React elements cannot reach. Every colour is a theme token.
+ */
+
+.shelter-lot-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.shelter-lot-fade {
+  z-index: 1;
+}
+
+/* Plain base layer: parchment ground in light, deep green in dark. */
+.map-plain .leaflet-container {
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      color-mix(in srgb, var(--color-surface) 70%, transparent),
+      transparent 68%
+    ),
+    var(--color-surface-2);
+}
+
+.shelter-siteplan-image {
+  transform-origin: center center;
+}
+
+/* ── block cluster marker ─────────────────────────────────────────── */
+
+.shelter-cluster-wrap {
+  background: none;
+  border: 0;
+}
+
+.shelter-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 10px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms ease;
+}
+.shelter-cluster.is-in {
+  opacity: 1;
+  transform: scale(1);
+}
+.shelter-cluster:hover {
+  transform: translateY(-2px) scale(1);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.55);
+}
+
+.shelter-cluster-code {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+.shelter-cluster-count {
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--color-muted);
+}
+.shelter-cluster-bar {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-line-soft);
+  margin-top: 2px;
+}
+.shelter-cluster-bar i {
+  display: block;
+  height: 100%;
+}
+
+/* ── 17 – 17.99: block outlines with a count label ─────────────────── */
+
+.shelter-block-outline {
+  opacity: 0;
+  transition: opacity 220ms ease;
+  cursor: pointer;
+}
+.shelter-block-outline.is-in {
+  opacity: 1;
+}
+
+.shelter-block-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  text-shadow: 0 1px 3px color-mix(in srgb, var(--color-surface) 80%, transparent);
+}
+.shelter-block-label.is-in {
+  opacity: 1;
+  transform: scale(1);
+}
+.shelter-block-label b {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.shelter-block-label span {
+  font-size: 10.5px;
+  color: var(--color-muted);
+}

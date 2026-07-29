@@ -1,0 +1,17 @@
+/*
+ * Leaflet paints its panes at z-index 400+, so the map's own chrome lives at
+ * 590–650. A portalled shadcn overlay sits at z-50 and would render UNDER the
+ * map — the Post payment dialog opened from this drawer would simply vanish.
+ * Lift every portalled layer above the map chrome, once, here.
+ */
+[data-slot='dialog-overlay'],
+[data-slot='dialog-content'],
+[data-slot='alert-dialog-overlay'],
+[data-slot='alert-dialog-content'],
+[data-slot='popover-content'],
+[data-slot='dropdown-menu-content'],
+[data-slot='dropdown-menu-sub-content'],
+[data-slot='select-content'],
+[data-slot='tooltip-content'] {
+  z-index: 800;
+}

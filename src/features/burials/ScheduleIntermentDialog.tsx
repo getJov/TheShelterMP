@@ -1,0 +1,806 @@
+import { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { toast } from 'sonner'
+import {
+  ASSUMPTIONS,
+  AT_NEED_WINDOW_DAYS,
+  INTERMENT_TYPE_LABEL,
+  MAX_BURIALS_PER_DAY,
+  SLOT_LABEL,
+  type BurialSlot,
+  type IntermentId,
+  type IntermentRequirements,
+  type IntermentType,
+  type ISODate,
+  type LocationId,
+  type Lot,
+  type LotId,
+} from '@/domain'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import { Icon } from '@/components/ui-brand/Icon'
+import {
+  IconCalendar,
+  IconCheck,
+  IconLot,
+  IconWarning,
+} from '@/components/ui-brand/icons'
+import { AssumedChip } from '@/components/ui-brand/AssumedChip'
+import { MoneyText } from '@/components/ui-brand/MoneyText'
+import { cn } from '@/lib/utils'
+import { fmtDate, fmtDateLong, toDate, toISODate } from '@/lib/dates'
+import { useCurrentUser } from '@/lib/permissions'
+import { dataset, useDataset } from '@/stores/dataset'
+import {
+  availableSlots,
+  isDayFull,
+  nextAvailableSlot,
+  useBurials,
+} from '@/stores/burials'
+import { TODAY } from '@/mock'
+import { CapacityMeter, SlotIcon } from './bits'
+import { RequirementsChecklist } from './RequirementsChecklist'
+import {
+  EASE,
+  INTERMENT_TYPE_HINT,
+  isOutsideWindow,
+  lotCodeFor,
+  ownerName,
+  tierName,
+  windowEnd,
+} from './helpers'
+
+const STEPS = ['Lot', 'Deceased', 'Schedule'] as const
+
+const EMPTY_REQUIREMENTS: IntermentRequirements = {
+  deathCertificate: false,
+  burialPermit: false,
+  transferPermit: false,
+  ownerConsent: false,
+  feesSettled: false,
+}
+
+export function ScheduleIntermentDialog({
+  open,
+  onOpenChange,
+  locationId,
+  presetLotId = null,
+  presetDate = null,
+  presetSlot = null,
+  onScheduled,
+}: {
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  locationId: LocationId
+  presetLotId?: LotId | null
+  presetDate?: ISODate | null
+  presetSlot?: BurialSlot | null
+  onScheduled?: (id: IntermentId) => void
+}) {
+  const user = useCurrentUser()
+  const version = useDataset((s) => s.version)
+  const schedule = useBurials((s) => s.scheduleInterment)
+
+  const [step, setStep] = useState(0)
+  const [lotId, setLotId] = useState<LotId | null>(presetLotId)
+  const [first, setFirst] = useState('')
+  const [middle, setMiddle] = useState('')
+  const [last, setLast] = useState('')
+  const [dob, setDob] = useState<ISODate | null>(null)
+  const [dod, setDod] = useState<ISODate | null>(null)
+  const [type, setType] = useState<IntermentType>('permanent')
+  const [date, setDate] = useState<ISODate | null>(presetDate)
+  const [slot, setSlot] = useState<BurialSlot | null>(presetSlot)
+  const [requirements, setRequirements] = useState<IntermentRequirements>(EMPTY_REQUIREMENTS)
+  const [override, setOverride] = useState('')
+  const [notes, setNotes] = useState('')
+
+  // Reset every time the dialog is opened, so a preset never leaks between uses.
+  useEffect(() => {
+    if (!open) return
+    setStep(presetLotId ? 1 : 0)
+    setLotId(presetLotId)
+    setFirst('')
+    setMiddle('')
+    setLast('')
+    setDob(null)
+    setDod(null)
+    setType('permanent')
+    setDate(presetDate)
+    setSlot(presetSlot)
+    setRequirements(EMPTY_REQUIREMENTS)
+    setOverride('')
+    setNotes('')
+  }, [open, presetLotId, presetDate, presetSlot])
+
+  const openClose = useMemo(
+    () => dataset().services.find((s) => s.code === 'OPEN_CLOSE') ?? null,
+    [],
+  )
+
+  /** Lots at capacity are excluded here rather than shown and rejected. */
+  const eligibleLots = useMemo(() => {
+    void version
+    return dataset()
+      .lots.filter(
+        (l) =>
+          l.locationId === locationId &&
+          l.currentContractId !== null &&
+          l.intermentCount < l.capacity,
+      )
+      .sort((a, b) => (lotCodeFor(a) < lotCodeFor(b) ? -1 : 1))
+  }, [locationId, version])
+
+  const lot = useMemo(
+    () => (lotId ? (eligibleLots.find((l) => l.id === lotId) ?? null) : null),
+    [lotId, eligibleLots],
+  )
+
+  const free = useMemo(() => {
+    void version
+    return date ? availableSlots(date, locationId) : []
+  }, [date, locationId, version])
+
+  const next = useMemo(() => {
+    void version
+    return nextAvailableSlot(TODAY, locationId)
+  }, [locationId, version])
+
+  const outside = dod && date ? isOutsideWindow(dod, date) : false
+
+  const stepValid = [
+    lot !== null,
+    first.trim().length > 0 && last.trim().length > 0 && dod !== null,
+    date !== null && slot !== null && free.includes(slot) && (!outside || override.trim().length > 0),
+  ]
+
+  const submit = () => {
+    if (!lot || !dod || !date || !slot || !openClose) return
+    try {
+      const id = schedule({
+        lotId: lot.id,
+        deceasedFirstName: first,
+        deceasedMiddleName: middle || null,
+        deceasedLastName: last,
+        dateOfBirth: dob,
+        dateOfDeath: dod,
+        type,
+        scheduledDate: date,
+        slot,
+        requirements,
+        openingClosingFeeCentavos: openClose.defaultAmountCentavos,
+        notes: notes.trim() || null,
+        windowOverrideReason: outside ? override.trim() : null,
+        actor: { id: user.id, role: user.role },
+      })
+      toast.success(
+        user.role === 'agent' ? 'Interment requested' : 'Interment scheduled',
+        {
+          description: `${first} ${last} · ${lotCodeFor(lot)} · ${fmtDate(date)}, ${SLOT_LABEL[slot].toLowerCase()}.`,
+        },
+      )
+      onOpenChange(false)
+      onScheduled?.(id)
+    } catch (e) {
+      toast.error('Could not schedule', {
+        description: e instanceof Error ? e.message : 'Unknown error',
+      })
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[88vh] gap-0 overflow-hidden p-0 sm:max-w-[640px]">
+        <DialogHeader className="border-b border-line px-5 pb-4 pt-5">
+          <DialogTitle className="font-display text-[21px] font-semibold">
+            Schedule a burial
+          </DialogTitle>
+          <DialogDescription className="text-[13px]">
+            {user.role === 'agent'
+              ? 'Your request goes to the manager for approval before the slot is confirmed.'
+              : `A day holds ${MAX_BURIALS_PER_DAY} services — one morning, one afternoon.`}
+          </DialogDescription>
+          <Stepper step={step} onStep={setStep} valid={stepValid} />
+        </DialogHeader>
+
+        <div className="min-h-[330px] overflow-y-auto px-5 py-4">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 14 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -14 }}
+              transition={{ duration: 0.24, ease: EASE }}
+            >
+              {step === 0 && (
+                <LotStep lots={eligibleLots} selected={lot} onSelect={setLotId} />
+              )}
+
+              {step === 1 && (
+                <DeceasedStep
+                  first={first}
+                  middle={middle}
+                  last={last}
+                  dob={dob}
+                  dod={dod}
+                  type={type}
+                  onFirst={setFirst}
+                  onMiddle={setMiddle}
+                  onLast={setLast}
+                  onDob={setDob}
+                  onDod={setDod}
+                  onType={(t) => {
+                    setType(t)
+                    // Selecting bone_transfer adds the transfer-permit requirement.
+                    setRequirements((r) => ({ ...r, transferPermit: t !== 'bone_transfer' ? true : false }))
+                  }}
+                />
+              )}
+
+              {step === 2 && (
+                <ScheduleStep
+                  locationId={locationId}
+                  date={date}
+                  slot={slot}
+                  dod={dod}
+                  free={free}
+                  next={next}
+                  outside={outside}
+                  override={override}
+                  notes={notes}
+                  type={type}
+                  requirements={requirements}
+                  feeCentavos={openClose?.defaultAmountCentavos ?? 0}
+                  onDate={(d) => {
+                    setDate(d)
+                    setSlot(null)
+                  }}
+                  onSlot={setSlot}
+                  onOverride={setOverride}
+                  onNotes={setNotes}
+                  onToggleRequirement={(k, v) =>
+                    setRequirements((r) => ({ ...r, [k]: v }))
+                  }
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <DialogFooter className="items-center gap-2 border-t border-line bg-surface-2 px-5 py-3.5 sm:justify-between">
+          <span className="text-[12px] text-muted">
+            Step {step + 1} of 3 · {STEPS[step]}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => (step === 0 ? onOpenChange(false) : setStep(step - 1))}
+            >
+              {step === 0 ? 'Cancel' : 'Back'}
+            </Button>
+            {step < 2 ? (
+              <Button disabled={!stepValid[step]} onClick={() => setStep(step + 1)}>
+                Continue
+              </Button>
+            ) : (
+              <Button disabled={!stepValid[2]} onClick={submit} className="gap-2">
+                <Icon icon={IconCheck} size={16} />
+                {user.role === 'agent' ? 'Request interment' : 'Schedule interment'}
+              </Button>
+            )}
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function Stepper({
+  step,
+  onStep,
+  valid,
+}: {
+  step: number
+  onStep: (n: number) => void
+  valid: boolean[]
+}) {
+  return (
+    <ol className="mt-3 flex items-center gap-1.5">
+      {STEPS.map((label, n) => {
+        const reachable = n === 0 || valid.slice(0, n).every(Boolean)
+        return (
+          <li key={label} className="flex flex-1 items-center gap-1.5">
+            <button
+              type="button"
+              disabled={!reachable}
+              onClick={() => reachable && onStep(n)}
+              className={cn(
+                'flex flex-1 items-center gap-2 rounded-md border px-2 py-1.5 text-left text-[12px] transition-colors',
+                n === step
+                  ? 'border-gold bg-gold/12 font-medium text-gold-deep dark:text-gold'
+                  : 'border-line text-muted hover:border-gold/50',
+                !reachable && 'cursor-not-allowed opacity-50',
+              )}
+            >
+              <span
+                className={cn(
+                  'grid size-[18px] shrink-0 place-items-center rounded-full font-mono text-[10px]',
+                  n === step
+                    ? 'bg-gold-deep text-white dark:bg-gold dark:text-black'
+                    : valid[n]
+                      ? 'bg-green/20 text-green'
+                      : 'bg-surface-2 text-muted',
+                )}
+              >
+                {valid[n] && n !== step ? '✓' : n + 1}
+              </span>
+              {label}
+            </button>
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
+// ── step 1 · lot ─────────────────────────────────────────────────────
+
+function LotStep({
+  lots,
+  selected,
+  onSelect,
+}: {
+  lots: Lot[]
+  selected: Lot | null
+  onSelect: (id: LotId) => void
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="text-[12.5px] text-muted">
+        Only lots with remaining capacity appear here. A lot at capacity is not
+        listed at all — there is nothing to reject.
+      </p>
+
+      {selected && (
+        <div className="rounded-lg border border-gold/50 bg-gold/8 p-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-mono text-[14px] font-medium text-ink">
+                {lotCodeFor(selected)}
+              </p>
+              <p className="mt-0.5 truncate text-[12.5px] text-muted">
+                {ownerName(selected)} · {tierName(selected)}
+              </p>
+            </div>
+            <CapacityMeter
+              used={selected.intermentCount}
+              capacity={selected.capacity}
+              className="shrink-0"
+            />
+          </div>
+        </div>
+      )}
+
+      <Command className="rounded-lg border border-line bg-surface">
+        <CommandInput placeholder="Search lot code or owner…" />
+        <CommandList className="max-h-[240px]">
+          <CommandEmpty className="py-6 text-center text-[13px] text-muted">
+            No lot with remaining capacity matches.
+          </CommandEmpty>
+          {lots.slice(0, 200).map((l) => (
+            <CommandItem
+              key={l.id}
+              value={`${lotCodeFor(l)} ${ownerName(l)} ${tierName(l)}`}
+              onSelect={() => onSelect(l.id)}
+              className="flex items-center gap-3"
+            >
+              <Icon icon={IconLot} size={15} className="text-muted" />
+              <span className="font-mono text-[12.5px] text-ink">{lotCodeFor(l)}</span>
+              <span className="min-w-0 flex-1 truncate text-[12px] text-muted">
+                {ownerName(l)}
+              </span>
+              <span className="tabular shrink-0 text-[11.5px] text-muted">
+                {l.intermentCount} of {l.capacity} used
+              </span>
+            </CommandItem>
+          ))}
+        </CommandList>
+      </Command>
+      {lots.length > 200 && (
+        <p className="text-[11.5px] text-muted">
+          Showing the first 200 of {lots.length} eligible lots — narrow the search.
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ── step 2 · deceased ────────────────────────────────────────────────
+
+function DeceasedStep({
+  first,
+  middle,
+  last,
+  dob,
+  dod,
+  type,
+  onFirst,
+  onMiddle,
+  onLast,
+  onDob,
+  onDod,
+  onType,
+}: {
+  first: string
+  middle: string
+  last: string
+  dob: ISODate | null
+  dod: ISODate | null
+  type: IntermentType
+  onFirst: (v: string) => void
+  onMiddle: (v: string) => void
+  onLast: (v: string) => void
+  onDob: (v: ISODate | null) => void
+  onDod: (v: ISODate | null) => void
+  onType: (v: IntermentType) => void
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="First name" required>
+          <Input value={first} onChange={(e) => onFirst(e.target.value)} />
+        </Field>
+        <Field label="Middle name">
+          <Input value={middle} onChange={(e) => onMiddle(e.target.value)} />
+        </Field>
+        <Field label="Last name" required>
+          <Input value={last} onChange={(e) => onLast(e.target.value)} />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Date of birth">
+          <DatePickerButton
+            value={dob}
+            onChange={onDob}
+            placeholder="Optional"
+            captionLayout="dropdown"
+            startMonth={new Date(1920, 0)}
+            endMonth={toDate(TODAY)}
+          />
+        </Field>
+        <Field label="Date of death" required>
+          <DatePickerButton
+            value={dod}
+            onChange={onDod}
+            placeholder="Required"
+            captionLayout="dropdown"
+            startMonth={new Date(2024, 0)}
+            endMonth={toDate(TODAY)}
+          />
+        </Field>
+      </div>
+
+      {dod && (
+        <div className="rounded-lg border border-gold/45 bg-gold/8 px-3 py-2.5 text-[12.5px] text-gold-deep dark:text-gold">
+          <span className="font-medium">Interment window:</span> on or before{' '}
+          <span className="font-medium">{fmtDate(windowEnd(dod))}</span> (
+          {AT_NEED_WINDOW_DAYS} days).
+        </div>
+      )}
+
+      <div>
+        <p className="eyebrow mb-2 text-muted">Interment type</p>
+        <RadioGroup
+          value={type}
+          onValueChange={(v) => onType(v as IntermentType)}
+          className="gap-2"
+        >
+          {(Object.keys(INTERMENT_TYPE_LABEL) as IntermentType[]).map((t) => (
+            <label
+              key={t}
+              className={cn(
+                'flex cursor-pointer items-start gap-3 rounded-lg border p-2.5 transition-colors',
+                type === t ? 'border-gold bg-gold/8' : 'border-line hover:border-gold/45',
+              )}
+            >
+              <RadioGroupItem value={t} className="mt-0.5" />
+              <span className="min-w-0">
+                <span className="block text-[13px] font-medium text-ink">
+                  {INTERMENT_TYPE_LABEL[t]}
+                </span>
+                <span className="block text-[11.5px] leading-snug text-muted">
+                  {INTERMENT_TYPE_HINT[t]}
+                </span>
+              </span>
+            </label>
+          ))}
+        </RadioGroup>
+      </div>
+    </div>
+  )
+}
+
+// ── step 3 · schedule ────────────────────────────────────────────────
+
+function ScheduleStep({
+  locationId,
+  date,
+  slot,
+  dod,
+  free,
+  next,
+  outside,
+  override,
+  notes,
+  type,
+  requirements,
+  feeCentavos,
+  onDate,
+  onSlot,
+  onOverride,
+  onNotes,
+  onToggleRequirement,
+}: {
+  locationId: LocationId
+  date: ISODate | null
+  slot: BurialSlot | null
+  dod: ISODate | null
+  free: BurialSlot[]
+  next: { date: ISODate; slot: BurialSlot } | null
+  outside: boolean
+  override: string
+  notes: string
+  type: IntermentType
+  requirements: IntermentRequirements
+  feeCentavos: number
+  onDate: (v: ISODate) => void
+  onSlot: (v: BurialSlot) => void
+  onOverride: (v: string) => void
+  onNotes: (v: string) => void
+  onToggleRequirement: (k: keyof IntermentRequirements, v: boolean) => void
+}) {
+  const limit = dod && dod > TODAY ? dod : TODAY
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
+        <div className="rounded-lg border border-line bg-surface p-1">
+          <Calendar
+            mode="single"
+            selected={date ? toDate(date) : undefined}
+            onSelect={(d) => d && onDate(toISODate(d))}
+            defaultMonth={date ? toDate(date) : toDate(TODAY)}
+            weekStartsOn={1}
+            className="bg-transparent"
+            disabled={[
+              { before: toDate(limit) },
+              // Full days are disabled outright, not rejected on submit.
+              (d: Date) => isDayFull(toISODate(d), locationId),
+            ]}
+            modifiers={
+              dod
+                ? { outsideWindow: (d: Date) => toISODate(d) > windowEnd(dod) }
+                : undefined
+            }
+            modifiersClassNames={{
+              outsideWindow: 'text-gold-deep dark:text-gold font-medium',
+            }}
+          />
+        </div>
+
+        <div className="space-y-3">
+          {next && (
+            <p className="text-[12.5px] text-muted">
+              <span className="font-medium text-ink">Next available:</span>{' '}
+              {fmtDateLong(next.date)}, {SLOT_LABEL[next.slot].toLowerCase()}
+            </p>
+          )}
+
+          {dod && (
+            <p className="text-[12px] text-muted">
+              Interment window: on or before{' '}
+              <span className="font-medium text-ink">{fmtDate(windowEnd(dod))}</span> (
+              {AT_NEED_WINDOW_DAYS} days from the date of death).
+            </p>
+          )}
+
+          <div>
+            <p className="eyebrow mb-1.5 text-muted">Slot</p>
+            {!date ? (
+              <p className="text-[12.5px] text-muted">Pick a date first.</p>
+            ) : (
+              <RadioGroup
+                value={slot ?? ''}
+                onValueChange={(v) => onSlot(v as BurialSlot)}
+                className="gap-1.5"
+              >
+                {(['morning', 'afternoon'] as BurialSlot[]).map((s) => {
+                  const taken = !free.includes(s)
+                  return (
+                    <label
+                      key={s}
+                      className={cn(
+                        'flex items-center gap-2.5 rounded-lg border px-2.5 py-2 text-[13px] transition-colors',
+                        taken
+                          ? 'cursor-not-allowed border-line bg-surface-2 text-muted'
+                          : slot === s
+                            ? 'cursor-pointer border-gold bg-gold/8 text-ink'
+                            : 'cursor-pointer border-line hover:border-gold/45',
+                      )}
+                    >
+                      <RadioGroupItem value={s} disabled={taken} />
+                      <SlotIcon slot={s} />
+                      <span className="flex-1">{SLOT_LABEL[s]}</span>
+                      {taken && <span className="text-[11.5px]">Already booked</span>}
+                    </label>
+                  )
+                })}
+              </RadioGroup>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-line bg-surface-2 px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[12.5px] text-muted">Opening &amp; closing fee</span>
+              <MoneyText centavos={feeCentavos} className="text-[13.5px] font-medium" />
+            </div>
+            <p className="mt-1 flex items-center gap-1.5 text-[11.5px] text-muted">
+              Billed as a service line on the contract.
+              <AssumedChip why={ASSUMPTIONS.serviceFees.why} />
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {outside && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.24, ease: EASE }}
+          className="rounded-lg border border-gold bg-gold/10 p-3"
+        >
+          <p className="flex items-start gap-2 text-[13px] font-medium text-gold-deep dark:text-gold">
+            <Icon icon={IconWarning} size={16} className="mt-px" />
+            {date && dod
+              ? `${fmtDate(date)} falls outside the ${AT_NEED_WINDOW_DAYS}-day window, which closes ${fmtDate(windowEnd(dod))}.`
+              : 'Outside the interment window.'}
+          </p>
+          <p className="mt-1 text-[12px] leading-snug text-muted">
+            The rule is the client's. The override exists because reality has
+            exceptions and a system that simply refuses gets worked around on paper.
+          </p>
+          <Textarea
+            value={override}
+            onChange={(e) => onOverride(e.target.value)}
+            placeholder="Reason for scheduling outside the window (required)"
+            className="mt-2 min-h-[62px] bg-surface text-[13px]"
+          />
+        </motion.div>
+      )}
+
+      <div>
+        <p className="eyebrow mb-1.5 text-muted">Requirements</p>
+        <RequirementsChecklist
+          type={type}
+          requirements={requirements}
+          editable
+          idPrefix="new-interment"
+          onToggle={onToggleRequirement}
+        />
+        <p className="mt-1.5 text-[11.5px] text-muted">
+          Outstanding items do not block scheduling — the permit usually arrives
+          after the date is set — but they do block completion.
+        </p>
+      </div>
+
+      <Field label="Notes">
+        <Textarea
+          value={notes}
+          onChange={(e) => onNotes(e.target.value)}
+          placeholder="Anything the office or the grounds crew should know"
+          className="min-h-[56px] text-[13px]"
+        />
+      </Field>
+    </div>
+  )
+}
+
+// ── small parts ──────────────────────────────────────────────────────
+
+function Field({
+  label,
+  required,
+  children,
+}: {
+  label: string
+  required?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="eyebrow text-muted">
+        {label}
+        {required && <span className="ml-1 text-danger">*</span>}
+      </Label>
+      {children}
+    </div>
+  )
+}
+
+/** A Calendar in a Popover. Never a native date input. */
+export function DatePickerButton({
+  value,
+  onChange,
+  placeholder = 'Pick a date',
+  disabled,
+  captionLayout,
+  startMonth,
+  endMonth,
+  className,
+}: {
+  value: ISODate | null
+  onChange: (v: ISODate) => void
+  placeholder?: string
+  disabled?: React.ComponentProps<typeof Calendar>['disabled']
+  captionLayout?: React.ComponentProps<typeof Calendar>['captionLayout']
+  startMonth?: Date
+  endMonth?: Date
+  className?: string
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            'w-full justify-start gap-2 font-normal',
+            !value && 'text-muted',
+            className,
+          )}
+        >
+          <Icon icon={IconCalendar} size={15} />
+          {value ? fmtDate(value) : placeholder}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={value ? toDate(value) : undefined}
+          defaultMonth={value ? toDate(value) : endMonth}
+          onSelect={(d) => {
+            if (!d) return
+            onChange(toISODate(d))
+            setOpen(false)
+          }}
+          weekStartsOn={1}
+          disabled={disabled}
+          captionLayout={captionLayout}
+          startMonth={startMonth}
+          endMonth={endMonth}
+        />
+      </PopoverContent>
+    </Popover>
+  )
+}
