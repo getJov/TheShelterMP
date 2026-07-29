@@ -17,6 +17,7 @@ export interface ChromeBlock {
   code: string
   polygon: Polygon
   active: boolean
+  target?: boolean
 }
 
 export interface ChromeState {
@@ -161,16 +162,16 @@ export class ChromeCanvas {
         ctx.save()
         ctx.beginPath()
         this.path(ctx, b.polygon)
-        ctx.setLineDash(b.active ? [2, 3] : [6, 5])
-        ctx.lineWidth = b.active ? 2.5 : 2
-        ctx.strokeStyle = b.active ? gold : withAlpha(ink, s.dark ? 0.55 : 0.45)
+        ctx.setLineDash(b.target ? [1, 3] : b.active ? [2, 3] : [6, 5])
+        ctx.lineWidth = b.target ? 3 : b.active ? 2.5 : 2
+        ctx.strokeStyle = b.active || b.target ? gold : withAlpha(ink, s.dark ? 0.55 : 0.45)
         ctx.stroke()
-        if (b.active) {
-          ctx.fillStyle = withAlpha(gold, 0.06)
+        if (b.active || b.target) {
+          ctx.fillStyle = withAlpha(gold, b.target ? 0.12 : 0.06)
           ctx.fill()
         }
         ctx.restore()
-        this.label(ctx, b.polygon, b.code, b.active ? gold : withAlpha(ink, 0.7), paper)
+        this.label(ctx, b.polygon, b.code, b.active || b.target ? gold : withAlpha(ink, 0.7), paper)
       }
     }
 

@@ -100,6 +100,7 @@ export default function MapEditorPage() {
       if (e.key === 'Escape') {
         s.clearSelection()
         s.setPendingBlock(null)
+        s.cancelBlockEdit()
         return
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && s.selection.size > 0) {

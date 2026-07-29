@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { ASSUMPTIONS, OWNERSHIP_TRANSFER_FEE, type Contract } from '@/domain'
+import {
+  ASSUMPTIONS,
+  OWNERSHIP_TRANSFER_FEE,
+  type ClientId,
+  type Contract,
+} from '@/domain'
 import {
   Dialog,
   DialogContent,
@@ -18,7 +23,7 @@ import { Icon } from '@/components/ui-brand/Icon'
 import { IconTransfer } from '@/components/ui-brand/icons'
 import { useSales } from '@/stores/sales'
 import { useCurrentUserOrNull } from '@/lib/permissions'
-import { ClientCombobox, type BuyerValue } from './ClientCombobox'
+import { ClientCombobox } from './ClientCombobox'
 import { clientNameOf, lotCodeById } from '../lib'
 
 /**
@@ -36,7 +41,7 @@ export function TransferOwnershipDialog({
 }) {
   const user = useCurrentUserOrNull()
   const requestTransfer = useSales((s) => s.requestTransfer)
-  const [to, setTo] = useState<BuyerValue>(null)
+  const [to, setTo] = useState<ClientId | null>(null)
   const [reason, setReason] = useState('')
 
   useEffect(() => {
@@ -46,9 +51,9 @@ export function TransferOwnershipDialog({
   }, [open])
 
   function submit() {
-    if (!contract || !user || to?.kind !== 'client') return
+    if (!contract || !user || !to) return
     const result = requestTransfer(
-      { contractId: contract.id, toClientId: to.clientId, reason: reason.trim() },
+      { contractId: contract.id, toClientId: to, reason: reason.trim() },
       user,
     )
     if ('error' in result) {
@@ -88,7 +93,7 @@ export function TransferOwnershipDialog({
               <div className="min-w-0 flex-1">
                 <p className="eyebrow text-muted">New owner</p>
                 <p className="truncate text-[13.5px] text-ink">
-                  {to?.kind === 'client' ? clientNameOf(to.clientId) : '—'}
+                  {to ? clientNameOf(to) : '—'}
                 </p>
               </div>
             </div>
@@ -101,7 +106,6 @@ export function TransferOwnershipDialog({
                 id="tr-to"
                 value={to}
                 onChange={setTo}
-                allowProspect={false}
                 exclude={contract.clientId}
               />
             </div>
@@ -138,7 +142,7 @@ export function TransferOwnershipDialog({
           </Button>
           <Button
             onClick={submit}
-            disabled={to?.kind !== 'client' || reason.trim().length < 4}
+            disabled={!to || reason.trim().length < 4}
           >
             File for approval
           </Button>

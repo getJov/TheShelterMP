@@ -57,7 +57,7 @@ import { TODAY } from '@/mock'
 import { fmtDate } from '@/lib/dates'
 import { LotCombobox } from './LotCombobox'
 import { AgentCombobox } from './AgentCombobox'
-import { ClientCombobox, type BuyerValue } from './ClientCombobox'
+import { ClientCombobox } from './ClientCombobox'
 import { DateField } from './DateField'
 import { PriceCard } from './PriceCard'
 import { ScheduleTable } from './ScheduleTable'
@@ -99,8 +99,8 @@ export function ContractBuilder({
 
   const [step, setStep] = useState(0)
   const [lotId, setLotId] = useState<LotId | null>(initialLotId)
-  const [buyer, setBuyer] = useState<BuyerValue>(null)
-  const [coOwner, setCoOwner] = useState<BuyerValue>(null)
+  const [buyer, setBuyer] = useState<ClientId | null>(null)
+  const [coOwner, setCoOwner] = useState<ClientId | null>(null)
   const [agentId, setAgentId] = useState<string>('')
   const [needType, setNeedType] = useState<NeedType>('pre_need')
   const [paymentMode, setPaymentMode] = useState<PaymentMode>('spot_cash')
@@ -173,8 +173,7 @@ export function ContractBuilder({
   )
   const contractPrice = Math.max(0, listPrice - discountCentavos + servicesTotal)
 
-  const buyerClient =
-    buyer?.kind === 'client' ? indexes().clientsById.get(buyer.clientId) : null
+  const buyerClient = buyer ? (indexes().clientsById.get(buyer) ?? null) : null
 
   const schedulePreview = useMemo(() => {
     if (paymentMode !== 'installment' || contractPrice <= 0) return []
@@ -201,7 +200,7 @@ export function ContractBuilder({
     )
   }, [selectedAgent, contractPrice, rules, signedAt, version])
 
-  const step1Ok = Boolean(lotId && buyer?.kind === 'client' && agentId)
+  const step1Ok = Boolean(lotId && buyer && agentId)
   const step2Ok =
     Boolean(resolved && resolved.amountCentavos !== null) &&
     (paymentMode === 'spot_cash' || termMonths > 0) &&
@@ -209,14 +208,13 @@ export function ContractBuilder({
   const canAdvance = step === 0 ? step1Ok : step === 1 ? step2Ok : true
 
   function submit() {
-    if (!user || !lotId || !buyer || buyer.kind !== 'client' || !resolved?.entry) return
+    if (!user || !lotId || !buyer || !resolved?.entry) return
     setBusy(true)
     const id = createContract(
       {
         lotId,
-        clientId: buyer.clientId,
-        coOwnerClientId:
-          coOwner?.kind === 'client' ? (coOwner.clientId as ClientId) : null,
+        clientId: buyer,
+        coOwnerClientId: coOwner,
         needType,
         paymentMode,
         termMonths: paymentMode === 'installment' ? termMonths : null,
@@ -304,7 +302,6 @@ export function ContractBuilder({
                       id="cb-buyer"
                       value={buyer}
                       onChange={setBuyer}
-                      allowProspect={false}
                       placeholder="Search the client book"
                     />
                     {buyerClient?.seniorCitizen && <SeniorHint />}
@@ -318,8 +315,7 @@ export function ContractBuilder({
                       id="cb-coowner"
                       value={coOwner}
                       onChange={setCoOwner}
-                      allowProspect={false}
-                      exclude={buyer?.kind === 'client' ? buyer.clientId : null}
+                      exclude={buyer}
                     />
                   </div>
                 </div>

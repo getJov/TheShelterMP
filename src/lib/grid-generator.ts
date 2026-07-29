@@ -16,6 +16,7 @@ import {
   metresToLng,
   offsetMetres,
   pointInPolygon,
+  polygonCentroid,
   rectAt,
 } from '@/lib/geo'
 
@@ -608,6 +609,51 @@ export function translateLot(lot: Lot, delta: [number, number], now: string): Lo
     centroid: [lot.centroid[0] + delta[0], lot.centroid[1] + delta[1]],
     updatedAt: now,
   }
+}
+
+export function transformLotBetweenBlocks(
+  lot: Lot,
+  fromBlock: Polygon,
+  toBlock: Polygon,
+  now: string,
+): Lot {
+  const polygon = lot.polygon.map((p) => transformPointBetweenBlocks(p, fromBlock, toBlock))
+  return {
+    ...lot,
+    polygon,
+    centroid: polygonCentroid(polygon),
+    areaSqm: Math.round(areaSqm(polygon) * 100) / 100,
+    updatedAt: now,
+  }
+}
+
+function transformPointBetweenBlocks(p: LatLng, fromBlock: Polygon, toBlock: Polygon): LatLng {
+  if (fromBlock.length < 4 || toBlock.length < 4) {
+    const from = polygonCentroid(fromBlock)
+    const to = polygonCentroid(toBlock)
+    return [p[0] + to[0] - from[0], p[1] + to[1] - from[1]]
+  }
+
+  const origin = fromBlock[0]!
+  const east = toLocal(origin, fromBlock[1]!, 0)
+  const south = toLocal(origin, fromBlock[3]!, 0)
+  const point = toLocal(origin, p, 0)
+  const det = east.e * south.n - east.n * south.e
+  if (Math.abs(det) < 1e-9) {
+    const from = polygonCentroid(fromBlock)
+    const to = polygonCentroid(toBlock)
+    return [p[0] + to[0] - from[0], p[1] + to[1] - from[1]]
+  }
+
+  const u = (point.e * south.n - point.n * south.e) / det
+  const v = (east.e * point.n - east.n * point.e) / det
+  const top = lerpLatLng(toBlock[0]!, toBlock[1]!, u)
+  const bottom = lerpLatLng(toBlock[3]!, toBlock[2]!, u)
+  return lerpLatLng(top, bottom, v)
+}
+
+function lerpLatLng(a: LatLng, b: LatLng, t: number): LatLng {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
 }
 
 // ── regeneration modes ───────────────────────────────────────────────

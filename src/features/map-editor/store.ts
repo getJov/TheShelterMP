@@ -30,16 +30,18 @@ import {
   renumber,
   resizeLot,
   safeCapacity,
+  transformLotBetweenBlocks,
   type GridPlan,
   type Numbering,
   type RegenMode,
   type RegenResult,
 } from '@/lib/grid-generator'
 
-export type Tool = 'select' | 'block' | 'grid' | 'draw' | 'overlay'
+export type Tool = 'select' | 'editBlock' | 'block' | 'grid' | 'draw' | 'overlay'
 
 export const TOOL_KEYS: Record<string, Tool> = {
   v: 'select',
+  e: 'editBlock',
   b: 'block',
   g: 'grid',
   d: 'draw',
@@ -86,6 +88,19 @@ export interface PendingBlock {
   defaultTierId: TierId | null
 }
 
+export interface EditingBlock {
+  id: BlockId
+  originalPolygon: Polygon
+  polygon: Polygon
+  rotationDeg: number
+  moveLots: boolean
+}
+
+export interface BlockEditResult {
+  movedLots: number
+  protectedLots: number
+}
+
 const UNDO_DEPTH = 50
 
 /** Audit ids start well past the seed's so the two never collide. */
@@ -103,6 +118,16 @@ export interface PublishAudit {
 const clone = <T,>(v: T): T => structuredClone(v)
 
 const emptyDraft = (): DraftState => ({ blocks: [], lots: [], overlays: [] })
+
+function blockEditFrom(block: Block, moveLots = false): EditingBlock {
+  return {
+    id: block.id,
+    originalPolygon: clone(block.polygon),
+    polygon: clone(block.polygon),
+    rotationDeg: block.grid?.rotationDeg ?? 0,
+    moveLots,
+  }
+}
 
 export const defaultGrid = (): GridParams => ({
   tierId: null,
@@ -126,6 +151,8 @@ interface EditorState extends DraftState {
   activeBlockId: BlockId | null
   activeOverlayId: OverlayId | null
   pendingBlock: PendingBlock | null
+  editingBlock: EditingBlock | null
+  moveTargetBlockId: BlockId | null
 
   grid: GridParams
   /** The 45% preview is noise once the block already holds that grid. */
@@ -151,6 +178,7 @@ interface EditorState extends DraftState {
   setGrid: (patch: Partial<GridParams>) => void
   setActiveBlock: (id: BlockId | null) => void
   setActiveOverlay: (id: OverlayId | null) => void
+  setMoveTargetBlock: (id: BlockId | null) => void
 
   // undo
   undo: () => void
@@ -167,6 +195,10 @@ interface EditorState extends DraftState {
   setPendingBlock: (p: PendingBlock | null) => void
   patchPendingBlock: (patch: Partial<PendingBlock>) => void
   commitPendingBlock: () => BlockId | null
+  startBlockEdit: (id: BlockId) => void
+  patchEditingBlock: (patch: Partial<Pick<EditingBlock, 'polygon' | 'rotationDeg' | 'moveLots'>>) => void
+  cancelBlockEdit: () => void
+  commitBlockEdit: () => BlockEditResult | null
   updateBlock: (id: BlockId, patch: Partial<Block>) => void
   deleteBlock: (id: BlockId) => void
 
@@ -257,6 +289,8 @@ export const useEditor = create<EditorState>((set, get) => {
     activeBlockId: null,
     activeOverlayId: null,
     pendingBlock: null,
+    editingBlock: null,
+    moveTargetBlockId: null,
 
     grid: defaultGrid(),
     showPreview: true,
@@ -302,6 +336,8 @@ export const useEditor = create<EditorState>((set, get) => {
         activeBlockId: first,
         activeOverlayId: null,
         pendingBlock: null,
+        editingBlock: null,
+        moveTargetBlockId: null,
         undoStack: [],
         redoStack: [],
         overlayEditBase: null,
@@ -371,6 +407,8 @@ export const useEditor = create<EditorState>((set, get) => {
         undoStack: [],
         redoStack: [],
         overlayEditBase: null,
+        editingBlock: null,
+        moveTargetBlockId: null,
         dirty: false,
       })
     },
@@ -380,6 +418,16 @@ export const useEditor = create<EditorState>((set, get) => {
       set((s) => ({
         tool,
         pendingBlock: tool === 'block' ? s.pendingBlock : null,
+        editingBlock:
+          tool === 'editBlock'
+            ? s.editingBlock ??
+              (s.activeBlockId
+                ? (() => {
+                    const block = s.blocks.find((b) => b.id === s.activeBlockId)
+                    return block ? blockEditFrom(block) : null
+                  })()
+                : null)
+            : null,
       })),
     setLayer: (k, v) => set((s) => ({ layers: { ...s.layers, [k]: v } })),
     setCompare: (compare) => set({ compare }),
@@ -397,9 +445,21 @@ export const useEditor = create<EditorState>((set, get) => {
       set((s) =>
         s.activeBlockId === activeBlockId
           ? {}
-          : { activeBlockId, showPreview: true, grid: gridFor(s, activeBlockId) },
+          : {
+              activeBlockId,
+              showPreview: true,
+              grid: gridFor(s, activeBlockId),
+              editingBlock:
+                s.tool === 'editBlock' && activeBlockId
+                  ? (() => {
+                      const block = s.blocks.find((b) => b.id === activeBlockId)
+                      return block ? blockEditFrom(block, s.editingBlock?.moveLots ?? false) : null
+                    })()
+                  : s.editingBlock,
+            },
       ),
     setActiveOverlay: (activeOverlayId) => set({ activeOverlayId }),
+    setMoveTargetBlock: (moveTargetBlockId) => set({ moveTargetBlockId }),
 
     // ── undo ────────────────────────────────────────────────────────
     undo: () => {
@@ -410,6 +470,8 @@ export const useEditor = create<EditorState>((set, get) => {
         ...restore(prev),
         undoStack: s.undoStack.slice(0, -1),
         redoStack: [...s.redoStack, snapshotOf(s)],
+        editingBlock: null,
+        moveTargetBlockId: null,
         dirty: true,
       })
       get().recheckOverlaps()
@@ -423,6 +485,8 @@ export const useEditor = create<EditorState>((set, get) => {
         ...restore(next),
         redoStack: s.redoStack.slice(0, -1),
         undoStack: [...s.undoStack, snapshotOf(s)],
+        editingBlock: null,
+        moveTargetBlockId: null,
         dirty: true,
       })
       get().recheckOverlaps()
@@ -488,6 +552,60 @@ export const useEditor = create<EditorState>((set, get) => {
         },
       }))
       return id
+    },
+
+    startBlockEdit: (id) => {
+      const s = get()
+      const block = s.blocks.find((b) => b.id === id)
+      if (!block) return
+      set({
+        tool: 'editBlock',
+        activeBlockId: id,
+        editingBlock: blockEditFrom(block, s.editingBlock?.moveLots ?? false),
+        pendingBlock: null,
+        selection: new Set(),
+      })
+    },
+
+    patchEditingBlock: (patch) =>
+      set((s) =>
+        s.editingBlock ? { editingBlock: { ...s.editingBlock, ...patch } } : {},
+      ),
+
+    cancelBlockEdit: () => set({ editingBlock: null }),
+
+    commitBlockEdit: () => {
+      const s = get()
+      const edit = s.editingBlock
+      const block = edit ? s.blocks.find((b) => b.id === edit.id) : null
+      if (!edit || !block) return null
+
+      const inBlock = s.lots.filter((l) => l.blockId === edit.id)
+      const protectedLots = inBlock.filter(isProtected).length
+      let movedLots = 0
+      const moved = edit.moveLots
+        ? s.lots.map((l) => {
+            if (l.blockId !== edit.id || isProtected(l)) return l
+            movedLots++
+            return transformLotBetweenBlocks(l, edit.originalPolygon, edit.polygon, NOW)
+          })
+        : s.lots
+      const editedBlock: Block = {
+        ...block,
+        polygon: edit.polygon,
+        centroid: polygonCentroid(edit.polygon),
+        grid: block.grid ? { ...block.grid, rotationDeg: edit.rotationDeg } : block.grid,
+        updatedAt: NOW,
+      }
+
+      mutate((st) => ({
+        blocks: st.blocks.map((b) => (b.id === edit.id ? editedBlock : b)),
+        lots: moved,
+        activeBlockId: edit.id,
+        editingBlock: blockEditFrom(editedBlock, edit.moveLots),
+        overlaps: detectOverlaps(moved),
+      }))
+      return { movedLots, protectedLots }
     },
 
     updateBlock: (id, patch) =>

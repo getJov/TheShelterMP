@@ -52,12 +52,14 @@ import { PanelSection, WarnLine } from './bits'
 import { useEditor, lotsOfBlock, type Tool } from './store'
 import { STATUS_LABEL, tierMix, useTiers } from './helpers'
 import { BlockPanel } from './BlockPanel'
+import { EditBlockPanel } from './EditBlockPanel'
 import { GridPanel } from './GridPanel'
 import { OverlayPanel } from './OverlayPanel'
 import type { CanvasHandle } from './EditorCanvas'
 
 const TOOLS: { id: Tool; label: string; key: string; icon: typeof IconSelect; hint: string }[] = [
   { id: 'select', label: 'Select', key: 'V', icon: IconSelect, hint: 'Click, rubber-band, lasso' },
+  { id: 'editBlock', label: 'Edit block', key: 'E', icon: IconEdit, hint: 'Move, resize, rotate' },
   { id: 'block', label: 'Block', key: 'B', icon: IconDrawBlock, hint: 'Drag out a boundary' },
   { id: 'grid', label: 'Grid', key: 'G', icon: IconGrid, hint: 'Generate lots inside a block' },
   { id: 'draw', label: 'Draw lot', key: 'D', icon: IconPen, hint: 'Free-hand, for irregular edges' },
@@ -100,6 +102,7 @@ export function Sidebar({ canvas }: { canvas: CanvasHandle | null }) {
 
       <ScrollArea className="min-h-0 flex-1">
         {tool === 'block' && <BlockPanel />}
+        {tool === 'editBlock' && <EditBlockPanel />}
         {tool === 'grid' && <GridPanel />}
         {tool === 'overlay' && <OverlayPanel canvas={canvas} />}
         {tool === 'draw' && <DrawPanel />}
@@ -425,10 +428,12 @@ function Row({
 function BlocksPanel({ canvas }: { canvas: CanvasHandle | null }) {
   const blocks = useEditor((s) => s.blocks)
   const lots = useEditor((s) => s.lots)
+  const tool = useEditor((s) => s.tool)
   const activeBlockId = useEditor((s) => s.activeBlockId)
   const setActiveBlock = useEditor((s) => s.setActiveBlock)
   const setTool = useEditor((s) => s.setTool)
   const setSelection = useEditor((s) => s.setSelection)
+  const startBlockEdit = useEditor((s) => s.startBlockEdit)
   const { byId } = useTiers()
   const [renaming, setRenaming] = useState<Block | null>(null)
   const [deleting, setDeleting] = useState<Block | null>(null)
@@ -459,6 +464,7 @@ function BlocksPanel({ canvas }: { canvas: CanvasHandle | null }) {
                       className="min-w-0 flex-1 text-left"
                       onClick={() => {
                         setActiveBlock(b.id)
+                        if (tool === 'editBlock') startBlockEdit(b.id)
                         canvas?.zoomToBlock(b.id)
                       }}
                     >
@@ -498,6 +504,16 @@ function BlocksPanel({ canvas }: { canvas: CanvasHandle | null }) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            startBlockEdit(b.id)
+                            canvas?.zoomToBlock(b.id)
+                          }}
+                        >
+                          <Icon icon={IconEdit} size={14} />
+                          Edit shape
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem onSelect={() => setRenaming(b)}>
                           <Icon icon={IconEdit} size={14} />
                           Rename

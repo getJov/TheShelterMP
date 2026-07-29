@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import type { BlockId, LotStatus, TierId } from '@/domain'
@@ -62,6 +62,7 @@ export function BulkActionsBar() {
   const changeStatus = useEditor((s) => s.changeStatus)
   const renumberSelection = useEditor((s) => s.renumberSelection)
   const moveToBlock = useEditor((s) => s.moveToBlock)
+  const setMoveTargetBlock = useEditor((s) => s.setMoveTargetBlock)
   const resizeSelection = useEditor((s) => s.resizeSelection)
   const deleteLots = useEditor((s) => s.deleteLots)
   const { tiers, byId } = useTiers()
@@ -85,6 +86,11 @@ export function BulkActionsBar() {
   const ids = useMemo(() => [...selection], [selection])
   const guarded = protectedIn(lots, selection)
   const open = selection.size > 0
+
+  useEffect(() => {
+    setMoveTargetBlock(sheet === 'move' && target ? (target as BlockId) : null)
+    return () => setMoveTargetBlock(null)
+  }, [sheet, target, setMoveTargetBlock])
 
   const apply = () => {
     const tier = byId.get(tierId as TierId)
@@ -360,6 +366,12 @@ export function BulkActionsBar() {
               {guarded.count} sold or occupied {guarded.count === 1 ? 'lot' : 'lots'} cannot be
               moved and will be left where they are.
             </DangerLine>
+          )}
+          {target && (
+            <WarnLine>
+              The target block is highlighted on the map. Dropping sold or occupied lots into a
+              different block is still blocked.
+            </WarnLine>
           )}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setSheet(null)}>

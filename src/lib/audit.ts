@@ -76,6 +76,7 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   'payout.released': 'Payout released',
   'agent.created': 'Agent record changed',
   'agent.archived': 'Agent archived',
+  'client.created': 'Client created',
   'interment.scheduled': 'Interment scheduled',
   'interment.completed': 'Interment completed',
   'interment.cancelled': 'Interment cancelled',
@@ -83,7 +84,11 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   'transfer.approved': 'Transfer decided',
 }
 
-export const KNOWN_ACTIONS: string[] = [...AUDIT_ACTIONS, 'transfer.requested']
+export const KNOWN_ACTIONS: string[] = [
+  ...AUDIT_ACTIONS,
+  'transfer.requested',
+  'client.created',
+]
 
 /** Display names for the `entityType` column. Matched case-insensitively. */
 const ENTITY_LABEL: Record<string, string> = {
@@ -101,6 +106,7 @@ const ENTITY_LABEL: Record<string, string> = {
   commissionentry: 'Commission',
   payoutrun: 'Payout run',
   agentprofile: 'Agent',
+  client: 'Client',
   interment: 'Interment',
   transfer: 'Transfer',
   job: 'Grounds job',
@@ -401,6 +407,15 @@ function describeAction(e: AuditEvent, ctx: Dataset): string {
       return reason ? `Archived ${name} — ${reason}` : `Archived ${name}`
     }
 
+    case 'client.created': {
+      const fromParts = [str(pick(a, 'firstName')), str(pick(a, 'lastName'))]
+        .filter(Boolean)
+        .join(' ')
+      const name = clientNameOf(ctx, e.entityId) ?? (fromParts || 'a client')
+      const ref = str(pick(a, 'clientRef'))
+      return `Added ${name} to the client book${ref ? ` (${ref})` : ''}`
+    }
+
     // ── burials ──
     case 'interment.scheduled': {
       const i = intermentOf(ctx, e)
@@ -478,6 +493,7 @@ export function entityHref(e: AuditEvent, ctx: Dataset = dataset()): string | nu
       return code ? `/map?lot=${code}` : '/map'
     }
     case 'contract':
+    case 'client':
     case 'payment':
     case 'transfer':
       return '/sales'

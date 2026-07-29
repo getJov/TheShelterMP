@@ -19,6 +19,9 @@ type Mode =
   | { k: 'lasso' }
   | { k: 'block'; x0: number; y0: number }
   | { k: 'vertex'; index: number }
+  | { k: 'blockEditMove' }
+  | { k: 'blockEditVertex'; index: number }
+  | { k: 'blockEditRotate' }
   | { k: 'overlayScale'; corner: number }
   | { k: 'rotate' }
   | { k: 'overlayMove' }
@@ -80,6 +83,8 @@ export function EditorSurface({ dark }: { dark: boolean }) {
   const activeBlockId = useEditor((s) => s.activeBlockId)
   const activeOverlayId = useEditor((s) => s.activeOverlayId)
   const pendingBlock = useEditor((s) => s.pendingBlock)
+  const editingBlock = useEditor((s) => s.editingBlock)
+  const moveTargetBlockId = useEditor((s) => s.moveTargetBlockId)
   const showBlocks = useEditor((s) => s.layers.blocks)
   const overlaps = useEditor((s) => s.overlaps)
   const locked = useEditor((s) => s.lockedOverlays)
@@ -130,6 +135,21 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         if (Math.abs(lot.centroid[0] - ll[0]) > 0.0005) continue
         if (Math.abs(lot.centroid[1] - ll[1]) > 0.0005) continue
         if (pointInPolygon(ll, lot.polygon)) return lot
+      }
+      return null
+    },
+    [toLL],
+  )
+
+  const blocksRef = useRef(blocks)
+  blocksRef.current = blocks
+
+  const blockHitTest = useCallback(
+    (x: number, y: number) => {
+      const ll = toLL(x, y)
+      for (let i = blocksRef.current.length - 1; i >= 0; i--) {
+        const block = blocksRef.current[i]!
+        if (pointInPolygon(ll, block.polygon)) return block
       }
       return null
     },
@@ -224,10 +244,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         code: b.code,
         polygon: b.polygon,
         active: b.id === activeBlockId,
+        target: b.id === moveTargetBlockId,
       })),
       preview: previewPolys,
       overlaps: overlapPolys,
-      pending: draftRect ?? pendingBlock?.polygon ?? null,
+      pending: draftRect ?? pendingBlock?.polygon ?? editingBlock?.polygon ?? null,
       drawing:
         tool === 'draw' && drawPts.length > 0 ? { points: drawPts, cursor: cursorLL } : null,
       band,
@@ -239,10 +260,12 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     showBlocks,
     blocks,
     activeBlockId,
+    moveTargetBlockId,
     previewPolys,
     overlapPolys,
     draftRect,
     pendingBlock,
+    editingBlock,
     tool,
     drawPts,
     cursorLL,
@@ -291,6 +314,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         return
       }
       s.setActiveBlock(hit.blockId)
+      if (s.tool === 'editBlock') {
+        s.startBlockEdit(hit.blockId)
+        lastPicked.current = hit.id
+        return
+      }
       if (e.metaKey || e.ctrlKey) {
         s.toggleSelection(hit.id)
       } else if (e.shiftKey && lastPicked.current) {
@@ -332,6 +360,22 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         return
       }
       if (tool === 'draw') return
+      if (tool === 'editBlock') {
+        const s = useEditor.getState()
+        const ll = toLL(p.x, p.y)
+        const edit = s.editingBlock
+        if (edit && pointInPolygon(ll, edit.polygon)) {
+          drag.current.from = ll
+          setMode({ k: 'blockEditMove' })
+          return
+        }
+        const block = blockHitTest(p.x, p.y)
+        if (block) {
+          s.startBlockEdit(block.id)
+          return
+        }
+        return
+      }
       if (tool === 'overlay') {
         const s = useEditor.getState()
         const active = s.overlays.find((o) => o.id === s.activeOverlayId)
@@ -352,7 +396,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       if (hitTest(p.x, p.y)) return // resolved on pointerup as a click
       setMode({ k: 'band', x0: p.x, y0: p.y, subtract: e.altKey })
     },
-    [map, tool, toPt, toLL, hitTest],
+    [map, tool, toPt, toLL, hitTest, blockHitTest],
   )
 
   const onMove = useCallback(
@@ -425,6 +469,55 @@ export function EditorSurface({ dark }: { dark: boolean }) {
               ...pb,
               rotationDeg: snapped,
               polygon: rotatePolygon(pb.polygon, centre, delta),
+            })
+          }
+          setReadout({ x: p.x, y: p.y, lines: [`${snapped.toFixed(0)}°`] })
+          break
+        }
+
+        case 'blockEditMove': {
+          const edit = s.editingBlock
+          if (!edit) break
+          const now = toLL(p.x, p.y)
+          const dLat = now[0] - drag.current.from[0]
+          const dLng = now[1] - drag.current.from[1]
+          const polygon = edit.polygon.map(
+            ([lat, lng]) => [lat + dLat, lng + dLng] as LatLng,
+          )
+          s.patchEditingBlock({ polygon })
+          drag.current.from = now
+          setReadout({ x: p.x, y: p.y, lines: ['Move block'] })
+          break
+        }
+
+        case 'blockEditVertex': {
+          const edit = s.editingBlock
+          if (!edit) break
+          const poly = edit.polygon.map((v, i) => (i === m.index ? toLL(p.x, p.y) : v))
+          s.patchEditingBlock({ polygon: poly })
+          setReadout({
+            x: p.x,
+            y: p.y,
+            lines: [
+              `${fmtM(distanceM(poly[0]!, poly[1]!))} × ${fmtM(distanceM(poly[1]!, poly[2]!))}`,
+              fmtArea(areaSqm(poly)),
+            ],
+          })
+          break
+        }
+
+        case 'blockEditRotate': {
+          const edit = s.editingBlock
+          if (!edit) break
+          const centre = polygonCentroid(edit.polygon)
+          const c = toPt(centre)
+          const raw = angleAt(c, p)
+          const snapped = snapAngle(drag.current.base + (raw - drag.current.angle))
+          const delta = snapped - edit.rotationDeg
+          if (Math.abs(delta) >= 0.001) {
+            s.patchEditingBlock({
+              rotationDeg: snapped,
+              polygon: rotatePolygon(edit.polygon, centre, delta),
             })
           }
           setReadout({ x: p.x, y: p.y, lines: [`${snapped.toFixed(0)}°`] })
@@ -509,7 +602,9 @@ export function EditorSurface({ dark }: { dark: boolean }) {
           })
         }
       } else if (m.k === 'idle') {
-        if (!moved && (tool === 'select' || tool === 'grid')) pick(p.x, p.y, e)
+        if (!moved && (tool === 'select' || tool === 'grid' || tool === 'editBlock')) {
+          pick(p.x, p.y, e)
+        }
       } else if (
         m.k === 'overlayMove' ||
         m.k === 'overlayScale' ||
@@ -604,6 +699,8 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     tool === 'overlay' && activeOverlay && !locked.has(activeOverlay.id)
       ? cornerPoints(activeOverlay.bounds, activeOverlay.rotationDeg, toPt)
       : null
+  const blockEditCorners =
+    tool === 'editBlock' && editingBlock ? editingBlock.polygon.map((v) => toPt(v)) : null
 
   const selectionChip = useMemo(() => {
     if (selection.size === 0) return null
@@ -624,6 +721,8 @@ export function EditorSurface({ dark }: { dark: boolean }) {
 
   const cursor = panMode
     ? 'grab'
+    : tool === 'editBlock'
+      ? 'move'
     : tool === 'block' || tool === 'draw'
       ? 'crosshair'
       : tool === 'overlay'
@@ -664,6 +763,28 @@ export function EditorSurface({ dark }: { dark: boolean }) {
             anchor={edgeAnchor(pendingBlock.polygon, toPt)}
             onDown={(e, centre) =>
               startRotate(e, centre, pendingBlock.rotationDeg, () => ({ k: 'rotate' }))
+            }
+          />
+        )}
+
+        {tool === 'editBlock' &&
+          editingBlock &&
+          blockEditCorners?.map((p, i) => (
+            <Handle
+              key={`block-edit-${i}`}
+              x={p.x}
+              y={p.y}
+              title="Drag to reshape this block corner"
+              onDown={() => setMode({ k: 'blockEditVertex', index: i })}
+            />
+          ))}
+        {tool === 'editBlock' && editingBlock && (
+          <RotationHandle
+            anchor={edgeAnchor(editingBlock.polygon, toPt)}
+            onDown={(e, centre) =>
+              startRotate(e, centre, editingBlock.rotationDeg, () => ({
+                k: 'blockEditRotate',
+              }))
             }
           />
         )}
@@ -716,6 +837,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         {panMode && (
           <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
             Pan mode — release Space to return to the tool
+          </div>
+        )}
+        {tool === 'editBlock' && editingBlock && mode.k === 'idle' && (
+          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+            Drag inside the block to move · drag corners to reshape · use the handle to rotate
           </div>
         )}
       </div>

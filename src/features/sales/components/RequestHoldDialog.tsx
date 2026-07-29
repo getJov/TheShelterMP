@@ -4,6 +4,7 @@ import {
   ASSUMPTIONS,
   HOLD_DURATION_DAYS,
   STATUS_APPEARANCE,
+  type ClientId,
   type LotId,
 } from '@/domain'
 import {
@@ -27,7 +28,7 @@ import { useCurrentUserOrNull } from '@/lib/permissions'
 import { resolvePrice } from '@/lib/price-resolver'
 import { addDays, fmtDate } from '@/lib/dates'
 import { TODAY } from '@/mock'
-import { ClientCombobox, type BuyerValue } from './ClientCombobox'
+import { ClientCombobox } from './ClientCombobox'
 import { LotCombobox } from './LotCombobox'
 import { PriceCard } from './PriceCard'
 import { lotCodeOf } from '../lib'
@@ -52,7 +53,7 @@ export function RequestHoldDialog({
   const user = useCurrentUserOrNull()
   const requestHold = useSales((s) => s.requestHold)
 
-  const [buyer, setBuyer] = useState<BuyerValue>(null)
+  const [buyer, setBuyer] = useState<ClientId | null>(null)
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [pickedLotId, setPickedLotId] = useState<LotId | null>(presetLotId)
@@ -70,10 +71,12 @@ export function RequestHoldDialog({
 
   const tier = lot ? indexes().tiersById.get(lot.tierId) : null
   const resolved = useMemo(
-    () =>
-      lot
+    () => {
+      void version
+      return lot
         ? resolvePrice(prices, lot.tierId, 'pre_need', 'spot_cash', TODAY)
-        : null,
+        : null
+    },
     [lot, prices, version],
   )
 
@@ -91,8 +94,8 @@ export function RequestHoldDialog({
     setBusy(true)
     const result = requestHold({
       lotId: lot.id,
-      clientId: buyer.kind === 'client' ? buyer.clientId : null,
-      prospectName: buyer.kind === 'prospect' ? buyer.name : null,
+      clientId: buyer,
+      prospectName: null,
       note: note.trim() || null,
       actor: user,
     })
@@ -183,7 +186,7 @@ export function RequestHoldDialog({
 
                 <div className="space-y-1.5">
                   <Label htmlFor="hold-buyer" className="text-[12.5px] text-muted">
-                    Client or prospect
+                    Buyer
                   </Label>
                   <ClientCombobox id="hold-buyer" value={buyer} onChange={setBuyer} />
                 </div>
