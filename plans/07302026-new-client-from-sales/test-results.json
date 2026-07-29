@@ -1,0 +1,58 @@
+{
+  "plan": "plans/07302026-new-client-from-sales",
+  "generatedAt": "2026-07-30",
+  "status": "Not Run",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Create new client from Request hold",
+      "surface": "ui",
+      "precondition": "Logged in as an agent/manager who can request holds; an available lot exists",
+      "steps": [
+        "1. Open Request hold on an available lot",
+        "2. Open the Buyer combobox",
+        "3. Confirm “Create new client” is visible without typing",
+        "4. Click it, enter first name, last name, phone; save",
+        "5. Confirm the new buyer is selected and Request hold succeeds"
+      ],
+      "expected": "New CL-… client is created, selected as buyer, hold is requested",
+      "status": "pending",
+      "evidence": "",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Create new client from New contract",
+      "surface": "ui",
+      "precondition": "Logged in as a user who can create contracts",
+      "steps": [
+        "1. Open New contract",
+        "2. Open Buyer combobox → Create new client",
+        "3. Complete the form and save",
+        "4. Advance through terms and create the contract"
+      ],
+      "expected": "Contract is created against the new Client record",
+      "status": "pending",
+      "evidence": "",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Prospect shortcut is gone",
+      "surface": "ui",
+      "precondition": "Buyer combobox open on hold or contract",
+      "steps": [
+        "1. Type a novel name that does not match any client",
+        "2. Confirm there is no “New prospect — …” row",
+        "3. Confirm “Create new client” remains available"
+      ],
+      "expected": "Only Create new client path exists for unknown buyers",
+      "status": "pending",
+      "evidence": "",
+      "notes": "",
+      "waiver": ""
+    }
+  ]
+}
