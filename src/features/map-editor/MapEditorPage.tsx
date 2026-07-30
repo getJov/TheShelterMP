@@ -25,8 +25,8 @@ import { useChangeReport, useLayoutValidation } from './helpers'
 import { TOOL_KEYS, useEditor, lotsOfBlock } from './store'
 
 function layerTitle(layerMode: ReturnType<typeof useEditor.getState>['layerMode'], editorMode: ReturnType<typeof useEditor.getState>['editorMode']) {
-  if (layerMode === 'baseMap') return 'Base Map'
-  if (layerMode === 'sitePlan') return 'Site Plan'
+  if (layerMode === 'baseMap') return 'Map reference'
+  if (layerMode === 'sitePlan') return 'Site plan'
   if (layerMode === 'blocks') return 'Blocks'
   if (layerMode === 'lots') return 'Lots'
   if (layerMode === 'tiers') return 'Tiers'
@@ -49,6 +49,7 @@ export default function MapEditorPage() {
   const redo = useEditor((s) => s.redo)
   const discard = useEditor((s) => s.discard)
   const setTool = useEditor((s) => s.setTool)
+  const setLayerMode = useEditor((s) => s.setLayerMode)
 
   const [canvas, setCanvas] = useState<CanvasHandle | null>(null)
   const [publishOpen, setPublishOpen] = useState(false)
@@ -105,7 +106,11 @@ export default function MapEditorPage() {
       }
       if (mod && e.key.toLowerCase() === 's') {
         e.preventDefault()
-        setPublishOpen(true)
+        if (!validation.canPublish) {
+          setLayerMode('review')
+          return
+        }
+        if (report.total > 0) setPublishOpen(true)
         return
       }
       if (mod) return
@@ -144,7 +149,7 @@ export default function MapEditorPage() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [undo, redo, setTool])
+  }, [undo, redo, setTool, setLayerMode, validation.canPublish, report.total])
 
   const onReady = useCallback((h: CanvasHandle) => setCanvas(h), [])
   const empty = blocks.length === 0
@@ -209,12 +214,18 @@ export default function MapEditorPage() {
             <Button
               size="sm"
               className="h-8 gap-1.5 text-[12.5px]"
-              disabled={report.total === 0 || !validation.canPublish}
-              onClick={() => setPublishOpen(true)}
+              disabled={validation.canPublish && report.total === 0}
+              onClick={() => {
+                if (!validation.canPublish) {
+                  setLayerMode('review')
+                  return
+                }
+                setPublishOpen(true)
+              }}
             >
               <Icon icon={IconPublish} size={14} />
               {!validation.canPublish
-                ? `Fix ${validation.blockingCount} conflict${validation.blockingCount === 1 ? '' : 's'}`
+                ? `Review ${validation.blockingCount} issue${validation.blockingCount === 1 ? '' : 's'}`
                 : report.total === 0
                 ? 'Nothing to publish'
                 : `Publish ${report.total} change${report.total === 1 ? '' : 's'}`}

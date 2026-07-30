@@ -27,6 +27,7 @@ import {
   newBlockId,
   newOverlayId,
   regenerate,
+  rearrangeExistingLots,
   renumber,
   resizeLot,
   safeCapacity,
@@ -35,6 +36,7 @@ import {
   type Numbering,
   type RegenMode,
   type RegenResult,
+  type RearrangeExistingLotsResult,
 } from '@/lib/grid-generator'
 import {
   alignmentFrame,
@@ -246,6 +248,10 @@ interface EditorState extends DraftState {
 
   // lots
   generate: (mode: RegenMode, plan: GridPlan, tier: Tier) => RegenResult | null
+  rearrangeExistingLots: (
+    plan: GridPlan,
+    tiersById: Map<TierId, Tier>,
+  ) => RearrangeExistingLotsResult | null
   addFreeLot: (polygon: Polygon, tier: Tier) => void
   changeTier: (ids: LotId[], tier: Tier) => void
   syncTierFootprints: (ids: LotId[] | null, tiersById: Map<TierId, Tier>) => LotId[]
@@ -962,6 +968,48 @@ export const useEditor = create<EditorState>((set, get) => {
             : b,
         ),
         selection: new Set<LotId>(),
+        overlaps: detectOverlaps(lots),
+        showPreview: false,
+      }))
+      return result
+    },
+
+    rearrangeExistingLots: (plan, tiersById) => {
+      const s = get()
+      const blockId = s.activeBlockId
+      if (!blockId) return null
+      const existing = s.lots.filter((lot) => lot.blockId === blockId)
+      if (existing.length === 0) return null
+
+      const result = rearrangeExistingLots({
+        existing,
+        plan,
+        tiersById,
+        rotationDeg: s.grid.rotationDeg,
+        now: NOW,
+      })
+      if (result.overflow > 0) return result
+
+      const rearrangedById = new Map(result.lots.map((lot) => [lot.id, lot]))
+      const lots = s.lots.map((lot) => rearrangedById.get(lot.id) ?? lot)
+      mutate((st) => ({
+        lots,
+        blocks: st.blocks.map((block) =>
+          block.id === blockId
+            ? {
+                ...block,
+                lotCount: result.lots.length,
+                grid: {
+                  rows: Math.round(st.grid.rows),
+                  cols: Math.round(st.grid.cols),
+                  rotationDeg: st.grid.rotationDeg,
+                  gutterM: st.grid.gutterM,
+                  numbering: st.grid.numbering,
+                },
+                updatedAt: NOW,
+              }
+            : block,
+        ),
         overlaps: detectOverlaps(lots),
         showPreview: false,
       }))

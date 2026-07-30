@@ -8,6 +8,7 @@ import {
   type LotId,
   type Polygon,
   type Tier,
+  type TierId,
 } from '@/domain'
 import {
   areaSqm,
@@ -390,6 +391,90 @@ export function resizeLot(lot: Lot, widthM: number, lengthM: number, rotationDeg
     areaSqm: Math.round(areaSqm(polygon) * 100) / 100,
     updatedAt: now,
   }
+}
+
+export interface RearrangeExistingLotsInput {
+  existing: Lot[]
+  plan: GridPlan
+  tiersById: Map<TierId, Tier>
+  rotationDeg: number
+  now: string
+}
+
+export interface RearrangeExistingLotsResult {
+  lots: Lot[]
+  moved: number
+  slots: number
+  overflow: number
+  missingTier: number
+}
+
+/**
+ * Reflow the lots that already exist in a block onto the current grid plan.
+ * This is deliberately not regeneration: lot ids, numbers, block assignment,
+ * status, contracts, owners, burials, notes and capacity all stay intact.
+ */
+export function rearrangeExistingLots({
+  existing,
+  plan,
+  tiersById,
+  rotationDeg,
+  now,
+}: RearrangeExistingLotsInput): RearrangeExistingLotsResult {
+  const ordered = [...existing].sort((a, b) => a.lotNumber - b.lotNumber)
+  const overflow = Math.max(0, ordered.length - plan.cells.length)
+  if (overflow > 0) {
+    return {
+      lots: existing,
+      moved: 0,
+      slots: plan.cells.length,
+      overflow,
+      missingTier: 0,
+    }
+  }
+
+  let moved = 0
+  let missingTier = 0
+  const lots = ordered.map((lot, index) => {
+    const cell = plan.cells[index]!
+    const tier = tiersById.get(lot.tierId)
+    const fallback = currentFootprint(lot)
+    if (!tier) missingTier++
+    const polygon = rectAt(
+      cell.centroid,
+      tier?.widthM ?? fallback.widthM,
+      tier?.lengthM ?? fallback.lengthM,
+      rotationDeg,
+    )
+    if (lotGeometryChanged(lot, polygon, cell.centroid)) moved++
+    return {
+      ...lot,
+      polygon,
+      centroid: cell.centroid,
+      areaSqm: Math.round(areaSqm(polygon) * 100) / 100,
+      updatedAt: now,
+    }
+  })
+
+  return {
+    lots,
+    moved,
+    slots: plan.cells.length,
+    overflow: 0,
+    missingTier,
+  }
+}
+
+function currentFootprint(lot: Lot): { widthM: number; lengthM: number } {
+  return {
+    widthM: distanceM(lot.polygon[0] ?? lot.centroid, lot.polygon[1] ?? lot.centroid),
+    lengthM: distanceM(lot.polygon[1] ?? lot.centroid, lot.polygon[2] ?? lot.centroid),
+  }
+}
+
+function lotGeometryChanged(lot: Lot, polygon: Polygon, centroid: LatLng): boolean {
+  if (distanceM(lot.centroid, centroid) > 0.01) return true
+  return lot.polygon.some((point, index) => distanceM(point, polygon[index] ?? point) > 0.01)
 }
 
 /**

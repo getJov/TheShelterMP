@@ -24,9 +24,15 @@ const now = '2026-07-30T00:00:00+08:00'
 const { asId } = await import('@/domain')
 const { describe } = await import('@/lib/audit')
 const { pointInPolygon, polygonCentroid, rectAt } = await import('@/lib/geo')
-const { fromLocal, toLocal, distanceM, resizeLot, planGrid, limitGridPlan } = await import(
-  '@/lib/grid-generator'
-)
+const {
+  fromLocal,
+  toLocal,
+  distanceM,
+  resizeLot,
+  planGrid,
+  limitGridPlan,
+  rearrangeExistingLots,
+} = await import('@/lib/grid-generator')
 const {
   alignmentFrame,
   applyAlignmentTransform,
@@ -142,6 +148,53 @@ const exactGridPlan = limitGridPlan(rawGridPlan, 5, tier.widthM * tier.lengthM)
 assert.equal(exactGridPlan.cells.length, 5)
 assert.equal(exactGridPlan.usedAreaSqm, 5 * tier.widthM * tier.lengthM)
 assert.equal(limitGridPlan(rawGridPlan, null, tier.widthM * tier.lengthM), rawGridPlan)
+
+const rearrangePlan = planGrid({
+  rows: 2,
+  cols: 1,
+  cellWidthM: tier.widthM,
+  cellLengthM: tier.lengthM,
+  gutterM: 0.25,
+  rowGutterM: 0.25,
+  rotationDeg: 0,
+  numbering: 'row_major',
+  startNumber: 1,
+  boundary: block.polygon,
+})
+const rearrangedExisting = rearrangeExistingLots({
+  existing: [availableLot, soldLot],
+  plan: rearrangePlan,
+  tiersById,
+  rotationDeg: 0,
+  now,
+})
+assert.equal(rearrangedExisting.overflow, 0)
+assert.equal(rearrangedExisting.moved, 2)
+assert.equal(rearrangedExisting.lots.length, 2)
+
+const rearrangedSoldLot = rearrangedExisting.lots.find((l) => l.id === soldLot.id)!
+assert.notEqual(JSON.stringify(rearrangedSoldLot.polygon), JSON.stringify(soldLot.polygon))
+assert.equal(rearrangedSoldLot.blockId, soldLot.blockId)
+assert.equal(rearrangedSoldLot.lotNumber, soldLot.lotNumber)
+assert.equal(rearrangedSoldLot.status, soldLot.status)
+assert.equal(rearrangedSoldLot.currentContractId, soldLot.currentContractId)
+assert.equal(rearrangedSoldLot.currentOwnerClientId, soldLot.currentOwnerClientId)
+assert.equal(rearrangedSoldLot.notes, soldLot.notes)
+assert.equal(rearrangedSoldLot.capacity, soldLot.capacity)
+assert.ok(pointInPolygon(rearrangedSoldLot.centroid, block.polygon))
+assert.ok(doesLotMatchTierFootprint(rearrangedSoldLot, tier))
+
+const shortRearrangePlan = limitGridPlan(rearrangePlan, 1, tier.widthM * tier.lengthM)
+const blockedRearrange = rearrangeExistingLots({
+  existing: [availableLot, soldLot],
+  plan: shortRearrangePlan,
+  tiersById,
+  rotationDeg: 0,
+  now,
+})
+assert.equal(blockedRearrange.overflow, 1)
+assert.equal(blockedRearrange.moved, 0)
+assert.equal(JSON.stringify(blockedRearrange.lots), JSON.stringify([availableLot, soldLot]))
 
 const overlayOnly = applyAlignmentTransform(
   baseline,

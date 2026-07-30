@@ -57,7 +57,7 @@ const TARGETS: {
 const fmtDeg = (n: number) => `${n.toFixed(0)} deg`
 const fmtPct = (n: number) => `${(n * 100).toFixed(0)}%`
 
-export function AlignLayoutPanel() {
+export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker?: boolean }) {
   const blocks = useEditor((s) => s.blocks)
   const lots = useEditor((s) => s.lots)
   const overlays = useEditor((s) => s.overlays)
@@ -117,37 +117,40 @@ export function AlignLayoutPanel() {
 
   return (
     <>
-      <PanelSection title="Align Layout">
+      <PanelSection title={alignmentPanelTitle(target)}>
         <div className="space-y-3.5">
           <div className="rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-[12px] leading-relaxed text-muted">
-            <span className="font-semibold text-ink">Records locked.</span> This only moves shapes
-            on the map. Lot numbers, clients, contracts, burials, prices and statuses stay unchanged.
+            <span className="font-semibold text-ink">Business records stay unchanged.</span> This
+            only moves the drawing on the map. Lot numbers, clients, contracts, burials, prices and
+            statuses stay as they are.
           </div>
 
-          <ToggleGroup
-            type="single"
-            value={target}
-            onValueChange={(value) => value && setTarget(value as AlignmentTarget)}
-            className="grid grid-cols-2 gap-2"
-          >
-            {TARGETS.map((item) => (
-              <Tooltip key={item.id}>
-                <TooltipTrigger asChild>
-                  <ToggleGroupItem
-                    value={item.id}
-                    aria-label={item.label}
-                    className="h-12 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
-                  >
-                    <Icon icon={item.icon} size={16} />
-                    <span className="text-[12.5px]">{item.label}</span>
-                  </ToggleGroupItem>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-[220px] text-[12px]">
-                  {item.hint}
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </ToggleGroup>
+          {showTargetPicker && (
+            <ToggleGroup
+              type="single"
+              value={target}
+              onValueChange={(value) => value && setTarget(value as AlignmentTarget)}
+              className="grid grid-cols-2 gap-2"
+            >
+              {TARGETS.map((item) => (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    <ToggleGroupItem
+                      value={item.id}
+                      aria-label={item.label}
+                      className="h-12 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+                    >
+                      <Icon icon={item.icon} size={16} />
+                      <span className="text-[12.5px]">{item.label}</span>
+                    </ToggleGroupItem>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-[220px] text-[12px]">
+                    {item.hint}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </ToggleGroup>
+          )}
 
           {frame ? (
             <Readout>
@@ -171,7 +174,7 @@ export function AlignLayoutPanel() {
               onClick={start}
             >
               <Icon icon={IconMove} size={14} />
-              Start
+              Move
             </Button>
             <NudgeButton label="Nudge right" icon={IconChevronRight} onClick={() => nudge(0.25, 0)} />
             <span />
@@ -188,7 +191,7 @@ export function AlignLayoutPanel() {
               onClick={() => rotate(-1)}
             >
               <Icon icon={IconRotate} size={14} />
-              Left 1 deg
+              Rotate left
             </Button>
             <Button
               type="button"
@@ -198,7 +201,7 @@ export function AlignLayoutPanel() {
               onClick={() => rotate(1)}
             >
               <Icon icon={IconRotate} size={14} />
-              Right 1 deg
+              Rotate right
             </Button>
           </div>
 
@@ -225,14 +228,13 @@ export function AlignLayoutPanel() {
               }}
             >
               <Icon icon={IconRotate} size={14} />
-              Save draft
+              Save step
             </Button>
           </div>
 
           <p className="text-[11px] leading-snug text-muted">
-            Drag the selected shape to move it. Blocks and site plans can use corner and side
-            handles for width and height. Lots keep their tier footprint. Drag the round handle to
-            rotate it. Hold Space to pan the map.
+            Drag the selected shape to move it. Use square handles for size and the round handle
+            for rotation. Lots keep the size set by their tier.
           </p>
         </div>
       </PanelSection>
@@ -281,4 +283,11 @@ function targetHelp(
   if (target === 'overlay' && !activeOverlay) return 'Upload or select a site-plan overlay first.'
   if (target === 'overlay' && hasLockedOverlay) return 'Unlock the active site-plan overlay before aligning it.'
   return 'Pick a valid target to align.'
+}
+
+function alignmentPanelTitle(target: AlignmentTarget) {
+  if (target === 'overlay') return 'Position site plan'
+  if (target === 'block') return 'Position block'
+  if (target === 'lots') return 'Position lots'
+  return 'Position layout'
 }

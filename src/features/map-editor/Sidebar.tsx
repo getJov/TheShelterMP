@@ -18,6 +18,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -40,7 +45,8 @@ import { Slider } from '@/components/ui/slider'
 import { Icon } from '@/components/ui-brand/Icon'
 import {
   IconBlock,
-  IconCheck,
+  IconChevronDown,
+  IconChevronRight,
   IconDelete,
   IconDrawBlock,
   IconEdit,
@@ -55,17 +61,19 @@ import {
   IconRuler,
   IconSatellite,
   IconSelect,
+  IconSettings,
 } from '@/components/ui-brand/icons'
 import { useMapStore } from '@/stores/map'
 import { spatialIndex } from '@/lib/grid-generator'
 import { cn } from '@/lib/utils'
 import { DangerLine, Field, PanelSection, Readout, WarnLine } from './bits'
-import { useEditor, lotsOfBlock, type EditorLayerMode, type Tool } from './store'
+import { useEditor, lotsOfBlock, type Tool } from './store'
 import { STATUS_LABEL, tierMix, useLayoutValidation, useChangeReport, useTiers } from './helpers'
 import { conflictSummary } from './geometry-validation'
 import { AlignLayoutPanel } from './AlignLayoutPanel'
 import { BlockPanel } from './BlockPanel'
 import { EditBlockPanel } from './EditBlockPanel'
+import { GuidedWorkflowPanel } from './GuidedWorkflowPanel'
 import { GridPanel } from './GridPanel'
 import { OverlayPanel } from './OverlayPanel'
 import type { CanvasHandle } from './EditorCanvas'
@@ -79,79 +87,81 @@ const TOOLS: { id: Tool; label: string; key: string; icon: typeof IconSelect; hi
   { id: 'overlay', label: 'Overlay', key: 'O', icon: IconOverlay, hint: 'Place a site plan' },
 ]
 
-const LAYERS: {
-  id: EditorLayerMode
-  label: string
-  icon: typeof IconMap
-  hint: string
-}[] = [
-  { id: 'baseMap', label: 'Base Map', icon: IconMap, hint: 'Pan, zoom, base layer and reset view.' },
-  { id: 'sitePlan', label: 'Site Plan', icon: IconOverlay, hint: 'Align the uploaded reference image.' },
-  { id: 'blocks', label: 'Blocks', icon: IconBlock, hint: 'Move, resize and rotate rectangle blocks.' },
-  { id: 'lots', label: 'Lots', icon: IconGrid, hint: 'Arrange generated lots inside a block.' },
-  { id: 'tiers', label: 'Tiers', icon: IconRuler, hint: 'Assign tier footprints one lot, selection or paint click at a time.' },
-  { id: 'review', label: 'Review', icon: IconCheck, hint: 'Check conflicts before Publish.' },
-]
-
 export function Sidebar({ canvas }: { canvas: CanvasHandle | null }) {
   const editorMode = useEditor((s) => s.editorMode)
   const layerMode = useEditor((s) => s.layerMode)
-  const setLayerMode = useEditor((s) => s.setLayerMode)
   const tool = useEditor((s) => s.tool)
   const alignmentTarget = useEditor((s) => s.alignmentTarget)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
   const showOverlayPanel = layerMode === 'sitePlan' || (editorMode === 'align' && alignmentTarget === 'overlay')
+  const showAlignmentPanel =
+    editorMode === 'align' &&
+    layerMode !== 'baseMap' &&
+    layerMode !== 'review' &&
+    layerMode !== 'tiers'
 
   return (
     <aside className="flex h-full w-[318px] shrink-0 flex-col border-r border-line bg-surface">
-      <PanelSection title="Workflow">
-        <ToggleGroup
-          type="single"
-          value={layerMode}
-          onValueChange={(v) => v && setLayerMode(v as EditorLayerMode)}
-          className="grid grid-cols-2 gap-2"
-        >
-          {LAYERS.map((item) => (
-            <Tooltip key={item.id}>
-              <TooltipTrigger asChild>
-                <ToggleGroupItem
-                  value={item.id}
-                  aria-label={item.label}
-                  className="h-11 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
-                >
-                  <Icon icon={item.icon} size={15} />
-                  <span className="text-[12px]">{item.label}</span>
-                </ToggleGroupItem>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-[220px] text-[12px]">
-                {item.hint}
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </ToggleGroup>
-      </PanelSection>
+      <GuidedWorkflowPanel />
 
       <ScrollArea className="min-h-0 flex-1">
         {layerMode === 'baseMap' && <BaseMapPanel canvas={canvas} />}
-        {layerMode === 'review' && <ReviewPanel />}
-        {layerMode === 'tiers' && <TierPaintPanel />}
-        {editorMode === 'align' && layerMode !== 'baseMap' && layerMode !== 'review' && <AlignLayoutPanel />}
-        {layerMode === 'blocks' && <BlockLayerPanel />}
-        {layerMode === 'lots' && <LotLayerPanel />}
-        {editorMode === 'inventory' && (
+        {layerMode === 'sitePlan' && (
           <>
-            <AdvancedToolPanel tool={tool} />
+            <StepBrief
+              title="Place the site plan"
+              body="Use the plan as a transparent guide over the map. Lock it once it lines up."
+            />
+            {showOverlayPanel && <OverlayPanel canvas={canvas} />}
+            {showAlignmentPanel && <AlignLayoutPanel showTargetPicker={false} />}
+          </>
+        )}
+        {layerMode === 'blocks' && (
+          <>
+            <StepBrief
+              title="Adjust one block at a time"
+              body="Choose a block, then move, resize, rotate, or rearrange its lot layout."
+            />
+            <BlockChooserPanel canvas={canvas} />
+            {showAlignmentPanel && <AlignLayoutPanel showTargetPicker={false} />}
+            <BlockLayerPanel />
             {tool === 'block' && <BlockPanel />}
             {tool === 'editBlock' && <EditBlockPanel />}
             {tool === 'grid' && <GridPanel />}
-            {tool === 'overlay' && <OverlayPanel canvas={canvas} />}
-            {tool === 'draw' && <DrawPanel />}
-            {tool === 'select' && <SelectionPanel />}
           </>
         )}
-        {showOverlayPanel && <OverlayPanel canvas={canvas} />}
+        {layerMode === 'lots' && (
+          <>
+            <StepBrief
+              title="Arrange lots inside the block"
+              body="Click a lot to select it, use Select by for groups, then drag selected lots into place."
+            />
+            <BlockChooserPanel canvas={canvas} />
+            <LotLayerPanel />
+            <SelectionPanel />
+            {showAlignmentPanel && <AlignLayoutPanel showTargetPicker={false} />}
+            {tool === 'draw' && <DrawPanel />}
+          </>
+        )}
+        {layerMode === 'tiers' && (
+          <>
+            <StepBrief
+              title="Assign lot tiers"
+              body="Choose a tier, then click lots on the map or apply it to the current selection."
+            />
+            <BlockChooserPanel canvas={canvas} />
+            <TierPaintPanel />
+            <SelectionPanel />
+          </>
+        )}
+        {layerMode === 'review' && <ReviewPanel />}
 
-        <LayersPanel />
-        <BlocksPanel canvas={canvas} />
+        <AdvancedEditorPanel
+          canvas={canvas}
+          tool={tool}
+          open={advancedOpen}
+          onOpenChange={setAdvancedOpen}
+        />
       </ScrollArea>
     </aside>
   )
@@ -187,6 +197,106 @@ function AdvancedToolPanel({ tool }: { tool: Tool }) {
           </Tooltip>
         ))}
       </ToggleGroup>
+    </PanelSection>
+  )
+}
+
+function StepBrief({ title, body }: { title: string; body: string }) {
+  return (
+    <section className="border-b border-line px-3.5 py-3.5">
+      <p className="text-[13px] font-semibold text-ink">{title}</p>
+      <p className="mt-1 text-[12px] leading-relaxed text-muted">{body}</p>
+    </section>
+  )
+}
+
+function AdvancedEditorPanel({
+  canvas,
+  tool,
+  open,
+  onOpenChange,
+}: {
+  canvas: CanvasHandle | null
+  tool: Tool
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <Collapsible open={open} onOpenChange={onOpenChange}>
+      <section className="border-b border-line px-3.5 py-3.5 last:border-b-0">
+        <CollapsibleTrigger asChild>
+          <Button
+            type="button"
+            variant="secondary"
+            className="h-8 w-full justify-between gap-2 text-[12.5px]"
+          >
+            <span className="flex items-center gap-1.5">
+              <Icon icon={IconSettings} size={14} />
+              Advanced tools
+            </span>
+            <Icon icon={open ? IconChevronDown : IconChevronRight} size={14} />
+          </Button>
+        </CollapsibleTrigger>
+        <p className="mt-2 text-[11.5px] leading-snug text-muted">
+          Visibility switches, full block actions, and old inventory tools stay here for power
+          users.
+        </p>
+      </section>
+      <CollapsibleContent>
+        <AdvancedToolPanel tool={tool} />
+        <LayersPanel />
+        <BlocksPanel canvas={canvas} />
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+function BlockChooserPanel({ canvas }: { canvas: CanvasHandle | null }) {
+  const blocks = useEditor((s) => s.blocks)
+  const lots = useEditor((s) => s.lots)
+  const activeBlockId = useEditor((s) => s.activeBlockId)
+  const setActiveBlock = useEditor((s) => s.setActiveBlock)
+
+  return (
+    <PanelSection title="Choose block">
+      {blocks.length === 0 ? (
+        <p className="text-[12px] leading-relaxed text-muted">
+          No blocks yet. Go to Blocks and draw the first cemetery section.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-1.5">
+          {blocks.map((block) => {
+            const count = lots.filter((lot) => lot.blockId === block.id).length
+            const active = block.id === activeBlockId
+            return (
+              <button
+                key={block.id}
+                type="button"
+                onClick={() => {
+                  setActiveBlock(block.id)
+                  canvas?.zoomToBlock(block.id)
+                }}
+                className={cn(
+                  'flex items-center justify-between gap-2 rounded-md border px-2.5 py-2 text-left transition-colors',
+                  active ? 'border-gold bg-gold/8' : 'border-line hover:bg-surface-2',
+                )}
+              >
+                <span className="min-w-0">
+                  <span className="block font-mono text-[12.5px] font-semibold text-ink">
+                    {block.code}
+                  </span>
+                  <span className="block truncate text-[11.5px] text-muted">
+                    {block.name ?? 'Unnamed block'}
+                  </span>
+                </span>
+                <span className="shrink-0 font-mono text-[10.5px] text-muted tabular">
+                  {count.toLocaleString()} lots
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </PanelSection>
   )
 }
@@ -292,7 +402,7 @@ function TierPaintPanel() {
               })
             }}
           >
-            Apply to selection
+            Apply to selected
           </Button>
           <Button
             variant="secondary"
@@ -305,7 +415,7 @@ function TierPaintPanel() {
               })
             }}
           >
-            Sync tier sizes
+            Match tier sizes
           </Button>
         </div>
 
@@ -344,7 +454,7 @@ function BlockLayerPanel() {
           onClick={() => setTool('grid')}
         >
           <Icon icon={IconGrid} size={14} />
-          Generate lots
+          Lot layout
         </Button>
       </div>
     </PanelSection>
@@ -353,37 +463,26 @@ function BlockLayerPanel() {
 
 function LotLayerPanel() {
   const setLayerMode = useEditor((s) => s.setLayerMode)
-  const setTool = useEditor((s) => s.setTool)
   const selection = useEditor((s) => s.selection)
 
   return (
     <PanelSection title="Lot Actions">
       <div className="space-y-2">
         <Readout>
-          Select lots, then drag the selected group inside its block. Lot size comes from the tier.
+          Click a lot to select it. Use Select by for rows, columns, whole blocks, tiers, or
+          statuses. Drag selected lots on the map to move them.
         </Readout>
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="secondary"
-            className="h-8 gap-1.5 text-[12px]"
-            onClick={() => setTool('select')}
-          >
-            <Icon icon={IconSelect} size={14} />
-            Select tools
-          </Button>
-          <Button
-            variant="secondary"
-            className="h-8 gap-1.5 text-[12px]"
-            onClick={() => setLayerMode('tiers')}
-          >
-            <Icon icon={IconRuler} size={14} />
-            Edit tiers
-          </Button>
-        </div>
+        <Button
+          variant="secondary"
+          className="h-8 w-full gap-1.5 text-[12px]"
+          onClick={() => setLayerMode('tiers')}
+        >
+          <Icon icon={IconRuler} size={14} />
+          Paint tiers
+        </Button>
         {selection.size > 0 && (
           <p className="text-[11.5px] text-muted">
-            {selection.size.toLocaleString()} selected. Switch to Tiers for bulk tier assignment or
-            paint mode.
+            {selection.size.toLocaleString()} selected. Go to Tiers to apply lot types.
           </p>
         )}
       </div>
@@ -408,7 +507,7 @@ function ReviewPanel() {
         ) : (
           <>
             <DangerLine>
-              Publish is blocked by {validation.blockingCount.toLocaleString()} geometry conflict
+              Publish is blocked by {validation.blockingCount.toLocaleString()} layout issue
               {validation.blockingCount === 1 ? '' : 's'}.
             </DangerLine>
             <ul className="space-y-1">
@@ -423,7 +522,7 @@ function ReviewPanel() {
               className="h-8 w-full text-[12px]"
               onClick={() => setSelection(validation.conflictingLotIds)}
             >
-              Select conflicting lots
+              Select lots with issues
             </Button>
           </>
         )}
@@ -700,8 +799,8 @@ function LayersPanel() {
         {!validation.canPublish && (
           <div className="space-y-2 pt-1">
             <DangerLine>
-              {validation.blockingCount.toLocaleString()} geometry conflict
-              {validation.blockingCount === 1 ? '' : 's'} block Publish.
+              {validation.blockingCount.toLocaleString()} layout issue
+              {validation.blockingCount === 1 ? '' : 's'} block publishing.
             </DangerLine>
             <ul className="space-y-1">
               {conflictSummary(validation).map((line) => (

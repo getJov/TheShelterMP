@@ -21,7 +21,7 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconAutoFit, IconGrid, IconWarning } from '@/components/ui-brand/icons'
+import { IconAutoFit, IconGrid, IconMove, IconWarning } from '@/components/ui-brand/icons'
 import { EmptyState } from '@/components/ui-brand/EmptyState'
 import { isProtected, NUMBERING, type RegenMode } from '@/lib/grid-generator'
 import { cn } from '@/lib/utils'
@@ -40,6 +40,7 @@ export function GridPanel() {
   const lots = useEditor((s) => s.lots)
   const activeBlockId = useEditor((s) => s.activeBlockId)
   const generate = useEditor((s) => s.generate)
+  const rearrangeExistingLots = useEditor((s) => s.rearrangeExistingLots)
   const { tiers, byId } = useTiers()
   const planned = useGridPlan()
 
@@ -98,6 +99,32 @@ export function GridPanel() {
     run('replace_all')
   }
 
+  const onRearrangeExisting = () => {
+    if (!planned) return
+    if (existing.length === 0) {
+      toast.info(`${block.code} has no lots to rearrange yet.`)
+      return
+    }
+    const result = rearrangeExistingLots(planned.plan, byId)
+    if (!result) return
+    if (result.overflow > 0) {
+      toast.error(`Not enough slots in ${block.code}`, {
+        description: `${fmt(existing.length)} existing lots need ${fmt(existing.length)} slots, but the current grid only has ${fmt(result.slots)}. Increase rows, columns, or block size.`,
+      })
+      return
+    }
+    const details = [
+      `${fmt(existing.length)} lot records kept`,
+      `${fmt(result.slots)} planned slots`,
+    ]
+    if (result.missingTier > 0) {
+      details.push(`${result.missingTier} missing tier${result.missingTier === 1 ? '' : 's'} kept at current size`)
+    }
+    toast.success(`${fmt(result.moved)} existing lots rearranged in ${block.code}`, {
+      description: `${details.join(' · ')}. Lot numbers, statuses, clients and contracts stay unchanged until Publish.`,
+    })
+  }
+
   const fitNow = () => {
     if (!tier) {
       toast.error('Pick a tier first — its footprint is what the fit is computed from.')
@@ -112,6 +139,7 @@ export function GridPanel() {
 
   const cells = planned?.plan.cells.length ?? 0
   const clipped = planned?.plan.clipped ?? 0
+  const isShortOnSlots = existing.length > 0 && cells < existing.length
 
   return (
     <>
@@ -287,14 +315,33 @@ export function GridPanel() {
 
           <Button className="w-full gap-1.5" disabled={!planned || !tier} onClick={onGenerate}>
             <Icon icon={IconGrid} size={15} />
-            Generate {cells > 0 ? `${fmt(cells)} lots` : 'lots'}
+            Generate {cells > 0 ? `${fmt(cells)} new lots` : 'new lots'}
           </Button>
+
+          <Button
+            variant="secondary"
+            className="w-full gap-1.5"
+            disabled={!planned || !tier || existing.length === 0}
+            onClick={onRearrangeExisting}
+          >
+            <Icon icon={IconMove} size={15} />
+            Rearrange existing lots
+          </Button>
+
+          {isShortOnSlots && (
+            <WarnLine>
+              The current grid has {fmt(cells)} slot{cells === 1 ? '' : 's'} for {fmt(existing.length)} existing lot
+              {existing.length === 1 ? '' : 's'}. Increase rows, columns, or resize the block
+              before rearranging.
+            </WarnLine>
+          )}
 
           {existing.length > 0 && (
             <p className="text-[11px] leading-snug text-muted">
               {block.code} already holds {fmt(existing.length)} lots
-              {soldCount > 0 && `, ${soldCount} of them sold or occupied`}. You will be asked how
-              to handle them.
+              {soldCount > 0 && `, ${soldCount} of them sold or occupied`}. Generate creates or
+              replaces lot records; rearrange keeps the existing records and only moves their map
+              positions.
             </p>
           )}
         </div>
@@ -305,8 +352,8 @@ export function GridPanel() {
           <DialogHeader>
             <DialogTitle>{block.code} already has lots</DialogTitle>
             <DialogDescription>
-              {fmt(existing.length)} lots stand in this block. Choose what happens to them before{' '}
-              {fmt(cells)} new lots are laid out.
+              {fmt(existing.length)} lots stand in this block. Choose what happens to those records
+              before {fmt(cells)} new lots are laid out.
             </DialogDescription>
           </DialogHeader>
 
@@ -344,7 +391,7 @@ export function GridPanel() {
             <p className="flex items-start gap-1.5 text-[12px] leading-snug text-muted">
               <Icon icon={IconWarning} size={13} className="mt-px text-gold-deep dark:text-gold" />
               Sold history is never destroyed. Those lots keep their contract, their code and their
-              exact position.
+              current position in this generation flow.
             </p>
           )}
           {soldCount > 0 && mode === 'replace_all' && (

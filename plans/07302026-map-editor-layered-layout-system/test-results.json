@@ -5,48 +5,51 @@
   "items": [
     {
       "id": "T1",
-      "title": "Layer-first map editor workflow is reachable",
+      "title": "Guided cemetery setup flow is reachable",
       "surface": "ui",
       "precondition": "Dev server is running at http://127.0.0.1:1616 and the smoke test signs in as the seeded admin user.",
       "steps": [
         "1. Run node qa/map-editor-layered-smoke.mjs.",
         "2. Open /map-editor as admin.",
-        "3. Assert the workflow exposes Base Map, Site Plan, Blocks, Lots, Tiers, and Review."
+        "3. Assert the Layout setup panel exposes Map reference, Site plan, Blocks, Lots, Tiers, and Review with plain action hints."
       ],
-      "expected": "The map editor renders a canvas and each layer mode is available from the workflow controls.",
+      "expected": "The map editor renders a canvas and the default sidebar presents a progressive guided setup flow instead of a technical toolbox.",
       "status": "pass",
-      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-guided-smoke-ok",
       "notes": "",
       "waiver": ""
     },
     {
       "id": "T2",
-      "title": "Base map and site-plan controls are visible from the layer workflow",
+      "title": "Base map, site-plan, and advanced controls are properly separated",
       "surface": "ui",
       "precondition": "Same browser smoke session as T1.",
       "steps": [
-        "1. In the smoke test, inspect Base Map mode.",
-        "2. Switch to Site Plan mode.",
-        "3. Assert satellite/default/reset controls plus site-plan upload, compare, opacity, and lock controls when an overlay exists."
+        "1. In the smoke test, assert advanced block and layer management is hidden by default.",
+        "2. Inspect Map reference mode for view-only satellite and reset controls.",
+        "3. Switch to Site Plan mode and assert upload, compare, opacity, lock, and position controls are available.",
+        "4. Switch to Blocks, open Lot layout, and assert Rearrange existing lots is available beside new-lot generation.",
+        "5. Expand Advanced tools and assert detailed Layers and Blocks panels remain reachable."
       ],
-      "expected": "Base map controls are view-only, and the site-plan overlay controls are reachable without opening Advanced Inventory.",
+      "expected": "Base map controls stay view-only, site-plan alignment and existing-lot rearrangement are reachable from guided steps, and advanced inventory controls are available only after explicit expansion.",
       "status": "pass",
-      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-guided-smoke-ok",
       "notes": "",
       "waiver": ""
     },
     {
       "id": "T3",
-      "title": "Rectangle block, lot, and overlay transforms preserve inventory identity",
+      "title": "Rectangle block, lot, overlay transforms, and existing-lot rearrangement preserve inventory identity",
       "surface": "cli",
       "precondition": "Focused QA runs against local TypeScript source through vite-node.",
       "steps": [
         "1. Run npx vite-node qa/map-editor-alignment.ts.",
         "2. Assert block move/resize/rotate updates block geometry.",
         "3. Assert lot footprints remain tier-sized and sold-lot business fields are preserved.",
-        "4. Assert overlay move/resize/rotate changes only overlay draft geometry."
+        "4. Assert rearranging existing lots maps the same lot records onto the current grid while preserving sold-lot identity/status/client/contract/capacity data.",
+        "5. Assert overlay move/resize/rotate changes only overlay draft geometry."
       ],
-      "expected": "Geometry changes are visual and draft-only, with lot identity/status/client/contract data unchanged.",
+      "expected": "Geometry changes are visual and draft-only, with lot identity/status/client/contract/capacity data unchanged.",
       "status": "pass",
       "evidence": "npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
       "notes": "",
@@ -60,7 +63,8 @@
       "steps": [
         "1. Run npx vite-node qa/map-editor-alignment.ts.",
         "2. Assert a rows-by-columns grid can be capped by exactCount.",
-        "3. Assert tier mismatch blocks publish and resizing to tier widthM/lengthM resolves the mismatch."
+        "3. Assert existing-lot rearrangement is blocked when the current planned grid has fewer slots than existing lots.",
+        "4. Assert tier mismatch blocks publish and resizing to tier widthM/lengthM resolves the mismatch."
       ],
       "expected": "Generated placeholder count honors exact count, and tier dimensions remain the lot footprint source of truth.",
       "status": "pass",
@@ -80,7 +84,7 @@
       ],
       "expected": "Review either reports no blockers or explains publish blocking, while focused QA proves invalid layouts cannot publish.",
       "status": "pass",
-      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok; npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-guided-smoke-ok; npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
       "notes": "",
       "waiver": ""
     },

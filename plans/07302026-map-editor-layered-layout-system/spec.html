@@ -80,6 +80,13 @@
       <p>Done means an admin can align the visual cemetery layout, create and resize rectangle blocks, generate placeholder available lots from rows/columns/count, arrange lots within a block, edit tiers by individual selection, multi-select, or paintbrush-style assignment, and publish only after overlap and outside-block conflicts are resolved.</p>
     </section>
 
+    <section class="spec-card" id="guided-continuation">
+      <h2>Guided Flow Continuation</h2>
+      <p>The layer system must present as a guided cemetery layout setup flow, not a technical toolbox. The default sidebar leads admins through progressive steps with plain-language labels: Map reference, Site plan, Blocks, Lots, Tiers, and Review.</p>
+      <p>Advanced tools remain available, but hidden by default behind an expandable Advanced tools section. Base map and Review are view-only steps; direct map alignment handles appear only when the active setup step can actually be moved, resized, or rotated.</p>
+      <p>When a block is resized, the Grid/Lot layout step must provide a clear <strong>Rearrange existing lots</strong> action. This action reflows the current lot records onto the planned rows and columns without changing lot ids, lot numbers, block assignment, tier, status, client, contract, burial, notes, or capacity. If the current grid has fewer slots than existing lots, the action must explain that rows, columns, exact count, or block size must be adjusted first.</p>
+    </section>
+
     <section class="spec-card" id="baseline">
       <h2>Baseline Source Of Truth</h2>
       <ul>
@@ -93,6 +100,7 @@
         <li><strong>Sold or occupied lots:</strong> admins may move them visually inside the same block, but their lot ID, lot number, block assignment, tier, status, client, contract, payment, burial, capacity, notes, and price relationship must remain unchanged unless a separate explicit action allows that field change.</li>
         <li><strong>Cross-block movement:</strong> dragging cannot move a lot into another block. Cross-block movement requires a separate confirmable reassignment action and must keep protected-lot safeguards.</li>
         <li><strong>Placeholder lots:</strong> grid generation creates available placeholder lots automatically. Admin can control rows, columns, and exact lot count manually. Reducing count may remove only available placeholder lots unless explicitly confirmed by an inventory action.</li>
+        <li><strong>Existing-lot rearrangement:</strong> a block-local rearrange action must move the existing lot records onto the current planned grid slots. It must preserve identity and business fields, including sold/occupied lots, and block when the plan has fewer slots than the existing lot count.</li>
         <li><strong>Tier dimensions:</strong> tier <code>widthM</code> and <code>lengthM</code> are authoritative real-world dimensions. The app stores dimensions in meters; any feet display is conversion-only.</li>
         <li><strong>Tier catalog boundary:</strong> tier definitions still belong to Pricing/Lot Types. Editing a tier's dimensions must not silently rewrite published lot polygons outside the map-editor draft workflow.</li>
         <li><strong>Tier-size propagation:</strong> the map editor must detect lots whose rectangle footprint does not match their current tier dimensions and provide a draft action to sync/apply those tier sizes. Applying or syncing a tier resizes affected lots in draft/preview semantics. If this causes overlaps or lots outside their block, the editor shows conflicts and blocks Publish until resolved.</li>
@@ -107,6 +115,7 @@
       <ul>
         <li><code>src/features/map-editor/MapEditorPage.tsx</code> - map-editor route shell, header actions, publish/discard blockers, and current mode title.</li>
         <li><code>src/features/map-editor/Sidebar.tsx</code> - current mode switcher, advanced inventory tools, layer controls, block list, selection tools, and overlap warning.</li>
+        <li><code>src/features/map-editor/GuidedWorkflowPanel.tsx</code> - guided setup stepper, step status summaries, and plain-language action hints.</li>
         <li><code>src/features/map-editor/AlignLayoutPanel.tsx</code> - existing simple alignment panel and closest local analog for admin-first geometry controls.</li>
         <li><code>src/features/map-editor/EditorSurface.tsx</code> - canvas pointer and handle layer for direct move, resize, rotate, lasso, block drawing, and overlay transforms.</li>
         <li><code>src/features/map-editor/EditorCanvas.tsx</code> - Leaflet canvas host and base map/editor layer composition.</li>
@@ -130,6 +139,7 @@
         <li>Keep the map-editor route and nav registration unchanged.</li>
         <li>Use shadcn/Radix primitives already present in <code>@/components/ui</code>; do not add native select, checkbox, radio, date, progress, or range controls.</li>
         <li>Use <code>@/components/ui-brand/Icon</code> and semantic Hugeicons from <code>@/components/ui-brand/icons</code>.</li>
+        <li>Default to guided setup panels first; keep detailed layer and block management behind collapsed Advanced tools.</li>
         <li>Keep geometry math in focused helpers, not scattered through React render bodies.</li>
         <li>Use existing toast/dialog patterns for warnings, confirmation, and publish feedback.</li>
         <li>Preserve draft, undo, redo, discard, route blocker, and publish behavior.</li>
@@ -142,9 +152,9 @@
       <h2>Product Model</h2>
       <div class="split-grid">
         <div>
-          <h3>Editor Modes</h3>
+          <h3>Guided Setup Steps</h3>
           <ul>
-            <li><strong>Base Map:</strong> view controls for mock/default/satellite-style background, pan, zoom, rotate view indicator if already available, and reset north. View only.</li>
+            <li><strong>Map reference:</strong> view controls for mock/default/satellite-style background, pan, zoom, rotate view indicator if already available, and reset north. View only.</li>
             <li><strong>Site Plan:</strong> upload/select image, show/hide, opacity, lock, move, resize, rotate, and compare against the base map.</li>
             <li><strong>Blocks:</strong> create/select rectangle blocks, move, resize width, resize height, rotate, and set block-local grid orientation.</li>
             <li><strong>Lots:</strong> generate rows/columns/count, arrange lots inside selected block, move sold/occupied lots only inside the same block, and keep cross-block reassignment explicit.</li>
@@ -247,11 +257,11 @@
       <article class="task-card">
         <h3>T1: Layered Mode Shell</h3>
         <dl>
-          <div><dt>Do</dt><dd>Reshape the sidebar into clear mode/layer steps: Base Map, Site Plan, Blocks, Lots, Tiers, Review. Keep existing Align Layout and Advanced Inventory foundation, but make the active layer obvious and make non-active layers visible but not directly editable.</dd></div>
-          <div><dt>Files</dt><dd><code>src/features/map-editor/Sidebar.tsx</code>, <code>src/features/map-editor/MapEditorPage.tsx</code>, <code>src/features/map-editor/AlignLayoutPanel.tsx</code>, possible new <code>src/features/map-editor/LayerModePanel.tsx</code>.</dd></div>
+          <div><dt>Do</dt><dd>Reshape the sidebar into guided setup steps: Map reference, Site Plan, Blocks, Lots, Tiers, Review. Keep existing Align Layout and Advanced Inventory foundation, but make the active layer obvious, keep non-active layers visible but not directly editable, and hide advanced tools by default.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/Sidebar.tsx</code>, <code>src/features/map-editor/GuidedWorkflowPanel.tsx</code>, <code>src/features/map-editor/MapEditorPage.tsx</code>, <code>src/features/map-editor/AlignLayoutPanel.tsx</code>.</dd></div>
           <div><dt>Depends on</dt><dd>None</dd></div>
           <div><dt>Parallel</dt><dd>Can run alongside T2.</dd></div>
-          <div><dt>Verify</dt><dd>Manual: <code>/map-editor</code> opens to a layer-first workflow; existing Advanced Inventory tools remain reachable.</dd></div>
+          <div><dt>Verify</dt><dd>Manual: <code>/map-editor</code> opens to a guided setup workflow; existing Advanced Inventory tools remain reachable by expanding Advanced tools.</dd></div>
         </dl>
       </article>
 
@@ -328,7 +338,7 @@
           <div><dt>Files</dt><dd><code>qa/map-editor-alignment.ts</code> or new focused QA file, <code>plans/07302026-map-editor-layered-layout-system/test-results.json</code>, <code>plans/07302026-map-editor-layered-layout-system/test.html</code>.</dd></div>
           <div><dt>Depends on</dt><dd>T1 through T7</dd></div>
           <div><dt>Parallel</dt><dd>Sequential final gate.</dd></div>
-          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code>, <code>npm run build</code>, <code>npm run lint</code>, <code>npm run validate:mock</code>, focused map-editor QA, and browser smoke for the layer workflow.</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code>, <code>npm run build</code>, <code>npm run lint</code>, <code>npm run validate:mock</code>, focused map-editor QA, and browser smoke for the guided setup workflow.</dd></div>
         </dl>
       </article>
     </section>
@@ -364,15 +374,18 @@
     <section class="spec-card" id="done">
       <h2>Done</h2>
       <ul class="checklist">
-        <li><input type="checkbox" disabled checked> <span><code>/map-editor</code> presents a layer-first workflow with Base Map, Site Plan, Blocks, Lots, Tiers, and Review behavior.</span></li>
+        <li><input type="checkbox" disabled checked> <span><code>/map-editor</code> presents a guided setup workflow with Map reference, Site Plan, Blocks, Lots, Tiers, and Review behavior.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Advanced editor tools are hidden by default behind an expandable Advanced tools section.</span></li>
         <li><input type="checkbox" disabled checked> <span>Site-plan overlay can be moved, width/height resized, rotated, hidden/shown, locked, and opacity-adjusted in draft.</span></li>
         <li><input type="checkbox" disabled checked> <span>Rectangle blocks can be moved, width/height resized, and rotated without stretching tier-sized lot footprints.</span></li>
         <li><input type="checkbox" disabled checked> <span>Grid generation creates available placeholder lots from rows, columns, exact count, tier footprint, gutter, orientation, and numbering.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Existing lots can be rearranged into the current block grid after a block resize while preserving lot identity, business fields, and same-block assignment.</span></li>
         <li><input type="checkbox" disabled checked> <span>Lots can be arranged within their current block; sold/occupied lots keep identity and business data.</span></li>
         <li><input type="checkbox" disabled checked> <span>Drag-based cross-block movement is prevented; cross-block reassignment remains an explicit confirmed action.</span></li>
         <li><input type="checkbox" disabled checked> <span>Tier assignment supports individual, multi-select, and paintbrush-style paths, and applying a tier resizes lots to that tier footprint.</span></li>
         <li><input type="checkbox" disabled checked> <span>Tier dimension changes communicate that existing lot geometry is reviewed/applied through map-editor draft validation.</span></li>
         <li><input type="checkbox" disabled checked> <span>Overlap and outside-block conflicts are visible in the canvas/sidebar and block Publish until resolved.</span></li>
+        <li><input type="checkbox" disabled checked> <span>When invalid layouts exist, the header action sends admins to Review instead of leaving them at a dead disabled Publish button.</span></li>
         <li><input type="checkbox" disabled checked> <span>Publish review names visual geometry moves separately from reassignment, status, tier, and placeholder generation changes.</span></li>
         <li><input type="checkbox" disabled checked> <span>Undo, redo, dirty state, route blocker, discard, and publish behavior remain intact.</span></li>
         <li><input type="checkbox" disabled checked> <span><code>npx tsc --noEmit -p tsconfig.app.json</code> passes.</span></li>

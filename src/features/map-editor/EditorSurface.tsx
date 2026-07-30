@@ -249,13 +249,15 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       },
     [activeBlockId, activeOverlayId, alignmentSession, alignmentTarget, selection],
   )
+  const isAlignmentLayer =
+    editorMode === 'align' && layerMode !== 'baseMap' && layerMode !== 'review'
 
   const alignFrame = useMemo(
     () =>
-      editorMode === 'align'
+      isAlignmentLayer
         ? alignmentFrame({ blocks, lots, overlays }, alignmentSelection)
         : null,
-    [alignmentSelection, blocks, editorMode, lots, overlays],
+    [alignmentSelection, blocks, isAlignmentLayer, lots, overlays],
   )
 
   const previewPolys = useMemo(
@@ -273,12 +275,12 @@ export function EditorSurface({ dark }: { dark: boolean }) {
 
   const conflictPolys = useMemo(
     () =>
-      geometryValidation.conflictingLotIds.size === 0
+      layerMode !== 'review' || geometryValidation.conflictingLotIds.size === 0
         ? []
         : lots
             .filter((l) => geometryValidation.conflictingLotIds.has(l.id))
             .map((l) => l.polygon),
-    [geometryValidation, lots],
+    [geometryValidation, layerMode, lots],
   )
 
   useEffect(() => {
@@ -448,7 +450,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         return
       }
 
-      if (editorMode === 'align') {
+      if (isAlignmentLayer) {
         const s = useEditor.getState()
         if (!alignmentBodyHit(s, p.x, p.y, e)) return
         if (!s.beginAlignment()) return
@@ -502,7 +504,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       if (hitTest(p.x, p.y)) return // resolved on pointerup as a click
       setMode({ k: 'band', x0: p.x, y0: p.y, subtract: e.altKey })
     },
-    [map, layerMode, tierPaintTierId, tiersById, editorMode, tool, toPt, toLL, hitTest, blockHitTest, alignmentBodyHit],
+    [map, layerMode, tierPaintTierId, tiersById, isAlignmentLayer, tool, toPt, toLL, hitTest, blockHitTest, alignmentBodyHit],
   )
 
   const onMove = useCallback(
@@ -856,7 +858,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       ? cornerPoints(activeOverlay.bounds, activeOverlay.rotationDeg, toPt)
       : null
   const alignmentCorners =
-    editorMode === 'align' && alignFrame
+    isAlignmentLayer && alignFrame
       ? alignmentTarget === 'overlay'
         ? activeOverlay && !locked.has(activeOverlay.id)
           ? cornerPoints(activeOverlay.bounds, activeOverlay.rotationDeg, toPt)
@@ -865,7 +867,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       : null
   const alignmentResizeCorners = alignmentTarget === 'lots' ? null : alignmentCorners
   const alignmentCenter =
-    editorMode === 'align' && alignFrame && alignmentTarget === 'overlay'
+    isAlignmentLayer && alignFrame && alignmentTarget === 'overlay'
       ? toPt(alignFrame.pivot)
       : null
   const alignmentEdges = alignmentResizeCorners ? edgeHandlePoints(alignmentResizeCorners) : []
@@ -893,7 +895,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     ? 'grab'
     : layerMode === 'tiers' && tierPaintTierId
       ? 'crosshair'
-    : editorMode === 'align'
+    : isAlignmentLayer
       ? 'move'
     : tool === 'editBlock'
       ? 'move'
@@ -957,7 +959,10 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-[450]" aria-hidden />
       <div
         ref={surfaceRef}
-        className={cn('absolute inset-0 z-[460]', panMode && 'pointer-events-none')}
+        className={cn(
+          'absolute inset-0 z-[460]',
+          (panMode || layerMode === 'baseMap' || layerMode === 'review') && 'pointer-events-none',
+        )}
         style={{ cursor, touchAction: 'none' }}
       >
         {tool === 'block' &&
@@ -1038,7 +1043,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
             onDown={startAlignmentMove}
           />
         )}
-        {editorMode === 'align' && alignFrame && alignmentCorners && (
+        {isAlignmentLayer && alignFrame && alignmentCorners && (
           <RotationHandle
             anchor={
               alignmentTarget === 'overlay' && alignmentCorners.length >= 2
@@ -1115,9 +1120,9 @@ export function EditorSurface({ dark }: { dark: boolean }) {
             Drag inside the block to move · drag corners to reshape · use the handle to rotate
           </div>
         )}
-        {editorMode === 'align' && alignFrame && mode.k === 'idle' && (
+        {isAlignmentLayer && alignFrame && mode.k === 'idle' && (
           <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
-            Drag the target to move · drag corners to resize · drag side handles for width or height · use the handle to rotate
+            Drag to move · use square handles for size · use the round handle to rotate
           </div>
         )}
       </div>
