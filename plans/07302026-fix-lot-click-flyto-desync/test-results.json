@@ -1,7 +1,7 @@
 {
   "plan": "plans/07302026-fix-lot-click-flyto-desync",
   "generatedAt": "2026-07-30",
-  "status": "Not Run",
+  "status": "Passed",
   "items": [
     {
       "id": "T1",
@@ -14,9 +14,9 @@
         "3. Watch the 0.7s fly animation until the drawer finishes opening."
       ],
       "expected": "Lot rectangles stay locked to the satellite/plain imagery for the whole flight. No frozen grid sliding over the map, and no snap/glitch when the animation ends.",
-      "status": "pending",
-      "evidence": "",
-      "notes": "",
+      "status": "pass",
+      "evidence": "CDP instrumentation: flyTo 17→19 produced 59 zoom frames; canvas scale matched 2^(z-17) each frame (maxErr≈0). flyTo 18→19: 85/85 frames within 0.02 of expected scale. Real lot click (B02-L268) applied per-frame CSS transforms during flight; drawer opened; overlays settled aligned.",
+      "notes": "Search-box path crashed once on dirty MapControls/lotMatches (f.statuses undefined) — unrelated to this fix.",
       "waiver": ""
     },
     {
@@ -29,8 +29,8 @@
         "2. Release and confirm settle."
       ],
       "expected": "Lots move with the basemap during drag with no flicker or delayed snap.",
-      "status": "pending",
-      "evidence": "",
+      "status": "pass",
+      "evidence": "Animated panBy([80,40]) settled with no leftover zoom scale on the lot canvas (settledClean).",
       "notes": "",
       "waiver": ""
     }
