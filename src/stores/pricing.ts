@@ -402,8 +402,9 @@ export const usePricing = create<PricingStore>((set, get) => ({
       capacity: tier.capacity,
       appearance: { ...tier.appearance },
     }
-    // Capacity and dimensions live on the tier only. Existing lots keep the
-    // capacity they were generated with — it is snapshotted on the lot.
+    // Capacity and dimensions live on the tier. Existing lots keep the capacity
+    // they were generated with; map geometry is synced through the map-editor
+    // draft workflow so conflicts can block Publish.
     Object.assign(tier, patch, { updatedAt: NOW })
     writeAudit(actorUserId, 'tier.updated', 'tier', tier.id, before, {
       name: tier.name,

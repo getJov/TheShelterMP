@@ -36,8 +36,19 @@ import {
   type RegenMode,
   type RegenResult,
 } from '@/lib/grid-generator'
+import {
+  alignmentFrame,
+  applyAlignmentTransform,
+  identityAlignmentTransform,
+  nudgeTransformMeters,
+  type AlignmentSelection,
+  type AlignmentTarget,
+  type AlignmentTransform,
+} from './geometry-transform'
 
 export type Tool = 'select' | 'editBlock' | 'block' | 'grid' | 'draw' | 'overlay'
+export type EditorMode = 'align' | 'inventory'
+export type EditorLayerMode = 'baseMap' | 'sitePlan' | 'blocks' | 'lots' | 'tiers' | 'review'
 
 export const TOOL_KEYS: Record<string, Tool> = {
   v: 'select',
@@ -67,6 +78,7 @@ export interface GridParams {
   rowGutterM: number
   /** When false the row gutter follows the column gutter. */
   splitGutters: boolean
+  exactCount: number | null
   rotationDeg: number
   numbering: Numbering
   startNumber: number
@@ -99,6 +111,20 @@ export interface EditingBlock {
 export interface BlockEditResult {
   movedLots: number
   protectedLots: number
+}
+
+export interface AlignmentSession {
+  selection: AlignmentSelection
+  base: Snapshot
+  transform: AlignmentTransform
+  dirtyBefore: boolean
+  label: string
+}
+
+export interface AlignmentCommitResult {
+  label: string
+  target: AlignmentTarget
+  count: number
 }
 
 const UNDO_DEPTH = 50
@@ -136,6 +162,7 @@ export const defaultGrid = (): GridParams => ({
   gutterM: 0.6,
   rowGutterM: 0.9,
   splitGutters: true,
+  exactCount: null,
   rotationDeg: 12,
   numbering: 'boustrophedon',
   startNumber: 1,
@@ -146,13 +173,18 @@ interface EditorState extends DraftState {
   /** Snapshot of the live data the drafts were forked from. Drives the diff. */
   baseline: DraftState
 
+  editorMode: EditorMode
+  layerMode: EditorLayerMode
   tool: Tool
+  alignmentTarget: AlignmentTarget
+  alignmentSession: AlignmentSession | null
   selection: Set<LotId>
   activeBlockId: BlockId | null
   activeOverlayId: OverlayId | null
   pendingBlock: PendingBlock | null
   editingBlock: EditingBlock | null
   moveTargetBlockId: BlockId | null
+  tierPaintTierId: TierId | null
 
   grid: GridParams
   /** The 45% preview is noise once the block already holds that grid. */
@@ -172,13 +204,23 @@ interface EditorState extends DraftState {
   publish: (actorUserId: UserId, audit: PublishAudit[]) => void
 
   // chrome
+  setEditorMode: (mode: EditorMode) => void
+  setLayerMode: (mode: EditorLayerMode) => void
   setTool: (t: Tool) => void
+  setAlignmentTarget: (target: AlignmentTarget) => void
+  beginAlignment: () => boolean
+  previewAlignment: (patch: Partial<AlignmentTransform>) => boolean
+  translateAlignment: (delta: [number, number]) => boolean
+  nudgeAlignmentMeters: (eastM: number, northM: number) => boolean
+  cancelAlignment: () => void
+  commitAlignment: () => AlignmentCommitResult | null
   setLayer: <K extends keyof LayerFlags>(k: K, v: LayerFlags[K]) => void
   setCompare: (v: boolean) => void
   setGrid: (patch: Partial<GridParams>) => void
   setActiveBlock: (id: BlockId | null) => void
   setActiveOverlay: (id: OverlayId | null) => void
   setMoveTargetBlock: (id: BlockId | null) => void
+  setTierPaintTier: (id: TierId | null) => void
 
   // undo
   undo: () => void
@@ -206,6 +248,7 @@ interface EditorState extends DraftState {
   generate: (mode: RegenMode, plan: GridPlan, tier: Tier) => RegenResult | null
   addFreeLot: (polygon: Polygon, tier: Tier) => void
   changeTier: (ids: LotId[], tier: Tier) => void
+  syncTierFootprints: (ids: LotId[] | null, tiersById: Map<TierId, Tier>) => LotId[]
   changeStatus: (ids: LotId[], status: LotStatus, reason: string | null) => void
   renumberSelection: (ids: LotId[], scheme: Numbering, start: number) => void
   moveToBlock: (ids: LotId[], target: BlockId) => LotId[]
@@ -279,18 +322,88 @@ export const useEditor = create<EditorState>((set, get) => {
     activeBlockId: s.activeBlockId,
   })
 
+  const pushUndo = (snap: Snapshot, s: EditorState) => {
+    const stack = [...s.undoStack, snap]
+    if (stack.length > UNDO_DEPTH) stack.shift()
+    return stack
+  }
+
+  const resolveAlignmentSelection = (s: EditorState): AlignmentSelection | null => {
+    if (s.alignmentTarget === 'layout') {
+      return s.blocks.length > 0
+        ? { target: 'layout', blockId: null, lotIds: [], overlayId: null }
+        : null
+    }
+
+    if (s.alignmentTarget === 'block') {
+      const blockId = s.activeBlockId
+      return blockId && s.blocks.some((b) => b.id === blockId)
+        ? { target: 'block', blockId, lotIds: [], overlayId: null }
+        : null
+    }
+
+    if (s.alignmentTarget === 'lots') {
+      const lotIds = [...s.selection]
+      return lotIds.length > 0
+        ? { target: 'lots', blockId: null, lotIds, overlayId: null }
+        : null
+    }
+
+    const overlayId = s.activeOverlayId
+    return overlayId &&
+      s.overlays.some((o) => o.id === overlayId) &&
+      !s.lockedOverlays.has(overlayId)
+      ? { target: 'overlay', blockId: null, lotIds: [], overlayId }
+      : null
+  }
+
+  const ensureAlignmentSession = (s: EditorState): AlignmentSession | null => {
+    if (s.alignmentSession) return s.alignmentSession
+    const selection = resolveAlignmentSelection(s)
+    if (!selection) return null
+    const base = snapshotOf(s)
+    const frame = alignmentFrame(base, selection)
+    if (!frame) return null
+    return {
+      selection,
+      base,
+      transform: identityAlignmentTransform(),
+      dirtyBefore: s.dirty,
+      label: frame.label,
+    }
+  }
+
+  const previewAlignmentFrom = (
+    s: EditorState,
+    session: AlignmentSession,
+    transform: AlignmentTransform,
+  ): Partial<EditorState> => {
+    const next = applyAlignmentTransform(session.base, session.selection, transform, NOW)
+    return {
+      ...next,
+      alignmentSession: { ...session, transform },
+      dirty: true,
+      overlaps: detectOverlaps(next.lots),
+    }
+  }
+
   return {
     locationId: null,
     baseline: emptyDraft(),
     ...emptyDraft(),
 
+    editorMode: 'align',
+    layerMode: 'baseMap',
     tool: 'select',
+    alignmentTarget: 'layout',
+    alignmentSession: null,
     selection: new Set<LotId>(),
     activeBlockId: null,
     activeOverlayId: null,
     pendingBlock: null,
     editingBlock: null,
     moveTargetBlockId: null,
+    tierPaintTierId: null,
 
     grid: defaultGrid(),
     showPreview: true,
@@ -337,6 +450,7 @@ export const useEditor = create<EditorState>((set, get) => {
         activeOverlayId: null,
         pendingBlock: null,
         editingBlock: null,
+        alignmentSession: null,
         moveTargetBlockId: null,
         undoStack: [],
         redoStack: [],
@@ -345,7 +459,10 @@ export const useEditor = create<EditorState>((set, get) => {
         dirty: false,
         overlaps: new Set(),
         compare: false,
+        editorMode: 'align',
+        layerMode: 'baseMap',
         tool: 'select',
+        tierPaintTierId: null,
       })
     },
 
@@ -408,15 +525,79 @@ export const useEditor = create<EditorState>((set, get) => {
         redoStack: [],
         overlayEditBase: null,
         editingBlock: null,
+        alignmentSession: null,
         moveTargetBlockId: null,
         dirty: false,
       })
     },
 
     // ── chrome ──────────────────────────────────────────────────────
+    setEditorMode: (editorMode) =>
+      set((s) => {
+        const restoreBase = s.alignmentSession ? restore(s.alignmentSession.base) : {}
+        return {
+          ...restoreBase,
+          editorMode,
+          layerMode: editorMode === 'align' ? s.layerMode : 'lots',
+          tool: editorMode === 'align' ? 'select' : s.tool,
+          pendingBlock: editorMode === 'align' ? null : s.pendingBlock,
+          editingBlock: editorMode === 'align' ? null : s.editingBlock,
+          alignmentSession: null,
+          moveTargetBlockId: editorMode === 'align' ? null : s.moveTargetBlockId,
+          dirty: s.alignmentSession ? s.alignmentSession.dirtyBefore : s.dirty,
+          overlaps: s.alignmentSession ? detectOverlaps(s.alignmentSession.base.lots) : s.overlaps,
+        }
+      }),
+    setLayerMode: (layerMode) =>
+      set((s) => {
+        const restoreBase = s.alignmentSession ? restore(s.alignmentSession.base) : {}
+        const alignTarget: AlignmentTarget =
+          layerMode === 'sitePlan'
+            ? 'overlay'
+            : layerMode === 'blocks'
+              ? 'block'
+              : layerMode === 'lots'
+                ? 'lots'
+                : 'layout'
+        const inventoryTool: Tool =
+          layerMode === 'blocks'
+            ? 'block'
+            : layerMode === 'tiers' || layerMode === 'lots'
+              ? 'select'
+              : 'select'
+        const shouldUseInventory = layerMode === 'tiers'
+        return {
+          ...restoreBase,
+          layerMode,
+          editorMode: shouldUseInventory ? 'inventory' : 'align',
+          alignmentTarget: alignTarget,
+          tool: shouldUseInventory ? inventoryTool : 'select',
+          layers: layerMode === 'sitePlan' ? { ...s.layers, sitePlan: true } : s.layers,
+          pendingBlock: null,
+          editingBlock: null,
+          alignmentSession: null,
+          moveTargetBlockId: null,
+          tierPaintTierId: layerMode === 'tiers' ? s.tierPaintTierId : null,
+          dirty: s.alignmentSession ? s.alignmentSession.dirtyBefore : s.dirty,
+          overlaps: s.alignmentSession ? detectOverlaps(s.alignmentSession.base.lots) : s.overlaps,
+        }
+      }),
     setTool: (tool) =>
       set((s) => ({
+        ...(s.alignmentSession ? restore(s.alignmentSession.base) : {}),
+        editorMode: 'inventory',
+        layerMode:
+          tool === 'overlay'
+            ? 'sitePlan'
+            : tool === 'block' || tool === 'editBlock' || tool === 'grid'
+              ? 'blocks'
+              : tool === 'select' || tool === 'draw'
+                ? 'lots'
+                : s.layerMode,
         tool,
+        alignmentSession: null,
+        dirty: s.alignmentSession ? s.alignmentSession.dirtyBefore : s.dirty,
+        overlaps: s.alignmentSession ? detectOverlaps(s.alignmentSession.base.lots) : s.overlaps,
         pendingBlock: tool === 'block' ? s.pendingBlock : null,
         editingBlock:
           tool === 'editBlock'
@@ -429,6 +610,95 @@ export const useEditor = create<EditorState>((set, get) => {
                 : null)
             : null,
       })),
+    setAlignmentTarget: (alignmentTarget) =>
+      set((s) => {
+        const restoreBase = s.alignmentSession ? restore(s.alignmentSession.base) : {}
+        return {
+          ...restoreBase,
+          alignmentTarget,
+          layerMode:
+            alignmentTarget === 'overlay'
+              ? 'sitePlan'
+              : alignmentTarget === 'block'
+                ? 'blocks'
+                : alignmentTarget === 'lots'
+                  ? 'lots'
+                  : s.layerMode,
+          alignmentSession: null,
+          editorMode: 'align',
+          tool: 'select',
+          pendingBlock: null,
+          editingBlock: null,
+          moveTargetBlockId: null,
+          dirty: s.alignmentSession ? s.alignmentSession.dirtyBefore : s.dirty,
+          overlaps: s.alignmentSession ? detectOverlaps(s.alignmentSession.base.lots) : s.overlaps,
+        }
+      }),
+    beginAlignment: () => {
+      const s = get()
+      const session = ensureAlignmentSession(s)
+      if (!session) return false
+      set({ alignmentSession: session, editorMode: 'align', tool: 'select' })
+      return true
+    },
+    previewAlignment: (patch) => {
+      const s = get()
+      const session = ensureAlignmentSession(s)
+      if (!session) return false
+      const transform = { ...session.transform, ...patch }
+      set(previewAlignmentFrom(s, session, transform))
+      return true
+    },
+    translateAlignment: ([deltaLat, deltaLng]) => {
+      const s = get()
+      const session = ensureAlignmentSession(s)
+      if (!session) return false
+      const transform = {
+        ...session.transform,
+        deltaLat: session.transform.deltaLat + deltaLat,
+        deltaLng: session.transform.deltaLng + deltaLng,
+      }
+      set(previewAlignmentFrom(s, session, transform))
+      return true
+    },
+    nudgeAlignmentMeters: (eastM, northM) => {
+      const s = get()
+      const session = ensureAlignmentSession(s)
+      if (!session) return false
+      const frame = alignmentFrame(session.base, session.selection)
+      if (!frame) return false
+      const transform = nudgeTransformMeters(session.transform, frame.pivot, eastM, northM)
+      set(previewAlignmentFrom(s, session, transform))
+      return true
+    },
+    cancelAlignment: () => {
+      const s = get()
+      const session = s.alignmentSession
+      if (!session) return
+      set({
+        ...restore(session.base),
+        alignmentSession: null,
+        dirty: session.dirtyBefore,
+        overlaps: detectOverlaps(session.base.lots),
+      })
+    },
+    commitAlignment: () => {
+      const s = get()
+      const session = s.alignmentSession
+      if (!session) return null
+      const frame = alignmentFrame({ blocks: s.blocks, lots: s.lots, overlays: s.overlays }, session.selection)
+      set({
+        undoStack: pushUndo(session.base, s),
+        redoStack: [],
+        alignmentSession: null,
+        dirty: true,
+      })
+      return {
+        label: session.label,
+        target: session.selection.target,
+        count: frame?.count ?? 1,
+      }
+    },
     setLayer: (k, v) => set((s) => ({ layers: { ...s.layers, [k]: v } })),
     setCompare: (compare) => set({ compare }),
     setGrid: (patch) =>
@@ -460,10 +730,20 @@ export const useEditor = create<EditorState>((set, get) => {
       ),
     setActiveOverlay: (activeOverlayId) => set({ activeOverlayId }),
     setMoveTargetBlock: (moveTargetBlockId) => set({ moveTargetBlockId }),
+    setTierPaintTier: (tierPaintTierId) => set({ tierPaintTierId, layerMode: 'tiers' }),
 
     // ── undo ────────────────────────────────────────────────────────
     undo: () => {
       const s = get()
+      if (s.alignmentSession) {
+        set({
+          ...restore(s.alignmentSession.base),
+          alignmentSession: null,
+          dirty: s.alignmentSession.dirtyBefore,
+          overlaps: detectOverlaps(s.alignmentSession.base.lots),
+        })
+        return
+      }
       const prev = s.undoStack[s.undoStack.length - 1]
       if (!prev) return
       set({
@@ -471,6 +751,7 @@ export const useEditor = create<EditorState>((set, get) => {
         undoStack: s.undoStack.slice(0, -1),
         redoStack: [...s.redoStack, snapshotOf(s)],
         editingBlock: null,
+        alignmentSession: null,
         moveTargetBlockId: null,
         dirty: true,
       })
@@ -479,6 +760,15 @@ export const useEditor = create<EditorState>((set, get) => {
 
     redo: () => {
       const s = get()
+      if (s.alignmentSession) {
+        set({
+          ...restore(s.alignmentSession.base),
+          alignmentSession: null,
+          dirty: s.alignmentSession.dirtyBefore,
+          overlaps: detectOverlaps(s.alignmentSession.base.lots),
+        })
+        return
+      }
       const next = s.redoStack[s.redoStack.length - 1]
       if (!next) return
       set({
@@ -486,6 +776,7 @@ export const useEditor = create<EditorState>((set, get) => {
         redoStack: s.redoStack.slice(0, -1),
         undoStack: [...s.undoStack, snapshotOf(s)],
         editingBlock: null,
+        alignmentSession: null,
         moveTargetBlockId: null,
         dirty: true,
       })
@@ -543,6 +834,7 @@ export const useEditor = create<EditorState>((set, get) => {
         blocks: [...st.blocks, block],
         activeBlockId: id,
         pendingBlock: null,
+        editorMode: 'inventory',
         tool: 'grid',
         grid: {
           ...st.grid,
@@ -559,6 +851,7 @@ export const useEditor = create<EditorState>((set, get) => {
       const block = s.blocks.find((b) => b.id === id)
       if (!block) return
       set({
+        editorMode: 'inventory',
         tool: 'editBlock',
         activeBlockId: id,
         editingBlock: blockEditFrom(block, s.editingBlock?.moveLots ?? false),
@@ -702,12 +995,39 @@ export const useEditor = create<EditorState>((set, get) => {
     changeTier: (ids, tier) => {
       const set0 = new Set(ids)
       mutate((s) => ({
-        lots: s.lots.map((l) =>
-          set0.has(l.id)
-            ? { ...l, tierId: tier.id, capacity: safeCapacity(l, tier), updatedAt: NOW }
-            : l,
-        ),
+        lots: s.lots.map((l) => {
+          if (!set0.has(l.id)) return l
+          const block = s.blocks.find((b) => b.id === l.blockId)
+          const resized = resizeLot(l, tier.widthM, tier.lengthM, block?.grid?.rotationDeg ?? s.grid.rotationDeg, NOW)
+          return { ...resized, tierId: tier.id, capacity: safeCapacity(l, tier), updatedAt: NOW }
+        }),
       }))
+      get().recheckOverlaps()
+    },
+
+    syncTierFootprints: (ids, tiersById) => {
+      const s = get()
+      const targetIds = ids ? new Set(ids) : null
+      const changed: LotId[] = []
+      const lots = s.lots.map((lot) => {
+        if (targetIds && !targetIds.has(lot.id)) return lot
+        const tier = tiersById.get(lot.tierId)
+        if (!tier) return lot
+        const block = s.blocks.find((b) => b.id === lot.blockId)
+        const resized = resizeLot(
+          lot,
+          tier.widthM,
+          tier.lengthM,
+          block?.grid?.rotationDeg ?? s.grid.rotationDeg,
+          NOW,
+        )
+        if (JSON.stringify(resized.polygon) !== JSON.stringify(lot.polygon)) changed.push(lot.id)
+        return resized
+      })
+      if (changed.length > 0) {
+        mutate(() => ({ lots, overlaps: detectOverlaps(lots) }))
+      }
+      return changed
     },
 
     changeStatus: (ids, status, reason) => {

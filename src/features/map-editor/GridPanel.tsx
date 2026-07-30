@@ -153,6 +153,33 @@ export function GridPanel() {
             </Field>
           </div>
 
+          <div className="flex items-center justify-between gap-2">
+            <Label htmlFor="exact-lot-count" className="text-[11.5px] font-medium text-muted">
+              Use exact lot count
+            </Label>
+            <Switch
+              id="exact-lot-count"
+              checked={grid.exactCount !== null}
+              onCheckedChange={(checked) =>
+                setGrid({ exactCount: checked ? Math.max(1, Math.round(grid.rows * grid.cols)) : null })
+              }
+            />
+          </div>
+
+          {grid.exactCount !== null && (
+            <Field
+              label="Exact count"
+              hint="Rows and columns still shape the layout; the count caps how many available placeholders are created."
+            >
+              <NumberField
+                value={grid.exactCount}
+                min={1}
+                max={Math.max(1, Math.round(grid.rows * grid.cols))}
+                onChange={(exactCount) => setGrid({ exactCount })}
+              />
+            </Field>
+          )}
+
           <Button variant="secondary" className="h-8 w-full gap-1.5 text-[12.5px]" onClick={fitNow}>
             <Icon icon={IconAutoFit} size={14} />
             Fit to block

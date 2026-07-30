@@ -21,6 +21,7 @@ import { useMapStore } from '@/stores/map'
 import { cn } from '@/lib/utils'
 import { useEditor, type PublishAudit } from './store'
 import type { ChangeGroup, ChangeReport } from './helpers'
+import { conflictSummary, type GeometryValidationReport } from './geometry-validation'
 
 /**
  * The review. Every change in the client's own words, grouped, expandable to
@@ -31,10 +32,12 @@ export function PublishDialog({
   open,
   onOpenChange,
   report,
+  validation,
 }: {
   open: boolean
   onOpenChange: (v: boolean) => void
   report: ChangeReport
+  validation: GeometryValidationReport
 }) {
   const publish = useEditor((s) => s.publish)
   const overlays = useEditor((s) => s.overlays)
@@ -42,6 +45,12 @@ export function PublishDialog({
   const navigate = useNavigate()
 
   const confirm = () => {
+    if (!validation.canPublish) {
+      toast.error('Resolve geometry conflicts before publishing', {
+        description: conflictSummary(validation).join(' · '),
+      })
+      return
+    }
     const audit: PublishAudit[] = [...report.soldGroups, ...report.groups].map((g) => ({
       action: g.action,
       entityType: g.entityType,
@@ -78,7 +87,20 @@ export function PublishDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {report.total === 0 ? (
+        {!validation.canPublish ? (
+          <section className="rounded-lg border border-danger/40 bg-danger/10 p-3">
+            <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-danger">
+              <Icon icon={IconWarning} size={14} />
+              Publish blocked · {validation.blockingCount.toLocaleString()} geometry conflict
+              {validation.blockingCount === 1 ? '' : 's'}
+            </p>
+            <ul className="space-y-1 text-[12px] text-danger">
+              {conflictSummary(validation).map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </section>
+        ) : report.total === 0 ? (
           <EmptyState compact icon={IconCheck} title="Nothing to publish" body="The draft matches the live map." />
         ) : (
           <ScrollArea className="max-h-[46vh] pr-3">
@@ -112,7 +134,7 @@ export function PublishDialog({
           <Button variant="secondary" onClick={() => onOpenChange(false)}>
             Keep editing
           </Button>
-          <Button className="gap-1.5" disabled={report.total === 0} onClick={confirm}>
+          <Button className="gap-1.5" disabled={report.total === 0 || !validation.canPublish} onClick={confirm}>
             <Icon icon={IconPublish} size={15} />
             Publish
           </Button>

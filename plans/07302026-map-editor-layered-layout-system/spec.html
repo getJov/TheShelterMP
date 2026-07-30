@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map Editor Layered Layout System Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; background: var(--soft); margin-top: 12px; }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 900px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    ul, ol { padding-left: 1.25rem; }
+    li { margin: 0.35rem 0; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    .note { border: 1px dashed var(--line); border-radius: 8px; padding: 14px; background: var(--soft); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill status-completed">Completed</span>
+      </div>
+      <h1>Map Editor Layered Layout System</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/07302026-map-editor-layered-layout-system</dd></div>
+        <div><dt>Size</dt><dd>Large</dd></div>
+        <div><dt>Risk</dt><dd>Level 4</dd></div>
+        <div><dt>Readiness</dt><dd>No blockers after readiness loop</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The map editor is becoming a core operational feature, not a developer-only geometry tool. Admins need a layered visual editor that aligns a cemetery layout against a mock/base map and site-plan reference while preserving inventory identity.</p>
+      <p>The current editor has useful primitives, but the admin mental model must be simpler: map at the bottom, site plan above it, blocks inside the site plan, lots inside blocks, and tier sizing as real-world lot dimensions.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Implement a rectangle-first layered layout system in <code>/map-editor</code>. The initial scope supports mock/base map controls, site-plan overlay alignment, rectangle blocks, rectangular lots, real-world tier sizes, mode-based editing, draft-only changes, conflict warnings, and Publish blocking for invalid layouts.</p>
+      <p>Done means an admin can align the visual cemetery layout, create and resize rectangle blocks, generate placeholder available lots from rows/columns/count, arrange lots within a block, edit tiers by individual selection, multi-select, or paintbrush-style assignment, and publish only after overlap and outside-block conflicts are resolved.</p>
+    </section>
+
+    <section class="spec-card" id="baseline">
+      <h2>Baseline Source Of Truth</h2>
+      <ul>
+        <li><strong>Layer order:</strong> mock/base map, site-plan overlay, blocks, lots, labels/status/tier overlays.</li>
+        <li><strong>Geometry scope:</strong> rectangle blocks and rectangular lots only. Arbitrary block polygons, freeform lots, warped site-plan images, and geospatial calibration are later work.</li>
+        <li><strong>Base map scope:</strong> mock/base map is acceptable. No Google Maps integration and no real geospatial map-canvas rotation in this execution.</li>
+        <li><strong>View versus data:</strong> pan, zoom, satellite/default, and reset north affect the view/reference layer only. Rotating the view must not mutate cemetery geometry.</li>
+        <li><strong>Site plan:</strong> uploaded or existing site-plan image remains a visual reference layer. Admin can move, resize, rotate, set opacity, show/hide, and lock it in draft.</li>
+        <li><strong>Blocks:</strong> blocks are rectangle containers for now. Admin can move, resize width, resize height, rotate, and set row/column/count generation parameters.</li>
+        <li><strong>Lots:</strong> lots are rectangular inventory shapes inside exactly one block. Lots may be moved visually only within their current block during normal layout editing.</li>
+        <li><strong>Sold or occupied lots:</strong> admins may move them visually inside the same block, but their lot ID, lot number, block assignment, tier, status, client, contract, payment, burial, capacity, notes, and price relationship must remain unchanged unless a separate explicit action allows that field change.</li>
+        <li><strong>Cross-block movement:</strong> dragging cannot move a lot into another block. Cross-block movement requires a separate confirmable reassignment action and must keep protected-lot safeguards.</li>
+        <li><strong>Placeholder lots:</strong> grid generation creates available placeholder lots automatically. Admin can control rows, columns, and exact lot count manually. Reducing count may remove only available placeholder lots unless explicitly confirmed by an inventory action.</li>
+        <li><strong>Tier dimensions:</strong> tier <code>widthM</code> and <code>lengthM</code> are authoritative real-world dimensions. The app stores dimensions in meters; any feet display is conversion-only.</li>
+        <li><strong>Tier catalog boundary:</strong> tier definitions still belong to Pricing/Lot Types. Editing a tier's dimensions must not silently rewrite published lot polygons outside the map-editor draft workflow.</li>
+        <li><strong>Tier-size propagation:</strong> the map editor must detect lots whose rectangle footprint does not match their current tier dimensions and provide a draft action to sync/apply those tier sizes. Applying or syncing a tier resizes affected lots in draft/preview semantics. If this causes overlaps or lots outside their block, the editor shows conflicts and blocks Publish until resolved.</li>
+        <li><strong>Draft safety:</strong> conflicts are allowed while editing. Publish is blocked when overlaps or outside-block violations remain.</li>
+        <li><strong>Existing current worktree:</strong> the prior Align Layout foundation in this worktree is the starting point, including <code>AlignLayoutPanel.tsx</code> and <code>geometry-transform.ts</code>. Execution must not discard that work.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+      <h3>Relevant Files</h3>
+      <ul>
+        <li><code>src/features/map-editor/MapEditorPage.tsx</code> - map-editor route shell, header actions, publish/discard blockers, and current mode title.</li>
+        <li><code>src/features/map-editor/Sidebar.tsx</code> - current mode switcher, advanced inventory tools, layer controls, block list, selection tools, and overlap warning.</li>
+        <li><code>src/features/map-editor/AlignLayoutPanel.tsx</code> - existing simple alignment panel and closest local analog for admin-first geometry controls.</li>
+        <li><code>src/features/map-editor/EditorSurface.tsx</code> - canvas pointer and handle layer for direct move, resize, rotate, lasso, block drawing, and overlay transforms.</li>
+        <li><code>src/features/map-editor/EditorCanvas.tsx</code> - Leaflet canvas host and base map/editor layer composition.</li>
+        <li><code>src/features/map-editor/chrome-canvas.ts</code> - non-Lot canvas chrome for previews, handles, outlines, lasso, and conflict highlights.</li>
+        <li><code>src/features/map-editor/store.ts</code> - draft state, undo/redo, hydration, publish, block editing, lot generation, alignment session, move/reassign, tier/status mutation, overlay edits, and overlap state.</li>
+        <li><code>src/features/map-editor/GridPanel.tsx</code> - current rows/columns/tier footprint generation flow and placeholder-lot behavior.</li>
+        <li><code>src/features/map-editor/use-grid-plan.ts</code> - grid fit/preview bridge that already uses tier dimensions in meters.</li>
+        <li><code>src/features/map-editor/BulkActionsBar.tsx</code> - current bulk tier/status/reassign/resize operations and confirmable move-to-block flow.</li>
+        <li><code>src/features/map-editor/helpers.ts</code> - draft paint, tier mix, diff report, protected-lot grouping, and publish summary labels.</li>
+        <li><code>src/features/map-editor/geometry-transform.ts</code> - existing alignment transform helpers for layout, block, lots, and overlay targets.</li>
+        <li><code>src/lib/grid-generator.ts</code> - real-world geometry helpers, fit, grid planning, lot building, overlap detection, protected-lot checks, resizing, and reassignment transforms.</li>
+        <li><code>src/domain/tier.ts</code> - tier source-of-truth fields <code>widthM</code>, <code>lengthM</code>, appearance, category, and capacity.</li>
+        <li><code>src/stores/pricing.ts</code> - tier create/update store and audit behavior; dimensions already live here.</li>
+        <li><code>src/features/pricing/TierDialog.tsx</code> and <code>src/features/pricing/LotTiersTab.tsx</code> - existing tier editor copy currently says dimensions affect newly generated lots only. It must be updated to say geometry changes are reviewed/applied safely in the map-editor draft workflow.</li>
+        <li><code>src/features/map-editor/PublishDialog.tsx</code> - publish review and confirmation; must block invalid layouts and explain why.</li>
+        <li><code>src/lib/audit.ts</code> - audit labels for published map-editor changes.</li>
+      </ul>
+      <h3>Patterns To Follow</h3>
+      <ul>
+        <li>Use existing Zustand stores. Do not introduce another state system.</li>
+        <li>Keep the map-editor route and nav registration unchanged.</li>
+        <li>Use shadcn/Radix primitives already present in <code>@/components/ui</code>; do not add native select, checkbox, radio, date, progress, or range controls.</li>
+        <li>Use <code>@/components/ui-brand/Icon</code> and semantic Hugeicons from <code>@/components/ui-brand/icons</code>.</li>
+        <li>Keep geometry math in focused helpers, not scattered through React render bodies.</li>
+        <li>Use existing toast/dialog patterns for warnings, confirmation, and publish feedback.</li>
+        <li>Preserve draft, undo, redo, discard, route blocker, and publish behavior.</li>
+      </ul>
+      <p><strong>Reference files:</strong> <code>AlignLayoutPanel.tsx</code> for admin-first mode controls, <code>GridPanel.tsx</code> for tier-footprint rows/columns generation, <code>BulkActionsBar.tsx</code> for selected-lot commands, <code>TierDialog.tsx</code> for tier dimensions, and <code>store.ts</code> for undoable draft mutation.</p>
+      <p><strong>Loaded Constitution Articles:</strong> <code>DISC-1.1</code>, <code>DISC-1.2</code>, <code>DISC-1.3</code>, <code>CORE-1.1</code>, <code>CORE-1.2</code>, <code>CORE-2.1</code>, <code>CORE-2.2</code>, <code>CORE-2.3</code>, <code>CORE-2.4</code>, <code>CORE-6.1</code>, <code>CORE-6.2</code>, <code>FE-1.3</code>, <code>FE-2.2</code>, <code>FE-3.2</code>, <code>VER-1.1</code>, <code>VER-2.1</code>, <code>VER-2.2</code>, <code>VER-3.2</code>, <code>VER-3.3</code>, <code>STACK-TSJS-1.1</code>, <code>STACK-TSJS-1.2</code>, and <code>STACK-TSJS-3.2</code>.</p>
+    </section>
+
+    <section class="spec-card" id="product">
+      <h2>Product Model</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Editor Modes</h3>
+          <ul>
+            <li><strong>Base Map:</strong> view controls for mock/default/satellite-style background, pan, zoom, rotate view indicator if already available, and reset north. View only.</li>
+            <li><strong>Site Plan:</strong> upload/select image, show/hide, opacity, lock, move, resize, rotate, and compare against the base map.</li>
+            <li><strong>Blocks:</strong> create/select rectangle blocks, move, resize width, resize height, rotate, and set block-local grid orientation.</li>
+            <li><strong>Lots:</strong> generate rows/columns/count, arrange lots inside selected block, move sold/occupied lots only inside the same block, and keep cross-block reassignment explicit.</li>
+            <li><strong>Tiers:</strong> assign tier visually by individual lot, multi-select, and paintbrush-style assignment; tier size is displayed as real-world footprint and existing lots can be synced to current tier dimensions in draft.</li>
+            <li><strong>Review:</strong> publish review lists created placeholders, moved available lots, moved protected lots, tier changes, tier-size impacts, overlaps, and outside-block conflicts.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Interaction Rules</h3>
+          <ul>
+            <li>Only the active layer is directly editable. Other layers stay visible but locked or ghosted.</li>
+            <li>Direct handles must be visible on selected site plan, block, and lot/group frames.</li>
+            <li>Rows, columns, count, gap, orientation, and default tier are configured from the selected block context.</li>
+            <li>Tier paint mode must not accidentally start geometry drag. Geometry mode must not accidentally paint tiers.</li>
+            <li>Conflicts are highlighted on the canvas and listed in the side panel with actions to select, fix, or cancel.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Must</h3>
+          <ul>
+            <li>Keep initial geometry rectangle-only for blocks and lots.</li>
+            <li>Keep all edits draft-only until Publish.</li>
+            <li>Allow sold/occupied lot geometry movement only inside the same block.</li>
+            <li>Preserve sold/occupied lot identity and business data during visual geometry edits.</li>
+            <li>Require explicit reassignment for any cross-block lot movement.</li>
+            <li>Generate available placeholder lots automatically from grid settings and allow manual exact count control.</li>
+            <li>Use tier <code>widthM</code>/<code>lengthM</code> as the authoritative lot footprint.</li>
+            <li>Detect overlaps and lots outside their block after geometry, grid, lot, and tier-size edits.</li>
+            <li>Block Publish while invalid geometry remains.</li>
+            <li>Keep existing protected-lot safeguards for delete, reassign, status, renumber, and other inventory operations.</li>
+            <li>Run the execution loop task-by-task, with focused checks after each task and full verification at the end.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Must Not</h3>
+          <ul>
+            <li>Do not implement real Google Maps, paid APIs, geospatial projection calibration, or legal survey support.</li>
+            <li>Do not implement arbitrary polygon blocks or non-rectangular lots in this execution.</li>
+            <li>Do not silently reassign lots to another block through dragging.</li>
+            <li>Do not delete, renumber, recode, sell, unsell, hold, release, or alter client/contract/burial data from geometry movement.</li>
+            <li>Do not add new dependencies or drag libraries.</li>
+            <li>Do not edit frozen <code>@/domain</code> constants beyond consuming existing tier fields.</li>
+            <li>Do not remove existing Advanced Inventory capabilities.</li>
+            <li>Do not bypass route blockers, dirty state, undo/redo, publish/discard, or validation behavior.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Out Of Scope</h3>
+      <ul>
+        <li>Database schema changes or backend persistence.</li>
+        <li>Real Google Maps integration, API keys, or external network map providers beyond existing/mock base layers.</li>
+        <li>Four-corner image warp, perspective correction, survey coordinate systems, or GPS anchoring.</li>
+        <li>Arbitrary polygon blocks, freeform lots, curved paths, aisles, and irregular cemetery sections.</li>
+        <li>Sales, payments, burials, client records, or pricing book money changes.</li>
+        <li>Mobile-first redesign. The editor remains desktop/tablet oriented, but must not break narrow viewport layout.</li>
+      </ul>
+      <h3>Constitution Constraints</h3>
+      <ul>
+        <li><code>DISC-1.1</code>, <code>DISC-1.2</code>, <code>DISC-1.3</code> - execution must re-read local instructions, manifests, and nearby analogs before editing.</li>
+        <li><code>CORE-1.1</code>, <code>CORE-1.2</code> - new names must reveal whether they handle view state, draft geometry, tier dimensions, validation, or publish blocking.</li>
+        <li><code>CORE-2.1</code>, <code>CORE-2.2</code>, <code>CORE-2.3</code>, <code>CORE-2.4</code> - keep geometry helpers, store mutation, and UI rendering separate; follow existing map-editor and pricing analogs.</li>
+        <li><code>CORE-6.1</code>, <code>CORE-6.2</code> - behavior changes require automated or explicitly documented verification, including failure paths for invalid layouts.</li>
+        <li><code>FE-1.3</code>, <code>FE-2.2</code>, <code>FE-3.2</code> - keep presentation and logic separated, avoid new state systems, and surface errors through existing UX patterns.</li>
+        <li><code>VER-1.1</code>, <code>VER-2.1</code>, <code>VER-2.2</code>, <code>VER-3.2</code>, <code>VER-3.3</code> - use existing verification commands, match tests to risk, cover regression paths, and keep spec and code aligned.</li>
+        <li><code>STACK-TSJS-1.1</code>, <code>STACK-TSJS-1.2</code>, <code>STACK-TSJS-3.2</code> - follow project module conventions, avoid new <code>any</code>, and move large component logic into helpers/store functions.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level:</strong> 4 - Major Impact. This changes the core admin workflow for cemetery geometry and how tier dimensions affect existing lot shapes.</p>
+      <h3>Risks Identified</h3>
+      <ul>
+        <li><strong>Geometry correction can be mistaken for inventory mutation.</strong> Mitigation: mode-based editing, active-layer locks, explicit copy, and publish review groups separating visual moves from reassignment/status/tier changes.</li>
+        <li><strong>Tier-size propagation can create layout conflicts across many lots.</strong> Mitigation: apply geometry sync in map-editor draft/preview semantics, detect overlaps/outside-block violations, show counts, and block Publish until fixed.</li>
+        <li><strong>Sold/occupied lots may be moved visually.</strong> Mitigation: only allow same-block geometry movement; preserve IDs, numbers, block, tier, status, clients, contracts, payments, burials, capacity, notes, and prices.</li>
+        <li><strong>Rectangle-only MVP could be confused with final arbitrary-shape support.</strong> Mitigation: label rectangle-only scope in the spec and keep future polygon support out of execution.</li>
+        <li><strong>Pointer interactions can make <code>EditorSurface.tsx</code> unmaintainable.</strong> Mitigation: keep heavy geometry and validation in helpers, with the surface responsible for event wiring and visual state.</li>
+        <li><strong>Publish blocking can frustrate admins if conflicts are hard to find.</strong> Mitigation: canvas highlights, side-panel conflict list, select/focus actions, and clear repair/cancel paths.</li>
+        <li><strong>Pricing tier copy currently conflicts with this behavior.</strong> Mitigation: update tier dimension wording and confirmation so admins understand existing map layouts may need review when dimensions change.</li>
+      </ul>
+      <p><strong>Blast radius:</strong> <code>/map-editor</code>, map-editor draft store, grid generation helpers, geometry transform helpers, publish dialog/reporting, tier editor copy/store behavior, pricing tier consumers, live map geometry after Publish, audit summaries, QA scripts, and existing mock validation.</p>
+      <h3>Pushback</h3>
+      <ul>
+        <li>"Drag, drop, resize everything" is not a safe execution contract. The correct contract is layered editing with only one active layer editable at a time.</li>
+        <li>"Tier size always controls lot size" is cleaner than "only new lots unless something overlaps." The latter creates hidden exceptions admins cannot reason about.</li>
+        <li>Real maps and arbitrary shapes do not belong in this execution. Future-us will hate mixing API/geospatial integration into a core editor rewrite before rectangle behavior is stable.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+
+      <article class="task-card">
+        <h3>T1: Layered Mode Shell</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Reshape the sidebar into clear mode/layer steps: Base Map, Site Plan, Blocks, Lots, Tiers, Review. Keep existing Align Layout and Advanced Inventory foundation, but make the active layer obvious and make non-active layers visible but not directly editable.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/Sidebar.tsx</code>, <code>src/features/map-editor/MapEditorPage.tsx</code>, <code>src/features/map-editor/AlignLayoutPanel.tsx</code>, possible new <code>src/features/map-editor/LayerModePanel.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>None</dd></div>
+          <div><dt>Parallel</dt><dd>Can run alongside T2.</dd></div>
+          <div><dt>Verify</dt><dd>Manual: <code>/map-editor</code> opens to a layer-first workflow; existing Advanced Inventory tools remain reachable.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Geometry Validation Contract</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add focused helpers for rectangle footprint measurement, overlap detection, outside-block detection, tier-size mismatch detection, and conflict summaries. Conflicts must be allowed in draft but returned as structured validation results that Publish can consume.</dd></div>
+          <div><dt>Files</dt><dd><code>src/lib/grid-generator.ts</code>, <code>src/features/map-editor/helpers.ts</code>, possible new <code>src/features/map-editor/geometry-validation.ts</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>None</dd></div>
+          <div><dt>Parallel</dt><dd>Can run alongside T1.</dd></div>
+          <div><dt>Verify</dt><dd>Automated helper checks: overlapping lots are reported, lots outside their block are reported, valid lots pass, and protected-lot business fields are ignored by geometry validation.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3: Site Plan And Mock Base Map Controls</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Expose base map view controls and site-plan overlay controls in the layer workflow. Base map controls must be view/reference only. Site plan supports upload/select, show/hide, opacity, lock, move, resize width/height, rotate, and reset/reference readouts.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/EditorCanvas.tsx</code>, <code>src/features/map-editor/OverlayPanel.tsx</code>, <code>src/features/map-editor/AlignLayoutPanel.tsx</code>, <code>src/features/map-editor/EditorSurface.tsx</code>, <code>src/stores/map.ts</code> if existing base-layer controls require it.</dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Parallel</dt><dd>Can run alongside T4 after T1.</dd></div>
+          <div><dt>Verify</dt><dd>Manual/browser smoke: map pan/zoom still works, site plan can be moved/resized/rotated, and locking prevents accidental site-plan edits.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Rectangle Block Editing And Lot Reflow</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Make rectangle block move, width resize, height resize, and rotate clear from the Blocks layer. Resizing a block must not stretch lot footprints; lots keep tier-defined size and can be reflowed through rows/columns/count controls. Sold/occupied lots remain inside the same block and keep identity.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/EditorSurface.tsx</code>, <code>src/features/map-editor/geometry-transform.ts</code>, <code>src/features/map-editor/store.ts</code>, <code>src/features/map-editor/GridPanel.tsx</code>, <code>src/features/map-editor/use-grid-plan.ts</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T1, T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run alongside T3 after T1/T2.</dd></div>
+          <div><dt>Verify</dt><dd>Automated/browser smoke: block width/height resize changes block geometry, lot footprints remain tier-sized, invalid lots are reported, and Save/Cancel/Undo still behave.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T5: Lot Generation, Arrangement, And Reassignment Boundaries</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Support exact lot count in addition to rows/columns. Generate available placeholders automatically. Allow dragging lots inside their current block, including sold/occupied geometry moves, while preventing drag-based cross-block movement. Keep cross-block movement behind an explicit reassignment action with target highlighting and confirmation.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/GridPanel.tsx</code>, <code>src/features/map-editor/BulkActionsBar.tsx</code>, <code>src/features/map-editor/EditorSurface.tsx</code>, <code>src/features/map-editor/store.ts</code>, <code>src/lib/grid-generator.ts</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T4</dd></div>
+          <div><dt>Parallel</dt><dd>Sequential after T4.</dd></div>
+          <div><dt>Verify</dt><dd>Automated checks: generated placeholders are available, exact count is honored, protected lots cannot be reassigned by drag, and explicit move-to-block keeps existing protected-lot safeguards.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T6: Tier Size Source Of Truth And Tier Paint Flow</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Make tier dimensions visibly authoritative in map-editor tier tools. Add individual, multi-select, and paintbrush-style tier assignment. Applying a tier resizes selected lots to that tier footprint. Add a draft sync/apply path for existing lots whose footprint differs from their tier. Pricing tier dimension edits must communicate that existing geometry is reviewed/applied safely through map-editor validation.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/Sidebar.tsx</code>, <code>src/features/map-editor/BulkActionsBar.tsx</code>, <code>src/features/map-editor/EditorSurface.tsx</code>, <code>src/features/map-editor/store.ts</code>, <code>src/features/pricing/TierDialog.tsx</code>, <code>src/features/pricing/LotTiersTab.tsx</code>, <code>src/stores/pricing.ts</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T5</dd></div>
+          <div><dt>Parallel</dt><dd>Sequential after T5 because tier changes depend on conflict validation and lot arrangement behavior.</dd></div>
+          <div><dt>Verify</dt><dd>Automated checks: changing/applying a tier updates lot footprint to <code>widthM</code>/<code>lengthM</code>, preserves protected lot business fields, reports overlaps/outside-block conflicts, and supports individual/multi/paint assignment paths.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T7: Publish Blocking, Review, And Audit Summaries</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Wire validation results into the header, side panel, and Publish dialog. Publish must be disabled while invalid geometry remains and explain each blocking group. Review must distinguish visual same-block moves, protected-lot visual moves, generated placeholders, tier assignments, tier-size impacts, and explicit reassignment.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/MapEditorPage.tsx</code>, <code>src/features/map-editor/PublishDialog.tsx</code>, <code>src/features/map-editor/helpers.ts</code>, <code>src/features/map-editor/store.ts</code>, <code>src/lib/audit.ts</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T5, T6</dd></div>
+          <div><dt>Parallel</dt><dd>Sequential after T6.</dd></div>
+          <div><dt>Verify</dt><dd>Manual/browser smoke: invalid layout blocks Publish, conflicts are listed, resolving conflicts re-enables Publish, and the publish review names protected-lot geometry moves without implying inventory mutation.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T8: Execution Loop Verification And Acceptance Artifacts</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Run focused checks after each task, then run full repository verification. Produce <code>test-results.json</code> and <code>test.html</code> in this plan folder after execution, with behavioral checks derived from this spec.</dd></div>
+          <div><dt>Files</dt><dd><code>qa/map-editor-alignment.ts</code> or new focused QA file, <code>plans/07302026-map-editor-layered-layout-system/test-results.json</code>, <code>plans/07302026-map-editor-layered-layout-system/test.html</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T1 through T7</dd></div>
+          <div><dt>Parallel</dt><dd>Sequential final gate.</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code>, <code>npm run build</code>, <code>npm run lint</code>, <code>npm run validate:mock</code>, focused map-editor QA, and browser smoke for the layer workflow.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="execution-loop">
+      <h2>Execution Loop</h2>
+      <ol>
+        <li>Before editing, set this spec status to <code>In Progress</code> and re-read the files listed in Context.</li>
+        <li>Execute tasks in dependency order. T1 and T2 may be developed independently, then T3/T4, then T5, T6, T7, and T8.</li>
+        <li>After each task, run the smallest meaningful verification for that task and fix failures caused by that task before moving on.</li>
+        <li>If implementation discovers a scope contradiction, update this same <code>spec.html</code> with a revision note before continuing. Do not create a new plan folder.</li>
+        <li>If a Level 3 or Level 4 risk expands beyond this rectangle-only/mock-map scope, stop and ask for a user decision before implementing the expansion.</li>
+        <li>After all tasks pass focused checks, run the full verification commands and create acceptance artifacts.</li>
+      </ol>
+      <div class="note">
+        <strong>Loop baseline:</strong> keep each loop focused on one behavior group, keep spec-code parity after each loop, and never use a passing build to justify unverified UI behavior.
+      </div>
+    </section>
+
+    <section class="spec-card" id="readiness-loop">
+      <h2>Readiness Loop</h2>
+      <h3>Pass 1 Findings</h3>
+      <ul>
+        <li><strong>Concern resolved:</strong> tier dimensions already exist in <code>Tier.widthM</code>/<code>Tier.lengthM</code>, but existing pricing copy says dimension changes affect newly generated lots only. Baseline tightened: tier dimensions are authoritative, but published lot polygons are synced through map-editor draft actions so conflict-producing geometry changes remain visible and publish-blocking.</li>
+        <li><strong>Concern resolved:</strong> "meters/feet" could imply a database change. Baseline tightened: store meters; feet is display/conversion only if added.</li>
+        <li><strong>Concern resolved:</strong> "all shapes possible" would over-expand scope. Baseline tightened: rectangle-only execution; arbitrary shapes later.</li>
+        <li><strong>Concern resolved:</strong> "Google Maps" would require external provider scope. Baseline tightened: mock/base map only, no real Google Maps integration.</li>
+      </ul>
+      <h3>Pass 2 Recheck</h3>
+      <p>No blockers remain. The spec has clear scope, explicit source-of-truth rules, executable tasks, dependency order, risk mitigations, and observable Done criteria.</p>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" disabled checked> <span><code>/map-editor</code> presents a layer-first workflow with Base Map, Site Plan, Blocks, Lots, Tiers, and Review behavior.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Site-plan overlay can be moved, width/height resized, rotated, hidden/shown, locked, and opacity-adjusted in draft.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Rectangle blocks can be moved, width/height resized, and rotated without stretching tier-sized lot footprints.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Grid generation creates available placeholder lots from rows, columns, exact count, tier footprint, gutter, orientation, and numbering.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Lots can be arranged within their current block; sold/occupied lots keep identity and business data.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Drag-based cross-block movement is prevented; cross-block reassignment remains an explicit confirmed action.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Tier assignment supports individual, multi-select, and paintbrush-style paths, and applying a tier resizes lots to that tier footprint.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Tier dimension changes communicate that existing lot geometry is reviewed/applied through map-editor draft validation.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Overlap and outside-block conflicts are visible in the canvas/sidebar and block Publish until resolved.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Publish review names visual geometry moves separately from reassignment, status, tier, and placeholder generation changes.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Undo, redo, dirty state, route blocker, discard, and publish behavior remain intact.</span></li>
+        <li><input type="checkbox" disabled checked> <span><code>npx tsc --noEmit -p tsconfig.app.json</code> passes.</span></li>
+        <li><input type="checkbox" disabled checked> <span><code>npm run build</code> passes.</span></li>
+        <li><input type="checkbox" disabled checked> <span><code>npm run lint</code> exits cleanly or only with pre-existing classified warnings.</span></li>
+        <li><input type="checkbox" disabled checked> <span><code>npm run validate:mock</code> passes.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Focused map-editor QA covers geometry validation, protected-lot preservation, tier-size propagation, and Publish blocking.</span></li>
+        <li><input type="checkbox" disabled checked> <span>Acceptance artifacts <code>test-results.json</code> and <code>test.html</code> are created after execution.</span></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

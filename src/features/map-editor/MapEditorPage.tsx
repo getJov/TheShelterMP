@@ -21,8 +21,18 @@ import { EditorCanvas, type CanvasHandle } from './EditorCanvas'
 import { Sidebar } from './Sidebar'
 import { BulkActionsBar } from './BulkActionsBar'
 import { PublishDialog } from './PublishDialog'
-import { useChangeReport } from './helpers'
+import { useChangeReport, useLayoutValidation } from './helpers'
 import { TOOL_KEYS, useEditor, lotsOfBlock } from './store'
+
+function layerTitle(layerMode: ReturnType<typeof useEditor.getState>['layerMode'], editorMode: ReturnType<typeof useEditor.getState>['editorMode']) {
+  if (layerMode === 'baseMap') return 'Base Map'
+  if (layerMode === 'sitePlan') return 'Site Plan'
+  if (layerMode === 'blocks') return 'Blocks'
+  if (layerMode === 'lots') return 'Lots'
+  if (layerMode === 'tiers') return 'Tiers'
+  if (layerMode === 'review') return 'Review'
+  return editorMode === 'align' ? 'Align Layout' : 'Advanced Inventory'
+}
 
 export default function MapEditorPage() {
   const activeLocationId = useSession((s) => s.activeLocationId)
@@ -31,6 +41,8 @@ export default function MapEditorPage() {
   const hydrate = useEditor((s) => s.hydrate)
   const dirty = useEditor((s) => s.dirty)
   const blocks = useEditor((s) => s.blocks)
+  const editorMode = useEditor((s) => s.editorMode)
+  const layerMode = useEditor((s) => s.layerMode)
   const undoDepth = useEditor((s) => s.undoStack.length)
   const redoDepth = useEditor((s) => s.redoStack.length)
   const undo = useEditor((s) => s.undo)
@@ -42,6 +54,7 @@ export default function MapEditorPage() {
   const [publishOpen, setPublishOpen] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
   const report = useChangeReport()
+  const validation = useLayoutValidation()
 
   useEffect(() => {
     hydrate(activeLocationId)
@@ -101,6 +114,16 @@ export default function MapEditorPage() {
         s.clearSelection()
         s.setPendingBlock(null)
         s.cancelBlockEdit()
+        s.cancelAlignment()
+        return
+      }
+      if (s.editorMode === 'align' && e.key.startsWith('Arrow')) {
+        e.preventDefault()
+        const step = e.shiftKey ? 1 : 0.25
+        if (e.key === 'ArrowUp') s.nudgeAlignmentMeters(0, step)
+        if (e.key === 'ArrowDown') s.nudgeAlignmentMeters(0, -step)
+        if (e.key === 'ArrowLeft') s.nudgeAlignmentMeters(-step, 0)
+        if (e.key === 'ArrowRight') s.nudgeAlignmentMeters(step, 0)
         return
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && s.selection.size > 0) {
@@ -137,7 +160,8 @@ export default function MapEditorPage() {
           <div className="min-w-0">
             <p className="eyebrow text-gold-deep dark:text-gold">Map editor</p>
             <h1 className="truncate font-display text-[19px] font-semibold leading-tight text-ink">
-              {location?.name ?? 'All locations'}
+              {location?.name ?? 'All locations'} ·{' '}
+              {layerTitle(layerMode, editorMode)}
             </h1>
           </div>
 
@@ -185,11 +209,13 @@ export default function MapEditorPage() {
             <Button
               size="sm"
               className="h-8 gap-1.5 text-[12.5px]"
-              disabled={report.total === 0}
+              disabled={report.total === 0 || !validation.canPublish}
               onClick={() => setPublishOpen(true)}
             >
               <Icon icon={IconPublish} size={14} />
-              {report.total === 0
+              {!validation.canPublish
+                ? `Fix ${validation.blockingCount} conflict${validation.blockingCount === 1 ? '' : 's'}`
+                : report.total === 0
                 ? 'Nothing to publish'
                 : `Publish ${report.total} change${report.total === 1 ? '' : 's'}`}
             </Button>
@@ -198,7 +224,7 @@ export default function MapEditorPage() {
 
         <div className="absolute inset-0 top-[57px]">
           <EditorCanvas onReady={onReady} />
-          <BulkActionsBar />
+          {editorMode === 'inventory' && <BulkActionsBar />}
 
           {empty && (
             <div className="pointer-events-none absolute inset-0 z-[630] grid place-items-center">
@@ -225,7 +251,12 @@ export default function MapEditorPage() {
         </div>
       </div>
 
-      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} report={report} />
+      <PublishDialog
+        open={publishOpen}
+        onOpenChange={setPublishOpen}
+        report={report}
+        validation={validation}
+      />
 
       <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
         <AlertDialogContent>

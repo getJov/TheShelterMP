@@ -296,6 +296,22 @@ export function planGrid(input: GridPlanInput): GridPlan {
   }
 }
 
+export function limitGridPlan(
+  plan: GridPlan,
+  exactCount: number | null,
+  cellAreaSqm: number,
+): GridPlan {
+  if (exactCount === null) return plan
+  const count = Math.max(0, Math.min(plan.cells.length, Math.round(exactCount)))
+  if (count === plan.cells.length) return plan
+  const cells = plan.cells.slice(0, count)
+  return {
+    ...plan,
+    cells,
+    usedAreaSqm: cells.length * cellAreaSqm,
+  }
+}
+
 // ── lot construction ─────────────────────────────────────────────────
 
 let lotSeq = 500_000

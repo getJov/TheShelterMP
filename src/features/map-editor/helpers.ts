@@ -16,6 +16,7 @@ import { resolveFill, type LotPaint } from '@/features/map/paint'
 import type { LotRecord } from '@/features/map/lot-canvas'
 import { isProtected } from '@/lib/grid-generator'
 import { useEditor, type DraftState } from './store'
+import { validateLayoutGeometry, type GeometryValidationReport } from './geometry-validation'
 
 export const STATUS_LABEL: Record<LotStatus, string> = {
   available: 'Available',
@@ -206,7 +207,8 @@ export function diffChanges(
     const bits: string[] = []
     if (before.code !== b.code) bits.push(`code ${before.code} → ${b.code}`)
     if ((before.name ?? '') !== (b.name ?? '')) bits.push('name')
-    if (JSON.stringify(before.polygon) !== JSON.stringify(b.polygon)) bits.push('boundary')
+    const geometryChanged = JSON.stringify(before.polygon) !== JSON.stringify(b.polygon)
+    if (geometryChanged) bits.push('geometry aligned')
     if (before.defaultTierId !== b.defaultTierId) bits.push('default tier')
     if (bits.length === 0) continue
     groups.push({
@@ -214,7 +216,10 @@ export function diffChanges(
       action: 'block.created',
       entityType: 'Block',
       entityId: b.id,
-      label: `Block ${b.code} edited`,
+      label:
+        geometryChanged && bits.length === 1
+          ? `Block ${b.code} geometry aligned`
+          : `Block ${b.code} edited`,
       detail: bits.join(', '),
       count: 1,
       codes: [b.code],
@@ -268,6 +273,7 @@ export function diffChanges(
   const moved = new Map<string, Lot[]>()
   const renumbered = new Map<BlockId, Lot[]>()
   const reshaped = new Map<BlockId, Lot[]>()
+  const footprintSynced = new Map<BlockId, Lot[]>()
 
   const bump = <K,>(m: Map<K, Lot[]>, k: K, l: Lot) => {
     const a = m.get(k)
@@ -286,7 +292,8 @@ export function diffChanges(
       before.blockId === l.blockId &&
       JSON.stringify(before.polygon) !== JSON.stringify(l.polygon)
     ) {
-      bump(reshaped, l.blockId, l)
+      if (Math.abs(before.areaSqm - l.areaSqm) > 0.05) bump(footprintSynced, l.blockId, l)
+      else bump(reshaped, l.blockId, l)
     }
   }
 
@@ -338,12 +345,24 @@ export function diffChanges(
   }
   for (const [blockId, lots] of reshaped) {
     push(
-      `resize-${blockId}`,
+      `geometry-${blockId}`,
       'block.created',
       'Block',
       blockId,
-      `${plural(lots.length, 'lot')} resized in ${codes.get(blockId) ?? '??'}`,
+      `${plural(lots.length, 'lot')} geometry aligned in ${codes.get(blockId) ?? '??'}`,
       lots,
+      'Only polygons, centroids and measured area changed',
+    )
+  }
+  for (const [blockId, lots] of footprintSynced) {
+    push(
+      `footprint-${blockId}`,
+      'block.created',
+      'Block',
+      blockId,
+      `${plural(lots.length, 'lot')} footprint synced to tier size in ${codes.get(blockId) ?? '??'}`,
+      lots,
+      'Tier width and length changed the visual lot geometry',
     )
   }
 
@@ -430,6 +449,16 @@ export function useChangeReport(): ChangeReport {
   return useMemo(
     () => diffChanges(baseline, { blocks, lots, overlays }, byId),
     [baseline, blocks, lots, overlays, byId],
+  )
+}
+
+export function useLayoutValidation(): GeometryValidationReport {
+  const blocks = useEditor((s) => s.blocks)
+  const lots = useEditor((s) => s.lots)
+  const { byId } = useTiers()
+  return useMemo(
+    () => validateLayoutGeometry(blocks, lots, byId),
+    [blocks, lots, byId],
   )
 }
 

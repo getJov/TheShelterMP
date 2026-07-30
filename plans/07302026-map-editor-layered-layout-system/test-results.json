@@ -1,0 +1,105 @@
+{
+  "plan": "plans/07302026-map-editor-layered-layout-system",
+  "generatedAt": "2026-07-30",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Layer-first map editor workflow is reachable",
+      "surface": "ui",
+      "precondition": "Dev server is running at http://127.0.0.1:1616 and the smoke test signs in as the seeded admin user.",
+      "steps": [
+        "1. Run node qa/map-editor-layered-smoke.mjs.",
+        "2. Open /map-editor as admin.",
+        "3. Assert the workflow exposes Base Map, Site Plan, Blocks, Lots, Tiers, and Review."
+      ],
+      "expected": "The map editor renders a canvas and each layer mode is available from the workflow controls.",
+      "status": "pass",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Base map and site-plan controls are visible from the layer workflow",
+      "surface": "ui",
+      "precondition": "Same browser smoke session as T1.",
+      "steps": [
+        "1. In the smoke test, inspect Base Map mode.",
+        "2. Switch to Site Plan mode.",
+        "3. Assert satellite/default/reset controls plus site-plan upload, compare, opacity, and lock controls when an overlay exists."
+      ],
+      "expected": "Base map controls are view-only, and the site-plan overlay controls are reachable without opening Advanced Inventory.",
+      "status": "pass",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Rectangle block, lot, and overlay transforms preserve inventory identity",
+      "surface": "cli",
+      "precondition": "Focused QA runs against local TypeScript source through vite-node.",
+      "steps": [
+        "1. Run npx vite-node qa/map-editor-alignment.ts.",
+        "2. Assert block move/resize/rotate updates block geometry.",
+        "3. Assert lot footprints remain tier-sized and sold-lot business fields are preserved.",
+        "4. Assert overlay move/resize/rotate changes only overlay draft geometry."
+      ],
+      "expected": "Geometry changes are visual and draft-only, with lot identity/status/client/contract data unchanged.",
+      "status": "pass",
+      "evidence": "npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Exact lot count and tier footprint rules are enforced",
+      "surface": "cli",
+      "precondition": "Focused QA uses the same grid and geometry helpers consumed by the map editor.",
+      "steps": [
+        "1. Run npx vite-node qa/map-editor-alignment.ts.",
+        "2. Assert a rows-by-columns grid can be capped by exactCount.",
+        "3. Assert tier mismatch blocks publish and resizing to tier widthM/lengthM resolves the mismatch."
+      ],
+      "expected": "Generated placeholder count honors exact count, and tier dimensions remain the lot footprint source of truth.",
+      "status": "pass",
+      "evidence": "npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Invalid geometry blocks Publish and is visible in review",
+      "surface": "ui",
+      "precondition": "Browser smoke and focused QA have access to seeded map-editor data.",
+      "steps": [
+        "1. Run node qa/map-editor-layered-smoke.mjs.",
+        "2. Switch to Review mode.",
+        "3. Run npx vite-node qa/map-editor-alignment.ts for overlap, outside-block, and tier-footprint conflict assertions."
+      ],
+      "expected": "Review either reports no blockers or explains publish blocking, while focused QA proves invalid layouts cannot publish.",
+      "status": "pass",
+      "evidence": "node qa/map-editor-layered-smoke.mjs -> map-editor-layered-smoke-ok; npx vite-node qa/map-editor-alignment.ts -> map-editor-alignment-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Repository verification suite passes",
+      "surface": "cli",
+      "precondition": "Run from /home/jovanie_getalla/projects/shelter after implementation.",
+      "steps": [
+        "1. Run npx tsc --noEmit -p tsconfig.app.json.",
+        "2. Run npm run build.",
+        "3. Run npm run lint.",
+        "4. Run npm run validate:mock."
+      ],
+      "expected": "Typecheck, build, lint, and mock validation all exit 0.",
+      "status": "pass",
+      "evidence": "tsc exit 0; build exit 0; lint exit 0 with existing warnings; validate:mock exit 0",
+      "notes": "Lint still reports existing warnings in unrelated files, including fast-refresh and unused-variable warnings.",
+      "waiver": ""
+    }
+  ]
+}

@@ -47,7 +47,7 @@ import { protectedIn, STATUS_LABEL, useTiers } from './helpers'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-type Sheet = null | 'status' | 'renumber' | 'move' | 'resize'
+type Sheet = null | 'status' | 'renumber' | 'move' | 'syncSize'
 
 /**
  * Slides up the moment anything is selected. Change tier is the headline —
@@ -63,7 +63,7 @@ export function BulkActionsBar() {
   const renumberSelection = useEditor((s) => s.renumberSelection)
   const moveToBlock = useEditor((s) => s.moveToBlock)
   const setMoveTargetBlock = useEditor((s) => s.setMoveTargetBlock)
-  const resizeSelection = useEditor((s) => s.resizeSelection)
+  const syncTierFootprints = useEditor((s) => s.syncTierFootprints)
   const deleteLots = useEditor((s) => s.deleteLots)
   const { tiers, byId } = useTiers()
 
@@ -79,10 +79,6 @@ export function BulkActionsBar() {
   const [start, setStart] = useState(1)
   // move sheet
   const [target, setTarget] = useState('')
-  // resize sheet
-  const [widthM, setWidthM] = useState(1)
-  const [lengthM, setLengthM] = useState(2.44)
-
   const ids = useMemo(() => [...selection], [selection])
   const guarded = protectedIn(lots, selection)
   const open = selection.size > 0
@@ -192,10 +188,10 @@ export function BulkActionsBar() {
                   size="sm"
                   variant="secondary"
                   className="h-9 gap-1.5 text-[12.5px]"
-                  onClick={() => setSheet('resize')}
+                  onClick={() => setSheet('syncSize')}
                 >
                   <Icon icon={IconResize} size={14} />
-                  Resize
+                  Sync size
                 </Button>
                 <Button
                   size="sm"
@@ -396,28 +392,21 @@ export function BulkActionsBar() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Resize ──────────────────────────────────────────────── */}
-      <Dialog open={sheet === 'resize'} onOpenChange={(v) => !v && setSheet(null)}>
+      {/* ── Sync tier footprint ─────────────────────────────────── */}
+      <Dialog open={sheet === 'syncSize'} onOpenChange={(v) => !v && setSheet(null)}>
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
-            <DialogTitle>Resize {selection.size} lots</DialogTitle>
+            <DialogTitle>Sync {selection.size} lot footprints</DialogTitle>
             <DialogDescription>
-              Each lot is re-laid on the new footprint around its existing centre.
+              Each selected lot is re-laid around its existing centre using the width and length
+              from its current tier.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Width">
-              <NumberField value={widthM} min={0.5} max={20} step={0.1} suffix="m" onChange={setWidthM} />
-            </Field>
-            <Field label="Length">
-              <NumberField value={lengthM} min={0.5} max={20} step={0.1} suffix="m" onChange={setLengthM} />
-            </Field>
-          </div>
           {guarded.count > 0 && (
-            <DangerLine>
-              {guarded.count} sold or occupied {guarded.count === 1 ? 'lot' : 'lots'} will be left
-              untouched — a lot with a contract or a burial is never reshaped.
-            </DangerLine>
+            <WarnLine>
+              {guarded.count} sold or occupied {guarded.count === 1 ? 'lot' : 'lots'} will be
+              resized visually only. Contracts, owners, burials and lot numbers stay unchanged.
+            </WarnLine>
           )}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setSheet(null)}>
@@ -425,14 +414,14 @@ export function BulkActionsBar() {
             </Button>
             <Button
               onClick={() => {
-                const refused = resizeSelection(ids, widthM, lengthM)
+                const changed = syncTierFootprints(ids, byId)
                 setSheet(null)
-                toast.success(`${ids.length - refused.length} lots resized`, {
-                  description: `${widthM} × ${lengthM} m.`,
+                toast.success(`${changed.length.toLocaleString()} lot footprints synced`, {
+                  description: 'Publish will stay blocked if the sync created geometry conflicts.',
                 })
               }}
             >
-              Resize
+              Sync size
             </Button>
           </DialogFooter>
         </DialogContent>

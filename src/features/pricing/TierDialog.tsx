@@ -155,7 +155,7 @@ export function TierDialog({
       updateTier(tier.id, shared, user.id)
       toast.success(`${shared.name} updated`, {
         description:
-          'Appearance is live on the map. Dimension and capacity changes apply to newly generated lots only.',
+          'Appearance is live on the map. Existing lot geometry is reviewed and synced from the map editor.',
       })
     } else {
       createTier(
@@ -181,8 +181,8 @@ export function TierDialog({
           <DialogTitle>{tier ? `Edit ${tier.name}` : 'New lot type'}</DialogTitle>
           <DialogDescription>
             A tier controls both what a product costs and what it looks like on
-            the map. Appearance changes take effect immediately; dimensions and
-            capacity only shape lots generated after the change.
+            the map. Appearance changes take effect immediately; existing lot
+            geometry is reviewed and synced safely from the map editor.
           </DialogDescription>
         </DialogHeader>
 
@@ -299,9 +299,10 @@ export function TierDialog({
 
             <p className="flex items-start gap-2 text-[11.5px] leading-relaxed text-muted">
               <Icon icon={IconInfo} size={14} className="mt-0.5 shrink-0" />
-              Changing dimensions or capacity affects newly generated lots only.
-              Existing lots snapshotted their capacity at creation, so burials
-              already recorded stay valid.
+              Tier dimensions are the source of truth for lot footprints. Existing lots can be
+              synced in the map editor draft, where overlaps and outside-block conflicts block
+              Publish until fixed. Existing lots keep their capacity snapshot so recorded burials
+              stay valid.
             </p>
           </div>
 

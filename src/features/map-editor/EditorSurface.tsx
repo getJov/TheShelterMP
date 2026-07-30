@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
+import { Icon } from '@/components/ui-brand/Icon'
+import { IconMove, IconRotate } from '@/components/ui-brand/icons'
 import type { Bounds, LatLng, Lot, LotId, Polygon } from '@/domain'
 import { areaSqm, pointInPolygon, polygonCentroid } from '@/lib/geo'
 import { distanceM, rotatePolygon } from '@/lib/grid-generator'
 import { cn } from '@/lib/utils'
 import { ChromeCanvas, emptyChrome, type ChromeState } from './chrome-canvas'
+import {
+  alignmentFrame,
+  beginAlignmentResize,
+  resizeAlignmentTransform,
+  type AlignmentResizeDrag,
+  type AlignmentResizeHandle,
+} from './geometry-transform'
+import { validateLayoutGeometry } from './geometry-validation'
 import { useEditor } from './store'
 import { useGridPlan } from './use-grid-plan'
 import { useTiers } from './helpers'
@@ -26,6 +36,9 @@ type Mode =
   | { k: 'rotate' }
   | { k: 'overlayMove' }
   | { k: 'overlayRotate' }
+  | { k: 'alignmentMove' }
+  | { k: 'alignmentResize' }
+  | { k: 'alignmentRotate' }
 
 /**
  * Data that changes on every pointermove. It lives in a ref rather than in
@@ -39,6 +52,7 @@ interface DragData {
   /** Rotation the object had when the gesture started. */
   base: number
   from: LatLng
+  resize: AlignmentResizeDrag | null
 }
 
 /** Re-render whenever the viewport changes, so DOM handles track the map. */
@@ -75,7 +89,12 @@ export function EditorSurface({ dark }: { dark: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chromeRef = useRef<ChromeCanvas | null>(null)
 
+  const editorMode = useEditor((s) => s.editorMode)
+  const layerMode = useEditor((s) => s.layerMode)
   const tool = useEditor((s) => s.tool)
+  const tierPaintTierId = useEditor((s) => s.tierPaintTierId)
+  const alignmentTarget = useEditor((s) => s.alignmentTarget)
+  const alignmentSession = useEditor((s) => s.alignmentSession)
   const lots = useEditor((s) => s.lots)
   const blocks = useEditor((s) => s.blocks)
   const overlays = useEditor((s) => s.overlays)
@@ -86,7 +105,6 @@ export function EditorSurface({ dark }: { dark: boolean }) {
   const editingBlock = useEditor((s) => s.editingBlock)
   const moveTargetBlockId = useEditor((s) => s.moveTargetBlockId)
   const showBlocks = useEditor((s) => s.layers.blocks)
-  const overlaps = useEditor((s) => s.overlaps)
   const locked = useEditor((s) => s.lockedOverlays)
   const showPreview = useEditor((s) => s.showPreview)
 
@@ -106,7 +124,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
   const lastPicked = useRef<LotId | null>(null)
   const modeRef = useRef<Mode>(mode)
   modeRef.current = mode
-  const drag = useRef<DragData>({ pts: [], angle: 0, base: 0, from: [0, 0] })
+  const drag = useRef<DragData>({ pts: [], angle: 0, base: 0, from: [0, 0], resize: null })
   const draftRectRef = useRef<Polygon | null>(draftRect)
   draftRectRef.current = draftRect
 
@@ -221,18 +239,46 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     }
   }, [map])
 
-  const previewPolys = useMemo(
+  const alignmentSelection = useMemo(
     () =>
-      tool !== 'grid' || !planned || !showPreview
-        ? []
-        : planned.plan.cells.map((c) => c.polygon),
-    [tool, planned, showPreview],
+      alignmentSession?.selection ?? {
+        target: alignmentTarget,
+        blockId: alignmentTarget === 'block' ? activeBlockId : null,
+        lotIds: alignmentTarget === 'lots' ? [...selection] : [],
+        overlayId: alignmentTarget === 'overlay' ? activeOverlayId : null,
+      },
+    [activeBlockId, activeOverlayId, alignmentSession, alignmentTarget, selection],
   )
 
-  const overlapPolys = useMemo(
+  const alignFrame = useMemo(
     () =>
-      overlaps.size === 0 ? [] : lots.filter((l) => overlaps.has(l.id)).map((l) => l.polygon),
-    [overlaps, lots],
+      editorMode === 'align'
+        ? alignmentFrame({ blocks, lots, overlays }, alignmentSelection)
+        : null,
+    [alignmentSelection, blocks, editorMode, lots, overlays],
+  )
+
+  const previewPolys = useMemo(
+    () =>
+      editorMode !== 'inventory' || tool !== 'grid' || !planned || !showPreview
+        ? []
+        : planned.plan.cells.map((c) => c.polygon),
+    [editorMode, tool, planned, showPreview],
+  )
+
+  const geometryValidation = useMemo(
+    () => validateLayoutGeometry(blocks, lots, tiersById),
+    [blocks, lots, tiersById],
+  )
+
+  const conflictPolys = useMemo(
+    () =>
+      geometryValidation.conflictingLotIds.size === 0
+        ? []
+        : lots
+            .filter((l) => geometryValidation.conflictingLotIds.has(l.id))
+            .map((l) => l.polygon),
+    [geometryValidation, lots],
   )
 
   useEffect(() => {
@@ -247,8 +293,8 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         target: b.id === moveTargetBlockId,
       })),
       preview: previewPolys,
-      overlaps: overlapPolys,
-      pending: draftRect ?? pendingBlock?.polygon ?? editingBlock?.polygon ?? null,
+      overlaps: conflictPolys,
+      pending: draftRect ?? pendingBlock?.polygon ?? editingBlock?.polygon ?? alignFrame?.polygon ?? null,
       drawing:
         tool === 'draw' && drawPts.length > 0 ? { points: drawPts, cursor: cursorLL } : null,
       band,
@@ -262,10 +308,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     activeBlockId,
     moveTargetBlockId,
     previewPolys,
-    overlapPolys,
+    conflictPolys,
     draftRect,
     pendingBlock,
     editingBlock,
+    alignFrame,
     tool,
     drawPts,
     cursorLL,
@@ -344,6 +391,42 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     [hitTest],
   )
 
+  const alignmentBodyHit = useCallback(
+    (s: ReturnType<typeof useEditor.getState>, x: number, y: number, e: PointerEvent) => {
+      if (s.alignmentTarget === 'layout') return !!blockHitTest(x, y)
+
+      if (s.alignmentTarget === 'block') {
+        const block = blockHitTest(x, y)
+        if (block && block.id !== s.activeBlockId) {
+          s.setActiveBlock(block.id)
+          return false
+        }
+        return !!block && block.id === s.activeBlockId
+      }
+
+      if (s.alignmentTarget === 'lots') {
+        const hit = hitTest(x, y)
+        if (!hit) {
+          if (!e.shiftKey && !e.metaKey && !e.ctrlKey) s.clearSelection()
+          return false
+        }
+        if (!s.selection.has(hit.id)) {
+          pick(x, y, e)
+          return false
+        }
+        return true
+      }
+
+      const active = s.overlays.find((o) => o.id === s.activeOverlayId)
+      return (
+        !!active &&
+        !s.lockedOverlays.has(active.id) &&
+        insideOverlay(active.bounds, L.point(x, y), toPt, active.rotationDeg)
+      )
+    },
+    [blockHitTest, hitTest, pick, toPt],
+  )
+
   // ── pointer handling ──────────────────────────────────────────────
   const startRef = useRef({ x: 0, y: 0, moved: false })
 
@@ -354,6 +437,25 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       if (target.closest('[data-editor-handle]')) return
       const p = map.mouseEventToContainerPoint(e)
       startRef.current = { x: p.x, y: p.y, moved: false }
+
+      if (layerMode === 'tiers' && tierPaintTierId) {
+        const hit = hitTest(p.x, p.y)
+        const tier = tiersById.get(tierPaintTierId)
+        if (hit && tier) {
+          useEditor.getState().setSelection([hit.id])
+          useEditor.getState().changeTier([hit.id], tier)
+        }
+        return
+      }
+
+      if (editorMode === 'align') {
+        const s = useEditor.getState()
+        if (!alignmentBodyHit(s, p.x, p.y, e)) return
+        if (!s.beginAlignment()) return
+        drag.current.from = toLL(p.x, p.y)
+        setMode({ k: 'alignmentMove' })
+        return
+      }
 
       if (tool === 'block') {
         setMode({ k: 'block', x0: p.x, y0: p.y })
@@ -379,7 +481,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       if (tool === 'overlay') {
         const s = useEditor.getState()
         const active = s.overlays.find((o) => o.id === s.activeOverlayId)
-        if (active && !s.lockedOverlays.has(active.id) && insideOverlay(active.bounds, p, toPt)) {
+        if (
+          active &&
+          !s.lockedOverlays.has(active.id) &&
+          insideOverlay(active.bounds, p, toPt, active.rotationDeg)
+        ) {
           s.beginOverlayEdit()
           drag.current.from = toLL(p.x, p.y)
           setMode({ k: 'overlayMove' })
@@ -396,7 +502,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       if (hitTest(p.x, p.y)) return // resolved on pointerup as a click
       setMode({ k: 'band', x0: p.x, y0: p.y, subtract: e.altKey })
     },
-    [map, tool, toPt, toLL, hitTest, blockHitTest],
+    [map, layerMode, tierPaintTierId, tiersById, editorMode, tool, toPt, toLL, hitTest, blockHitTest, alignmentBodyHit],
   )
 
   const onMove = useCallback(
@@ -560,6 +666,45 @@ export function EditorSurface({ dark }: { dark: boolean }) {
           break
         }
 
+        case 'alignmentMove': {
+          const now = toLL(p.x, p.y)
+          const dLat = now[0] - drag.current.from[0]
+          const dLng = now[1] - drag.current.from[1]
+          s.translateAlignment([dLat, dLng])
+          drag.current.from = now
+          setReadout({ x: p.x, y: p.y, lines: ['Move geometry'] })
+          break
+        }
+
+        case 'alignmentResize': {
+          const resize = drag.current.resize
+          if (!resize) break
+          const transform = resizeAlignmentTransform(resize, toLL(p.x, p.y), e.shiftKey)
+          if (!transform) break
+          s.previewAlignment(transform)
+          setReadout({
+            x: p.x,
+            y: p.y,
+            lines: [
+              `Width ${(transform.scale * transform.scaleX * 100).toFixed(0)}%`,
+              `Height ${(transform.scale * transform.scaleY * 100).toFixed(0)}%`,
+            ],
+          })
+          break
+        }
+
+        case 'alignmentRotate': {
+          const session = s.alignmentSession
+          const frame = session ? alignmentFrame(session.base, session.selection) : null
+          if (!frame) break
+          const c = toPt(frame.pivot)
+          const raw = angleAt(c, p)
+          const rotationDeg = snapAngle(drag.current.base + (raw - drag.current.angle))
+          s.previewAlignment({ rotationDeg })
+          setReadout({ x: p.x, y: p.y, lines: [`${rotationDeg.toFixed(0)}°`] })
+          break
+        }
+
         default:
           break
       }
@@ -602,7 +747,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
           })
         }
       } else if (m.k === 'idle') {
-        if (!moved && (tool === 'select' || tool === 'grid' || tool === 'editBlock')) {
+        if (
+          editorMode !== 'align' &&
+          !moved &&
+          (tool === 'select' || tool === 'grid' || tool === 'editBlock')
+        ) {
           pick(p.x, p.y, e)
         }
       } else if (
@@ -611,6 +760,12 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         m.k === 'overlayRotate'
       ) {
         s.commitOverlayEdit()
+      } else if (
+        m.k === 'alignmentMove' ||
+        m.k === 'alignmentResize' ||
+        m.k === 'alignmentRotate'
+      ) {
+        // Save/Cancel in the Align Layout panel controls the draft commit.
       }
 
       setMode({ k: 'idle' })
@@ -618,8 +773,9 @@ export function EditorSurface({ dark }: { dark: boolean }) {
       setLasso(null)
       setDraftRect(null)
       setReadout(null)
+      drag.current.resize = null
     },
-    [map, inBox, inLasso, pick, tool],
+    [editorMode, map, inBox, inLasso, pick, tool],
   )
 
   // ── free-hand drawing ─────────────────────────────────────────────
@@ -699,6 +855,20 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     tool === 'overlay' && activeOverlay && !locked.has(activeOverlay.id)
       ? cornerPoints(activeOverlay.bounds, activeOverlay.rotationDeg, toPt)
       : null
+  const alignmentCorners =
+    editorMode === 'align' && alignFrame
+      ? alignmentTarget === 'overlay'
+        ? activeOverlay && !locked.has(activeOverlay.id)
+          ? cornerPoints(activeOverlay.bounds, activeOverlay.rotationDeg, toPt)
+          : null
+        : alignFrame.polygon.map((v) => toPt(v))
+      : null
+  const alignmentResizeCorners = alignmentTarget === 'lots' ? null : alignmentCorners
+  const alignmentCenter =
+    editorMode === 'align' && alignFrame && alignmentTarget === 'overlay'
+      ? toPt(alignFrame.pivot)
+      : null
+  const alignmentEdges = alignmentResizeCorners ? edgeHandlePoints(alignmentResizeCorners) : []
   const blockEditCorners =
     tool === 'editBlock' && editingBlock ? editingBlock.polygon.map((v) => toPt(v)) : null
 
@@ -721,6 +891,10 @@ export function EditorSurface({ dark }: { dark: boolean }) {
 
   const cursor = panMode
     ? 'grab'
+    : layerMode === 'tiers' && tierPaintTierId
+      ? 'crosshair'
+    : editorMode === 'align'
+      ? 'move'
     : tool === 'editBlock'
       ? 'move'
     : tool === 'block' || tool === 'draw'
@@ -734,6 +908,48 @@ export function EditorSurface({ dark }: { dark: boolean }) {
     drag.current.angle = angleAt(centre, p)
     drag.current.base = base
     setMode(next())
+  }
+
+  const startAlignmentResize = (e: PointerEvent, handle: AlignmentResizeHandle) => {
+    const s = useEditor.getState()
+    if (!s.beginAlignment()) return
+    const nextState = useEditor.getState()
+    const session = nextState.alignmentSession
+    const baseFrame = session ? alignmentFrame(session.base, session.selection) : null
+    const currentFrame = session
+      ? alignmentFrame(
+          { blocks: nextState.blocks, lots: nextState.lots, overlays: nextState.overlays },
+          session.selection,
+        )
+      : null
+    if (!session || !baseFrame || !currentFrame) return
+    const resize = beginAlignmentResize(baseFrame, currentFrame, session.transform, handle)
+    if (!resize) return
+    const p = map.mouseEventToContainerPoint(e)
+    startRef.current = { x: p.x, y: p.y, moved: false }
+    drag.current.resize = resize
+    setMode({ k: 'alignmentResize' })
+  }
+
+  const startAlignmentMove = (e: PointerEvent) => {
+    const s = useEditor.getState()
+    if (!s.beginAlignment()) return
+    const p = map.mouseEventToContainerPoint(e)
+    startRef.current = { x: p.x, y: p.y, moved: false }
+    drag.current.from = toLL(p.x, p.y)
+    setMode({ k: 'alignmentMove' })
+  }
+
+  const startAlignmentRotate = (e: PointerEvent, centre: L.Point) => {
+    const s = useEditor.getState()
+    if (!s.beginAlignment()) return
+    const session = useEditor.getState().alignmentSession
+    if (!session) return
+    const p = map.mouseEventToContainerPoint(e)
+    startRef.current = { x: p.x, y: p.y, moved: false }
+    drag.current.angle = angleAt(centre, p)
+    drag.current.base = session.transform.rotationDeg
+    setMode({ k: 'alignmentRotate' })
   }
 
   return (
@@ -786,6 +1002,61 @@ export function EditorSurface({ dark }: { dark: boolean }) {
                 k: 'blockEditRotate',
               }))
             }
+          />
+        )}
+
+        {alignmentResizeCorners?.map((p, i) => (
+          <Handle
+            key={`align-${i}`}
+            x={p.x}
+            y={p.y}
+            title={
+              alignmentTarget === 'overlay'
+                ? 'Drag this corner to resize the site plan'
+                : 'Drag to scale this alignment target'
+            }
+            large={alignmentTarget === 'overlay'}
+            onDown={(e) => startAlignmentResize(e, cornerResizeHandle(i))}
+          />
+        ))}
+        {alignmentEdges.map((edge) => (
+          <Handle
+            key={`align-${edge.handle}`}
+            x={edge.point.x}
+            y={edge.point.y}
+            title={edge.title}
+            shape="edge"
+            large={alignmentTarget === 'overlay' || alignmentTarget === 'block'}
+            onDown={(e) => startAlignmentResize(e, edge.handle)}
+          />
+        ))}
+        {alignmentCenter && activeOverlay && !locked.has(activeOverlay.id) && (
+          <MoveHandle
+            x={alignmentCenter.x}
+            y={alignmentCenter.y}
+            title="Drag to move the site plan"
+            onDown={startAlignmentMove}
+          />
+        )}
+        {editorMode === 'align' && alignFrame && alignmentCorners && (
+          <RotationHandle
+            anchor={
+              alignmentTarget === 'overlay' && alignmentCorners.length >= 2
+                ? {
+                    x: (alignmentCorners[0]!.x + alignmentCorners[1]!.x) / 2,
+                    y: (alignmentCorners[0]!.y + alignmentCorners[1]!.y) / 2,
+                    cx: toPt(alignFrame.pivot).x,
+                    cy: toPt(alignFrame.pivot).y,
+                  }
+                : edgeAnchor(alignFrame.polygon, toPt)
+            }
+            large={alignmentTarget === 'overlay'}
+            title={
+              alignmentTarget === 'overlay'
+                ? 'Drag to rotate the site plan'
+                : 'Drag to rotate this alignment target'
+            }
+            onDown={startAlignmentRotate}
           />
         )}
 
@@ -844,6 +1115,11 @@ export function EditorSurface({ dark }: { dark: boolean }) {
             Drag inside the block to move · drag corners to reshape · use the handle to rotate
           </div>
         )}
+        {editorMode === 'align' && alignFrame && mode.k === 'idle' && (
+          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+            Drag the target to move · drag corners to resize · drag side handles for width or height · use the handle to rotate
+          </div>
+        )}
       </div>
     </>
   )
@@ -856,8 +1132,8 @@ export function EditorSurface({ dark }: { dark: boolean }) {
  * which also stops React's delegated listener at the root from ever seeing it.
  * Handles therefore bind natively too.
  */
-function useHandleDown(fn: (e: PointerEvent) => void) {
-  const ref = useRef<HTMLDivElement>(null)
+function useHandleDown<T extends HTMLElement>(fn: (e: PointerEvent) => void) {
+  const ref = useRef<T>(null)
   const cb = useRef(fn)
   cb.current = fn
   useEffect(() => {
@@ -878,22 +1154,64 @@ function Handle({
   x,
   y,
   title,
+  large = false,
+  shape = 'corner',
   onDown,
 }: {
   x: number
   y: number
   title: string
-  onDown: () => void
+  large?: boolean
+  shape?: 'corner' | 'edge'
+  onDown: (e: PointerEvent) => void
 }) {
-  const ref = useHandleDown(() => onDown())
+  const ref = useHandleDown<HTMLDivElement>((e) => onDown(e))
   return (
     <div
       ref={ref}
       data-editor-handle
       title={title}
-      className="absolute size-3.5 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize rounded-[3px] border-2 border-gold bg-surface shadow-sm"
+      className={cn(
+        'absolute -translate-x-1/2 -translate-y-1/2 border-2 border-gold bg-surface shadow-sm',
+        shape === 'edge' ? 'cursor-grab rounded-full' : 'cursor-nwse-resize',
+        shape === 'edge'
+          ? large
+            ? 'size-6 ring-4 ring-surface/70'
+            : 'size-4'
+          : large
+            ? 'size-6 rounded-[5px] ring-4 ring-surface/70'
+            : 'size-3.5 rounded-[3px]',
+      )}
       style={{ left: x, top: y }}
     />
+  )
+}
+
+function MoveHandle({
+  x,
+  y,
+  title,
+  onDown,
+}: {
+  x: number
+  y: number
+  title: string
+  onDown: (e: PointerEvent) => void
+}) {
+  const ref = useHandleDown<HTMLButtonElement>((e) => onDown(e))
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-editor-handle
+      data-editor-move-handle
+      aria-label={title}
+      title={title}
+      className="absolute flex size-10 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 border-gold bg-surface/95 p-0 text-gold-deep shadow-lg ring-4 ring-surface/70 backdrop-blur transition-transform hover:scale-105 active:cursor-grabbing dark:text-gold"
+      style={{ left: x, top: y }}
+    >
+      <Icon icon={IconMove} size={18} />
+    </button>
   )
 }
 
@@ -906,17 +1224,22 @@ interface Anchor {
 
 function RotationHandle({
   anchor,
+  large = false,
+  title = 'Drag to rotate - snaps to 1 deg, and to 0/45/90',
   onDown,
 }: {
   anchor: Anchor
+  large?: boolean
+  title?: string
   onDown: (e: PointerEvent, centre: L.Point) => void
 }) {
   const dx = anchor.x - anchor.cx
   const dy = anchor.y - anchor.cy
   const len = Math.hypot(dx, dy) || 1
-  const hx = anchor.x + (dx / len) * 26
-  const hy = anchor.y + (dy / len) * 26
-  const ref = useHandleDown((e) => onDown(e, L.point(anchor.cx, anchor.cy)))
+  const handleOffset = large ? 44 : 26
+  const hx = anchor.x + (dx / len) * handleOffset
+  const hy = anchor.y + (dy / len) * handleOffset
+  const ref = useHandleDown<HTMLButtonElement>((e) => onDown(e, L.point(anchor.cx, anchor.cy)))
   return (
     <>
       <svg className="pointer-events-none absolute left-0 top-0 overflow-visible" width={1} height={1}>
@@ -926,17 +1249,25 @@ function RotationHandle({
           x2={hx}
           y2={hy}
           stroke="var(--color-gold)"
-          strokeWidth={1.5}
+          strokeWidth={large ? 2 : 1.5}
           strokeDasharray="3 3"
         />
       </svg>
-      <div
+      <button
         ref={ref}
+        type="button"
         data-editor-handle
-        title="Drag to rotate — snaps to 1°, and to 0/45/90"
-        className="absolute size-4 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-gold bg-surface shadow-sm"
+        data-editor-rotate-handle
+        aria-label={title}
+        title={title}
+        className={cn(
+          'absolute flex -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 border-gold bg-surface p-0 text-gold-deep shadow-sm active:cursor-grabbing dark:text-gold',
+          large ? 'size-8 ring-4 ring-surface/70' : 'size-4',
+        )}
         style={{ left: hx, top: hy }}
-      />
+      >
+        {large && <Icon icon={IconRotate} size={15} />}
+      </button>
     </>
   )
 }
@@ -1005,15 +1336,85 @@ function cornerPoints(b: Bounds, rotationDeg: number, toPt: (ll: LatLng) => L.Po
   })
 }
 
-function insideOverlay(b: Bounds, p: L.Point, toPt: (ll: LatLng) => L.Point): boolean {
-  const nw = toPt([b[1][0], b[0][1]])
-  const se = toPt([b[0][0], b[1][1]])
-  return (
-    p.x >= Math.min(nw.x, se.x) &&
-    p.x <= Math.max(nw.x, se.x) &&
-    p.y >= Math.min(nw.y, se.y) &&
-    p.y <= Math.max(nw.y, se.y)
-  )
+function cornerResizeHandle(index: number): AlignmentResizeHandle {
+  if (index === 0) return 'nw'
+  if (index === 1) return 'ne'
+  if (index === 2) return 'se'
+  return 'sw'
+}
+
+function edgeHandlePoints(
+  corners: L.Point[],
+): { handle: AlignmentResizeHandle; point: L.Point; title: string }[] {
+  if (corners.length < 4) return []
+  return [
+    {
+      handle: 'n',
+      point: midpointPoint(corners[0]!, corners[1]!),
+      title: 'Drag to adjust height from the top edge',
+    },
+    {
+      handle: 'e',
+      point: midpointPoint(corners[1]!, corners[2]!),
+      title: 'Drag to adjust width from the right edge',
+    },
+    {
+      handle: 's',
+      point: midpointPoint(corners[2]!, corners[3]!),
+      title: 'Drag to adjust height from the bottom edge',
+    },
+    {
+      handle: 'w',
+      point: midpointPoint(corners[3]!, corners[0]!),
+      title: 'Drag to adjust width from the left edge',
+    },
+  ]
+}
+
+function midpointPoint(a: L.Point, b: L.Point): L.Point {
+  return L.point((a.x + b.x) / 2, (a.y + b.y) / 2)
+}
+
+function insideOverlay(
+  b: Bounds,
+  p: L.Point,
+  toPt: (ll: LatLng) => L.Point,
+  rotationDeg = 0,
+): boolean {
+  const corners = cornerPoints(b, rotationDeg, toPt)
+  return pointInScreenPolygon(p, corners) || pointNearScreenPolygon(p, corners, 14)
+}
+
+function pointInScreenPolygon(p: L.Point, polygon: L.Point[]): boolean {
+  let inside = false
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const a = polygon[i]!
+    const b = polygon[j]!
+    if (a.y === b.y) continue
+    const crosses = (a.y > p.y) !== (b.y > p.y)
+    const x = ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x
+    if (crosses && p.x < x) inside = !inside
+  }
+  return inside
+}
+
+function pointNearScreenPolygon(p: L.Point, polygon: L.Point[], tolerancePx: number): boolean {
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i]!
+    const b = polygon[(i + 1) % polygon.length]!
+    if (distanceToSegmentPx(p, a, b) <= tolerancePx) return true
+  }
+  return false
+}
+
+function distanceToSegmentPx(p: L.Point, a: L.Point, b: L.Point): number {
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+  if (dx === 0 && dy === 0) return Math.hypot(p.x - a.x, p.y - a.y)
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)))
+  const x = a.x + t * dx
+  const y = a.y + t * dy
+  return Math.hypot(p.x - x, p.y - y)
 }
 
 /** Corner order matches `cornerPoints`: NW, NE, SE, SW. */

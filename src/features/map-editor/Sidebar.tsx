@@ -28,29 +28,42 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Slider } from '@/components/ui/slider'
 import { Icon } from '@/components/ui-brand/Icon'
 import {
   IconBlock,
+  IconCheck,
   IconDelete,
   IconDrawBlock,
   IconEdit,
+  IconFitBounds,
   IconGrid,
   IconLayers,
+  IconMap,
   IconMore,
   IconOverlay,
   IconPen,
   IconRepair,
+  IconRuler,
   IconSatellite,
   IconSelect,
 } from '@/components/ui-brand/icons'
 import { useMapStore } from '@/stores/map'
 import { spatialIndex } from '@/lib/grid-generator'
 import { cn } from '@/lib/utils'
-import { PanelSection, WarnLine } from './bits'
-import { useEditor, lotsOfBlock, type Tool } from './store'
-import { STATUS_LABEL, tierMix, useTiers } from './helpers'
+import { DangerLine, Field, PanelSection, Readout, WarnLine } from './bits'
+import { useEditor, lotsOfBlock, type EditorLayerMode, type Tool } from './store'
+import { STATUS_LABEL, tierMix, useLayoutValidation, useChangeReport, useTiers } from './helpers'
+import { conflictSummary } from './geometry-validation'
+import { AlignLayoutPanel } from './AlignLayoutPanel'
 import { BlockPanel } from './BlockPanel'
 import { EditBlockPanel } from './EditBlockPanel'
 import { GridPanel } from './GridPanel'
@@ -66,34 +79,51 @@ const TOOLS: { id: Tool; label: string; key: string; icon: typeof IconSelect; hi
   { id: 'overlay', label: 'Overlay', key: 'O', icon: IconOverlay, hint: 'Place a site plan' },
 ]
 
+const LAYERS: {
+  id: EditorLayerMode
+  label: string
+  icon: typeof IconMap
+  hint: string
+}[] = [
+  { id: 'baseMap', label: 'Base Map', icon: IconMap, hint: 'Pan, zoom, base layer and reset view.' },
+  { id: 'sitePlan', label: 'Site Plan', icon: IconOverlay, hint: 'Align the uploaded reference image.' },
+  { id: 'blocks', label: 'Blocks', icon: IconBlock, hint: 'Move, resize and rotate rectangle blocks.' },
+  { id: 'lots', label: 'Lots', icon: IconGrid, hint: 'Arrange generated lots inside a block.' },
+  { id: 'tiers', label: 'Tiers', icon: IconRuler, hint: 'Assign tier footprints one lot, selection or paint click at a time.' },
+  { id: 'review', label: 'Review', icon: IconCheck, hint: 'Check conflicts before Publish.' },
+]
+
 export function Sidebar({ canvas }: { canvas: CanvasHandle | null }) {
+  const editorMode = useEditor((s) => s.editorMode)
+  const layerMode = useEditor((s) => s.layerMode)
+  const setLayerMode = useEditor((s) => s.setLayerMode)
   const tool = useEditor((s) => s.tool)
-  const setTool = useEditor((s) => s.setTool)
+  const alignmentTarget = useEditor((s) => s.alignmentTarget)
+  const showOverlayPanel = layerMode === 'sitePlan' || (editorMode === 'align' && alignmentTarget === 'overlay')
 
   return (
     <aside className="flex h-full w-[318px] shrink-0 flex-col border-r border-line bg-surface">
-      <PanelSection title="Tools">
+      <PanelSection title="Workflow">
         <ToggleGroup
           type="single"
-          value={tool}
-          onValueChange={(v) => v && setTool(v as Tool)}
-          className="w-full justify-start gap-1"
+          value={layerMode}
+          onValueChange={(v) => v && setLayerMode(v as EditorLayerMode)}
+          className="grid grid-cols-2 gap-2"
         >
-          {TOOLS.map((t) => (
-            <Tooltip key={t.id}>
+          {LAYERS.map((item) => (
+            <Tooltip key={item.id}>
               <TooltipTrigger asChild>
                 <ToggleGroupItem
-                  value={t.id}
-                  aria-label={t.label}
-                  className="size-10 rounded-md border border-line data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+                  value={item.id}
+                  aria-label={item.label}
+                  className="h-11 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
                 >
-                  <Icon icon={t.icon} size={17} />
+                  <Icon icon={item.icon} size={15} />
+                  <span className="text-[12px]">{item.label}</span>
                 </ToggleGroupItem>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-[12px]">
-                <span className="font-medium">{t.label}</span>
-                <span className="ml-1.5 font-mono text-[10.5px] opacity-70">{t.key}</span>
-                <span className="mt-0.5 block opacity-80">{t.hint}</span>
+              <TooltipContent side="bottom" className="max-w-[220px] text-[12px]">
+                {item.hint}
               </TooltipContent>
             </Tooltip>
           ))}
@@ -101,17 +131,310 @@ export function Sidebar({ canvas }: { canvas: CanvasHandle | null }) {
       </PanelSection>
 
       <ScrollArea className="min-h-0 flex-1">
-        {tool === 'block' && <BlockPanel />}
-        {tool === 'editBlock' && <EditBlockPanel />}
-        {tool === 'grid' && <GridPanel />}
-        {tool === 'overlay' && <OverlayPanel canvas={canvas} />}
-        {tool === 'draw' && <DrawPanel />}
-        {tool === 'select' && <SelectionPanel />}
+        {layerMode === 'baseMap' && <BaseMapPanel canvas={canvas} />}
+        {layerMode === 'review' && <ReviewPanel />}
+        {layerMode === 'tiers' && <TierPaintPanel />}
+        {editorMode === 'align' && layerMode !== 'baseMap' && layerMode !== 'review' && <AlignLayoutPanel />}
+        {layerMode === 'blocks' && <BlockLayerPanel />}
+        {layerMode === 'lots' && <LotLayerPanel />}
+        {editorMode === 'inventory' && (
+          <>
+            <AdvancedToolPanel tool={tool} />
+            {tool === 'block' && <BlockPanel />}
+            {tool === 'editBlock' && <EditBlockPanel />}
+            {tool === 'grid' && <GridPanel />}
+            {tool === 'overlay' && <OverlayPanel canvas={canvas} />}
+            {tool === 'draw' && <DrawPanel />}
+            {tool === 'select' && <SelectionPanel />}
+          </>
+        )}
+        {showOverlayPanel && <OverlayPanel canvas={canvas} />}
 
         <LayersPanel />
         <BlocksPanel canvas={canvas} />
       </ScrollArea>
     </aside>
+  )
+}
+
+function AdvancedToolPanel({ tool }: { tool: Tool }) {
+  const setTool = useEditor((s) => s.setTool)
+
+  return (
+    <PanelSection title="Advanced Inventory">
+      <ToggleGroup
+        type="single"
+        value={tool}
+        onValueChange={(v) => v && setTool(v as Tool)}
+        className="w-full justify-start gap-1"
+      >
+        {TOOLS.map((t) => (
+          <Tooltip key={t.id}>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem
+                value={t.id}
+                aria-label={t.label}
+                className="size-10 rounded-md border border-line data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+              >
+                <Icon icon={t.icon} size={17} />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-[12px]">
+              <span className="font-medium">{t.label}</span>
+              <span className="ml-1.5 font-mono text-[10.5px] opacity-70">{t.key}</span>
+              <span className="mt-0.5 block opacity-80">{t.hint}</span>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </ToggleGroup>
+    </PanelSection>
+  )
+}
+
+function BaseMapPanel({ canvas }: { canvas: CanvasHandle | null }) {
+  const baseLayer = useMapStore((s) => s.baseLayer)
+  const setBaseLayer = useMapStore((s) => s.setBaseLayer)
+
+  return (
+    <PanelSection title="Base Map">
+      <div className="space-y-3">
+        <Readout>
+          View only · pan and zoom the map underneath the cemetery layout. Reset north does not
+          change cemetery geometry.
+        </Readout>
+        <ToggleGroup
+          type="single"
+          value={baseLayer}
+          onValueChange={(value) => value && setBaseLayer(value as typeof baseLayer)}
+          className="grid grid-cols-2 gap-2"
+        >
+          <ToggleGroupItem
+            value="satellite"
+            aria-label="Satellite base"
+            className="h-10 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+          >
+            <Icon icon={IconSatellite} size={15} />
+            <span className="text-[12px]">Satellite</span>
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="plain"
+            aria-label="Default base"
+            className="h-10 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+          >
+            <Icon icon={IconMap} size={15} />
+            <span className="text-[12px]">Default</span>
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <Button
+          variant="secondary"
+          className="h-8 w-full gap-1.5 text-[12px]"
+          onClick={() => canvas?.fit()}
+        >
+          <Icon icon={IconFitBounds} size={14} />
+          Reset north and fit layout
+        </Button>
+      </div>
+    </PanelSection>
+  )
+}
+
+function TierPaintPanel() {
+  const selection = useEditor((s) => s.selection)
+  const tierPaintTierId = useEditor((s) => s.tierPaintTierId)
+  const setTierPaintTier = useEditor((s) => s.setTierPaintTier)
+  const changeTier = useEditor((s) => s.changeTier)
+  const syncTierFootprints = useEditor((s) => s.syncTierFootprints)
+  const { tiers, byId } = useTiers()
+  const validation = useLayoutValidation()
+  const ids = useMemo(() => [...selection], [selection])
+  const paintTier = tierPaintTierId ? byId.get(tierPaintTierId) : undefined
+
+  return (
+    <PanelSection title="Tier Paint">
+      <div className="space-y-3">
+        <Field label="Paint tier" hint="Click a lot on the map to assign this tier and resize its footprint.">
+          <Select
+            value={tierPaintTierId ?? ''}
+            onValueChange={(value) => setTierPaintTier(value ? (value as TierId) : null)}
+          >
+            <SelectTrigger className="h-9 w-full text-[13px]">
+              <SelectValue placeholder="Choose tier to paint" />
+            </SelectTrigger>
+            <SelectContent>
+              {tiers.map((tier) => (
+                <SelectItem key={tier.id} value={tier.id}>
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="size-2.5 shrink-0 rounded-[2px] border border-line"
+                      style={{ background: tier.appearance.fillColor }}
+                    />
+                    {tier.name}
+                    <span className="font-mono text-[10.5px] text-muted">
+                      {tier.widthM.toFixed(2)} x {tier.lengthM.toFixed(2)} m
+                    </span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            className="h-8 text-[12px]"
+            disabled={!paintTier || ids.length === 0}
+            onClick={() => {
+              if (!paintTier) return
+              changeTier(ids, paintTier)
+              toast.success(`${ids.length.toLocaleString()} lots changed to ${paintTier.name}`, {
+                description: 'Tier size was applied to the selected lot geometry.',
+              })
+            }}
+          >
+            Apply to selection
+          </Button>
+          <Button
+            variant="secondary"
+            className="h-8 text-[12px]"
+            disabled={validation.tierMismatchLotIds.size === 0}
+            onClick={() => {
+              const changed = syncTierFootprints([...validation.tierMismatchLotIds], byId)
+              toast.success(`${changed.length.toLocaleString()} lot footprints synced`, {
+                description: 'Publish is still blocked if the sync created overlaps or outside-block conflicts.',
+              })
+            }}
+          >
+            Sync tier sizes
+          </Button>
+        </div>
+
+        {paintTier ? (
+          <Readout>
+            Painting {paintTier.name} · {paintTier.widthM.toFixed(2)} x{' '}
+            {paintTier.lengthM.toFixed(2)} m
+          </Readout>
+        ) : (
+          <WarnLine>Choose a tier before painting lots on the map.</WarnLine>
+        )}
+      </div>
+    </PanelSection>
+  )
+}
+
+function BlockLayerPanel() {
+  const setTool = useEditor((s) => s.setTool)
+  const activeBlockId = useEditor((s) => s.activeBlockId)
+
+  return (
+    <PanelSection title="Block Actions">
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          variant="secondary"
+          className="h-8 gap-1.5 text-[12px]"
+          onClick={() => setTool('block')}
+        >
+          <Icon icon={IconDrawBlock} size={14} />
+          Draw block
+        </Button>
+        <Button
+          variant="secondary"
+          className="h-8 gap-1.5 text-[12px]"
+          disabled={!activeBlockId}
+          onClick={() => setTool('grid')}
+        >
+          <Icon icon={IconGrid} size={14} />
+          Generate lots
+        </Button>
+      </div>
+    </PanelSection>
+  )
+}
+
+function LotLayerPanel() {
+  const setLayerMode = useEditor((s) => s.setLayerMode)
+  const setTool = useEditor((s) => s.setTool)
+  const selection = useEditor((s) => s.selection)
+
+  return (
+    <PanelSection title="Lot Actions">
+      <div className="space-y-2">
+        <Readout>
+          Select lots, then drag the selected group inside its block. Lot size comes from the tier.
+        </Readout>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            className="h-8 gap-1.5 text-[12px]"
+            onClick={() => setTool('select')}
+          >
+            <Icon icon={IconSelect} size={14} />
+            Select tools
+          </Button>
+          <Button
+            variant="secondary"
+            className="h-8 gap-1.5 text-[12px]"
+            onClick={() => setLayerMode('tiers')}
+          >
+            <Icon icon={IconRuler} size={14} />
+            Edit tiers
+          </Button>
+        </div>
+        {selection.size > 0 && (
+          <p className="text-[11.5px] text-muted">
+            {selection.size.toLocaleString()} selected. Switch to Tiers for bulk tier assignment or
+            paint mode.
+          </p>
+        )}
+      </div>
+    </PanelSection>
+  )
+}
+
+function ReviewPanel() {
+  const validation = useLayoutValidation()
+  const report = useChangeReport()
+  const setSelection = useEditor((s) => s.setSelection)
+  const summary = conflictSummary(validation)
+
+  return (
+    <PanelSection title="Review">
+      <div className="space-y-3">
+        {validation.canPublish ? (
+          <Readout>
+            No geometry blockers · {report.total.toLocaleString()} staged change
+            {report.total === 1 ? '' : 's'} ready for publish review.
+          </Readout>
+        ) : (
+          <>
+            <DangerLine>
+              Publish is blocked by {validation.blockingCount.toLocaleString()} geometry conflict
+              {validation.blockingCount === 1 ? '' : 's'}.
+            </DangerLine>
+            <ul className="space-y-1">
+              {summary.map((line) => (
+                <li key={line} className="rounded-md border border-line bg-surface-2 px-2.5 py-2 text-[12px] text-muted">
+                  {line}
+                </li>
+              ))}
+            </ul>
+            <Button
+              variant="secondary"
+              className="h-8 w-full text-[12px]"
+              onClick={() => setSelection(validation.conflictingLotIds)}
+            >
+              Select conflicting lots
+            </Button>
+          </>
+        )}
+        {report.soldTouched > 0 && (
+          <WarnLine>
+            {report.soldTouched.toLocaleString()} sold or occupied lot
+            {report.soldTouched === 1 ? '' : 's'} have visual geometry changes staged.
+          </WarnLine>
+        )}
+      </div>
+    </PanelSection>
   )
 }
 
@@ -306,13 +629,13 @@ function DrawPanel() {
 function LayersPanel() {
   const layers = useEditor((s) => s.layers)
   const setLayer = useEditor((s) => s.setLayer)
-  const overlaps = useEditor((s) => s.overlaps)
   const repairOverlaps = useEditor((s) => s.repairOverlaps)
   const overlays = useEditor((s) => s.overlays)
   const activeOverlayId = useEditor((s) => s.activeOverlayId)
   const updateOverlay = useEditor((s) => s.updateOverlay)
   const baseLayer = useMapStore((s) => s.baseLayer)
   const setBaseLayer = useMapStore((s) => s.setBaseLayer)
+  const validation = useLayoutValidation()
 
   // The slider follows whichever plan is being worked on, so several plans can
   // be dimmed independently rather than sharing one global figure.
@@ -374,24 +697,34 @@ function LayersPanel() {
           icon={IconSatellite}
         />
 
-        {overlaps.size > 0 && (
+        {!validation.canPublish && (
           <div className="space-y-2 pt-1">
-            <WarnLine>
-              {overlaps.size} lots overlap another. They are outlined in red on the map.
-            </WarnLine>
-            <Button
-              variant="secondary"
-              className="h-8 w-full gap-1.5 text-[12px]"
-              onClick={() => {
-                repairOverlaps()
-                toast.success('Overlapping lots nudged apart', {
-                  description: 'Sold and occupied lots were left exactly where they were.',
-                })
-              }}
-            >
-              <Icon icon={IconRepair} size={14} />
-              Fix overlaps
-            </Button>
+            <DangerLine>
+              {validation.blockingCount.toLocaleString()} geometry conflict
+              {validation.blockingCount === 1 ? '' : 's'} block Publish.
+            </DangerLine>
+            <ul className="space-y-1">
+              {conflictSummary(validation).map((line) => (
+                <li key={line} className="rounded-md border border-line bg-surface-2 px-2.5 py-1.5 text-[11.5px] text-muted">
+                  {line}
+                </li>
+              ))}
+            </ul>
+            {validation.overlapLotIds.size > 0 && (
+              <Button
+                variant="secondary"
+                className="h-8 w-full gap-1.5 text-[12px]"
+                onClick={() => {
+                  repairOverlaps()
+                  toast.success('Overlapping lots nudged apart', {
+                    description: 'Sold and occupied lots were left exactly where they were.',
+                  })
+                }}
+              >
+                <Icon icon={IconRepair} size={14} />
+                Fix overlaps
+              </Button>
+            )}
           </div>
         )}
       </div>
