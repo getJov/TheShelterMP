@@ -84,10 +84,6 @@ export function CommissionSplit({
           <span className="text-[12.5px] font-medium text-ink">Total commission</span>
           <MoneyText centavos={total} className="text-[13.5px] font-medium text-ink" />
         </div>
-        <p className="mt-1.5 text-[11.5px] leading-snug text-muted">
-          Earned as payments are collected, never at signing. The basis is the full
-          payment — the trust-fund accrual is not deducted from it.
-        </p>
       </div>
     </div>
   )
@@ -97,7 +93,6 @@ export function CommissionSplit({
 export function TrustFundNote({
   amountCentavos,
   className,
-  compact,
 }: {
   amountCentavos?: Centavos
   className?: string
@@ -121,12 +116,6 @@ export function TrustFundNote({
           <p>
             <span className="font-medium">{TRUST_FUND_RATE_PERCENT}% of each payment</span>{' '}
             will accrue to the perpetual care fund.
-          </p>
-        )}
-        {!compact && (
-          <p className="mt-0.5 text-muted">
-            Added to a running total — it is not deducted from the balance, the contract
-            price or the commission basis.
           </p>
         )}
       </div>

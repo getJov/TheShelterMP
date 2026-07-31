@@ -241,7 +241,7 @@ export function PayoutRunDetail() {
             <EmptyState
               icon={IconPayout}
               title="Nothing accrued in this window yet"
-              body="Commission is earned when money is collected. As payments are posted they attach to this run."
+              body="Posted payments in this window will appear here."
               compact
             />
           </div>

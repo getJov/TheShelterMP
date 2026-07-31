@@ -101,9 +101,6 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
         <Icon icon={IconCalculator} size={17} className="text-gold-deep dark:text-gold" />
         <div>
           <p className="text-[14px] font-semibold text-ink">Price calculator</p>
-          <p className="text-[11.5px] text-muted">
-            Resolved for {NEED_TYPE_LABEL[needType].toLowerCase()} as of the page date
-          </p>
         </div>
       </header>
 
@@ -159,7 +156,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                       'flex items-center gap-2 text-[13px]',
                       allowed ? 'cursor-pointer' : 'cursor-not-allowed text-muted',
                     )}
-                    title={allowed ? undefined : 'At-need is spot cash only.'}
+                    title={allowed ? undefined : 'Installment unavailable.'}
                   >
                     <RadioGroupItem value={m} disabled={!allowed} />
                     {PAYMENT_MODE_LABEL[m]}
@@ -196,10 +193,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
           <div className="rounded-md border border-line bg-surface-2 px-3 py-4 text-center">
             <p className="text-[13.5px] italic text-muted">Contact for pricing</p>
             <p className="mt-1 text-[12px] leading-relaxed text-muted">
-              No entry matches this combination on {' '}
-              {NEED_TYPE_LABEL[needType].toLowerCase()} ·{' '}
-              {PAYMENT_MODE_LABEL[paymentMode].toLowerCase()}. Nothing is
-              substituted from another tier or mode.
+              No price is set for this combination.
             </p>
           </div>
         ) : (
@@ -278,10 +272,6 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                   className="font-display text-[18px] font-semibold text-green"
                 />
               </div>
-              <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
-                Additive — it is not deducted from the contract or the
-                commission basis.
-              </p>
             </div>
 
             <Separator className="my-3.5" />
@@ -305,10 +295,6 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                 </dd>
               </div>
             </dl>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
-              Commission is earned on collection, never at signing — these are
-              the amounts released across the life of the contract.
-            </p>
           </>
         )}
       </div>

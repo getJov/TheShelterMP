@@ -373,9 +373,6 @@ function PreviewStrip({
               className="font-display text-[20px] font-semibold leading-none text-green"
             />
           </span>
-          <span className="mt-1 block text-[11.5px] text-muted">
-            Added to perpetual care — not deducted from the balance.
-          </span>
         </Cell>
       </div>
 
@@ -408,9 +405,7 @@ function PreviewStrip({
           </ul>
         )}
         <p className="mt-1.5 text-[11.5px] text-muted">
-          Total{' '}
-          <MoneyText centavos={preview.commissionTotalCentavos} className="text-ink" /> —
-          the basis is the full payment; the trust-fund accrual is not deducted from it.
+          Total <MoneyText centavos={preview.commissionTotalCentavos} className="text-ink" />
         </p>
       </div>
     </motion.div>

@@ -553,21 +553,20 @@ function SelectionPanel() {
     <PanelSection title="Selection" action={<SelectByMenu />}>
       {selection.size === 0 ? (
         <div className="space-y-2 text-[12px] leading-relaxed text-muted">
-          <p>Click a lot to select it. Then:</p>
+          <p>Select a lot, then use:</p>
           <ul className="space-y-1 text-[11.5px]">
             <li>
-              <span className="font-mono text-ink">Shift</span>+click extends a range along the
-              numbering
+              <span className="font-mono text-ink">Shift</span>+click selects a numbered range
             </li>
             <li>
-              <span className="font-mono text-ink">⌘</span>+click toggles one
+              <span className="font-mono text-ink">⌘</span>+click toggles a lot
             </li>
-            <li>Drag on empty ground for a rubber band, Alt to subtract</li>
+            <li>Drag empty ground to box select; hold Alt to subtract</li>
             <li>
-              Hold <span className="font-mono text-ink">L</span> and drag for a lasso
+              Hold <span className="font-mono text-ink">L</span> and drag to lasso
             </li>
             <li>
-              <span className="font-mono text-ink">⌘A</span> selects the whole active block
+              <span className="font-mono text-ink">⌘A</span> selects the active block
             </li>
           </ul>
         </div>
@@ -698,14 +697,10 @@ function DrawPanel() {
   return (
     <PanelSection title="Draw lot">
       <div className="space-y-2.5 text-[12.5px] leading-relaxed text-muted">
-        <p>
-          The escape hatch for the irregular edges a grid cannot follow. Most sessions never need
-          it.
-        </p>
         <ul className="space-y-1 text-[11.5px]">
-          <li>Click to place each vertex — it snaps to a nearby lot corner within 8 px</li>
-          <li>Double-click or Enter closes the shape</li>
-          <li>Backspace removes the last vertex, Esc abandons it</li>
+          <li>Click each vertex; nearby corners snap within 8 px</li>
+          <li>Double-click or press Enter to close</li>
+          <li>Backspace removes the last vertex; Esc cancels</li>
         </ul>
         <p className="text-[11.5px]">
           New lots take the tier chosen on the Grid tool

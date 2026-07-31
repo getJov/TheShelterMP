@@ -730,7 +730,7 @@ function ReceivablesTab({
       )
     }
     toast.success(`Reminder logged for ${r.buyer}.`, {
-      description: 'Email and SMS delivery are a later phase — the agent has been notified.',
+      description: 'The agent has been notified in-app.',
     })
   }
 

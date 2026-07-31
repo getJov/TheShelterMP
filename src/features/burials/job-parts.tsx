@@ -145,7 +145,7 @@ export function PhotoSlots({ compact }: { compact?: boolean }) {
           </div>
         ))}
       </div>
-      <p className="mt-1.5 text-[11px] text-muted">Photo capture in a later phase.</p>
+      <p className="mt-1.5 text-[11px] text-muted">Photo capture unavailable.</p>
     </div>
   )
 }

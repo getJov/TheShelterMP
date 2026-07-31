@@ -227,8 +227,8 @@ export function TierCard({
           <Cell label="Capacity" value={`${tier.capacity}`} />
         </dl>
         <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
-          Changing dimensions affects newly generated lots only — existing lots
-          snapshotted their capacity when they were created.
+          Changing dimensions affects newly generated lots only. Existing lots
+          keep their recorded capacity.
         </p>
       </section>
 

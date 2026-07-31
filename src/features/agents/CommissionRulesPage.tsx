@@ -150,11 +150,6 @@ export function CommissionRulesPage() {
           <h2 className="mt-1.5 font-display text-[28px] font-semibold text-ink">
             Commission structure
           </h2>
-          <p className="mt-0.5 max-w-[74ch] text-[13.5px] text-muted">
-            The client confirmed twelve percent split three ways. Which level gets
-            which slice, and what each level is called, are ours until they say
-            otherwise — so both are editable here.
-          </p>
         </div>
 
         {/* ── editor ─────────────────────────────────────────── */}

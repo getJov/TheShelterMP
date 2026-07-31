@@ -171,12 +171,6 @@ export default function AuditPage() {
           }
         />
 
-        <p className="max-w-[80ch] text-[13px] leading-relaxed text-muted">
-          Append-only. Every consequential change — a status, a price, a payment, an
-          approval — with who made it and when. Expand a row to see exactly which
-          fields moved.
-        </p>
-
         <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface p-3">
           <div className="relative min-w-[220px] flex-1">
             <Icon
@@ -254,7 +248,7 @@ export default function AuditPage() {
           <EmptyState
             icon={IconAudit}
             title="Nothing matches those filters"
-            body="Widen the date range or clear the search — the log itself is never empty."
+            body="Widen the date range or clear the filters."
             action={
               dirty ? (
                 <Button variant="outline" onClick={reset}>
@@ -446,7 +440,7 @@ function Diff({ event }: { event: AuditEvent }) {
         ))}
       </div>
       <p className="mt-2.5 border-t border-line pt-2 text-[11.5px] text-muted">
-        Recorded {fmtDateTime(event.at)} · this entry can never be edited or removed.
+        Recorded {fmtDateTime(event.at)} · Read-only.
       </p>
     </div>
   )

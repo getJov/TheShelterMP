@@ -245,8 +245,7 @@ export default function MapEditorPage() {
                 </div>
                 <p className="font-display text-[21px] text-ink">No park layout yet</p>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
-                  Start by drawing your first block. Its lots are generated inside it in the next
-                  step.
+                  Draw a block to generate lots.
                 </p>
                 <Button className="mt-5 gap-1.5" onClick={() => setTool('block')}>
                   <Icon icon={IconDrawBlock} size={15} />
@@ -254,7 +253,7 @@ export default function MapEditorPage() {
                 </Button>
                 <p className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-muted">
                   <Icon icon={IconOverlay} size={13} />
-                  A site plan can be placed underneath first — Overlay tool, or press O.
+                  Optional: add a site plan with Overlay first.
                 </p>
               </div>
             </div>

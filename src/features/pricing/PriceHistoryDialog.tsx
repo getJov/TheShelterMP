@@ -134,9 +134,7 @@ function HistoryBody({
         </DialogTitle>
         <DialogDescription>
           {NEED_TYPE_LABEL[target.needType]} ·{' '}
-          {PAYMENT_MODE_LABEL[target.paymentMode]} — every generation of this
-          price, newest first. Nothing here was ever edited: each change closed
-          the row above it and appended a new one.
+          {PAYMENT_MODE_LABEL[target.paymentMode]} · Newest first
         </DialogDescription>
       </DialogHeader>
 

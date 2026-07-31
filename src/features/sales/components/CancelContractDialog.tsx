@@ -70,7 +70,7 @@ export function CancelContractDialog({
             Cancel contract {contract?.contractNo}?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This writes an audit event and cannot be undone from the app.
+            This records an audit event and cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

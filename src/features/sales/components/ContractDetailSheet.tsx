@@ -286,7 +286,7 @@ export function ContractDetailBody({
       {/* price breakdown */}
       <Section title="Price breakdown">
         <div className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5">
-          <FieldRow label="List price (snapshotted at signing)">
+          <FieldRow label="List price at signing">
             <MoneyText centavos={contract.listPriceCentavos} />
           </FieldRow>
           {contract.discountCentavos > 0 && (
@@ -310,7 +310,7 @@ export function ContractDetailBody({
           <p className="mt-2 text-[11.5px] leading-snug text-muted">
             Priced from entry{' '}
             <span className="font-mono">{contract.priceBookEntryId}</span> as of{' '}
-            {fmtDate(contract.signedAt)}. A later price change never restates this contract.
+            {fmtDate(contract.signedAt)}. Future price changes do not alter this contract.
           </p>
         </div>
         <TrustFundNote amountCentavos={model.trustFundCentavos} className="mt-2.5" compact />
@@ -396,7 +396,7 @@ export function ContractDetailBody({
       <Section title="Commission breakdown">
         {model.commissions.length === 0 ? (
           <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-[12.5px] text-muted">
-            No commission has accrued. Commission is earned on collection, never at signing.
+            No commission has accrued.
           </p>
         ) : (
           <CommissionByLevel entries={model.commissions} />
@@ -430,7 +430,7 @@ export function ContractDetailBody({
         </ul>
         <p className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-muted">
           <Icon icon={IconDocument} size={13} />
-          Checklist only — file storage and uploads are a later phase.
+          Files are tracked in the office checklist.
         </p>
       </Section>
 

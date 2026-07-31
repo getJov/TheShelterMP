@@ -97,10 +97,6 @@ function TabShell({ active, children }: { active: string; children: ReactNode })
             <h2 className="font-display text-[27px] font-semibold text-ink">
               Agents &amp; Commissions
             </h2>
-            <p className="mt-0.5 max-w-[72ch] text-[13px] text-muted">
-              Twelve percent, split three ways, earned as money arrives rather than
-              when a contract is signed.
-            </p>
           </div>
           <div className="pt-1">
             <PeriodPicker period={period} />

@@ -338,10 +338,9 @@ export function GridPanel() {
 
           {existing.length > 0 && (
             <p className="text-[11px] leading-snug text-muted">
-              {block.code} already holds {fmt(existing.length)} lots
-              {soldCount > 0 && `, ${soldCount} of them sold or occupied`}. Generate creates or
-              replaces lot records; rearrange keeps the existing records and only moves their map
-              positions.
+              Existing lots: {fmt(existing.length)}
+              {soldCount > 0 && ` · ${soldCount} sold or occupied`}. Generate creates or replaces
+              records; rearrange keeps the existing records and only moves them.
             </p>
           )}
         </div>
@@ -352,8 +351,8 @@ export function GridPanel() {
           <DialogHeader>
             <DialogTitle>{block.code} already has lots</DialogTitle>
             <DialogDescription>
-              {fmt(existing.length)} lots stand in this block. Choose what happens to those records
-              before {fmt(cells)} new lots are laid out.
+              Choose how to handle {fmt(existing.length)} existing lots before generating{' '}
+              {fmt(cells)} new lots.
             </DialogDescription>
           </DialogHeader>
 
@@ -364,15 +363,15 @@ export function GridPanel() {
               title="Replace unsold only"
               body={
                 soldCount > 0
-                  ? `The ${soldCount} sold or occupied lot${soldCount === 1 ? '' : 's'} stay exactly where they are, keeping their number, tier and capacity. The grid is laid around them.`
-                  : 'Regenerates everything, but would preserve any sold lot in place. None here are sold.'
+                  ? `${soldCount} sold or occupied lot${soldCount === 1 ? '' : 's'} stay in place; unsold lots are regenerated.`
+                  : 'Regenerates all existing lots.'
               }
             />
             <ModeOption
               value="append"
               current={mode}
               title="Add alongside"
-              body="Keeps every existing lot, continues the numbering, and skips any cell that would land on one."
+              body="Keeps existing lots and adds new numbered lots around them."
             />
             <ModeOption
               value="replace_all"
@@ -381,8 +380,8 @@ export function GridPanel() {
               disabled={soldCount > 0}
               body={
                 soldCount > 0
-                  ? `Blocked — ${soldCount} lot${soldCount === 1 ? ' is' : 's are'} sold or occupied and cannot be deleted.`
-                  : 'Deletes all existing lots in this block and lays out a fresh grid.'
+                  ? 'Unavailable while sold or occupied lots exist.'
+                  : 'Deletes existing lots and generates a fresh grid.'
               }
             />
           </RadioGroup>
@@ -390,8 +389,7 @@ export function GridPanel() {
           {soldCount > 0 && mode === 'replace_unsold' && (
             <p className="flex items-start gap-1.5 text-[12px] leading-snug text-muted">
               <Icon icon={IconWarning} size={13} className="mt-px text-gold-deep dark:text-gold" />
-              Sold history is never destroyed. Those lots keep their contract, their code and their
-              current position in this generation flow.
+              Sold or occupied lots keep their contract, code, and position.
             </p>
           )}
           {soldCount > 0 && mode === 'replace_all' && (

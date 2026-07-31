@@ -60,7 +60,7 @@ export function InvoiceDialog({
         <DialogHeader className="no-print">
           <DialogTitle className="font-display text-[22px]">Statement preview</DialogTitle>
           <DialogDescription>
-            Prints on A4. The contract number is the reference the client asked for.
+            Prints an A4 statement with the contract reference.
           </DialogDescription>
         </DialogHeader>
 
@@ -232,11 +232,11 @@ export function InvoiceDialog({
             <Icon icon={IconMail} size={14} />
             {model?.client?.email ? (
               <>
-                On file: <span className="text-ink">{model.client.email}</span> — automated
-                delivery is a later phase.
+                On file: <span className="text-ink">{model.client.email}</span>.
+                Print this statement if needed.
               </>
             ) : (
-              'No email on record — this statement must be handed over or printed.'
+              'No email on record. Print this statement for handoff.'
             )}
           </span>
           <Button onClick={() => window.print()} className="gap-1.5">

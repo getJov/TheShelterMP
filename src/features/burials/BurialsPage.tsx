@@ -7,7 +7,6 @@ import {
   useParams,
 } from 'react-router-dom'
 import {
-  MAX_BURIALS_PER_DAY,
   type BurialSlot,
   type Interment,
   type IntermentId,
@@ -20,11 +19,9 @@ import { EmptyState } from '@/components/ui-brand/EmptyState'
 import { SectionHeading } from '@/components/ui-brand/SectionHeading'
 import { Icon } from '@/components/ui-brand/Icon'
 import { IconBurials, IconLocation, IconWarning } from '@/components/ui-brand/icons'
-import { fmtDate } from '@/lib/dates'
 import { useActiveLocation, useCan } from '@/lib/permissions'
 import { dataset, useDataset } from '@/stores/dataset'
 import { lateUnassignedJobs, upcomingInterments } from '@/stores/burials'
-import { FIRST_INTERMENT } from '@/mock'
 import { CalendarTab } from './CalendarTab'
 import { IntermentsTab } from './IntermentsTab'
 import { GroundsJobsTab } from './GroundsJobsTab'
@@ -134,12 +131,6 @@ function BurialsShell({ tab }: { tab: Tab }) {
             ) : null
           }
         />
-
-        <p className="max-w-[78ch] text-[13px] leading-relaxed text-muted">
-          A day holds {MAX_BURIALS_PER_DAY} services — one morning, one afternoon —
-          and that ceiling is enforced, not advised. The park's first interment was{' '}
-          {fmtDate(FIRST_INTERMENT)}.
-        </p>
 
         <Tabs value={tab} onValueChange={(v) => navigate(TAB_PATH[v as Tab])}>
           <TabsList>

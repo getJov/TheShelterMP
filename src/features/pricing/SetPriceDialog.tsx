@@ -74,9 +74,8 @@ export function SetPriceDialog({
         <DialogHeader>
           <DialogTitle>Set a price</DialogTitle>
           <DialogDescription>
-            The price book is append-only. Confirming closes the entry in force
-            and appends a new one — the old amount stays readable forever, and
-            every contract already signed keeps the price it was sold at.
+            Set the amount that takes effect on the selected date. Signed contracts keep their
+            price.
           </DialogDescription>
         </DialogHeader>
 
@@ -204,7 +203,7 @@ function SingleForm({
     const mutation = setPrice(input, user.id)
     toastWithUndo(
       `${tier.name} — ${NEED_TYPE_LABEL[needType]} ${PAYMENT_MODE_LABEL[paymentMode].toLowerCase()} is now ${formatPeso(amountCentavos)}`,
-      `Effective ${fmtDate(effectiveFrom)}. The superseded entry was closed, not edited.`,
+      `Effective ${fmtDate(effectiveFrom)}.`,
       () => undoSetPrice([mutation]),
     )
     onDone()
@@ -271,7 +270,7 @@ function SingleForm({
                     'flex items-center gap-2 text-[13.5px]',
                     allowed ? 'cursor-pointer' : 'cursor-not-allowed text-muted',
                   )}
-                  title={allowed ? undefined : 'At-need is spot cash only.'}
+                  title={allowed ? undefined : 'Installment unavailable.'}
                 >
                   <RadioGroupItem value={m} disabled={!allowed} />
                   {PAYMENT_MODE_LABEL[m]}
@@ -334,9 +333,8 @@ function SingleForm({
 
       {isPast && (
         <Callout tone="warn">
-          {fmtDate(effectiveFrom)} is in the past. Back-dating rewrites which
-          entry resolves for that window — it does not change any contract
-          already signed, but check that is what you meant.
+          {fmtDate(effectiveFrom)} is in the past. Back-dating changes the active price for that
+          date range. Signed contracts are unchanged.
         </Callout>
       )}
 
@@ -449,8 +447,8 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
     }))
     const mutations: PriceMutation[] = setPriceBulk(inputs, user.id)
     toastWithUndo(
-      `${inputs.length} price entries appended`,
-      `Effective ${fmtDate(effectiveFrom)}. Every superseded entry was closed, not edited.`,
+      `${inputs.length} prices updated`,
+      `Effective ${fmtDate(effectiveFrom)}.`,
       () => undoSetPrice(mutations),
     )
     onDone()
@@ -584,8 +582,8 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
       </div>
 
       <Callout tone="info">
-        Contracts already signed are untouched — each one snapshotted its price
-        at signing. Only lots still available will sell at the new figures.
+        Contracts already signed keep their prices. Only available lots sell at
+        the new figures.
       </Callout>
 
       <DialogFooter>
@@ -649,7 +647,7 @@ export function BeforeAfter({
           <span className="tabular font-display text-[17px] text-ink">{contracts}</span>{' '}
           <span className="text-muted">
             active contracts — <span className="text-green">unaffected</span>, they keep
-            their snapshotted price
+            their signed price
           </span>
         </div>
         <div className="rounded-md border border-line bg-surface px-2.5 py-1.5">
