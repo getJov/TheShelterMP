@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Standalone Dashboard Content Responsiveness Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; margin-top: 14px; background: var(--soft); }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 840px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Standalone dashboard content responsiveness</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/08032026-standalone-dashboard-content-responsiveness</dd></div>
+        <div><dt>Size</dt><dd>Large</dd></div>
+        <div><dt>Risk</dt><dd>Level 3, mitigated</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The standalone <code>/dashboard</code> route currently reuses the map panel's <code>full</code> layout. That reuse is useful for content, but it also makes the route depend on viewport breakpoints and panel-only actions. At narrow available widths, the header, period controls, cards, touch affordances, and large financial values do not have an explicit standalone contract.</p>
+      <p>The mobile outcome is quick triage, not a reduced dashboard. Eligible users see Needs Attention first, then the same authorized cards in the same source order at every width. Every detail remains reachable; responsive behavior must not silently hide cards, chart information, values, menus, or drill-down actions.</p>
+      <p>This work cannot honestly claim that the entire route is mobile-ready while AppShell is excluded. Its success boundary is the dashboard-owned content rendered inside the router outlet.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Make the standalone dashboard content adapt from a 320px available container through wide desktop. Introduce an explicit standalone-route surface context, a bounded 1400px content wrapper, container-aware card composition, a mobile-safe header and period selector, safe value wrapping, and accessible touch behavior.</p>
+      <p>Preserve the current data selectors, permission rules, finance formatting, date source, period and collapsed-card persistence, links, card variants, and all map dashboard-panel states. This is responsive refinement, not a visual redesign or a dashboard architecture rewrite.</p>
+
+      <h3>In Scope</h3>
+      <ul>
+        <li>The header, reporting-period selector, action placement, cards, charts, legends, card menus, card rows, and card-local drill-down controls rendered by standalone <code>/dashboard</code>.</li>
+        <li>A typed <code>standalone</code> versus <code>map-panel</code> surface discriminator passed through shared dashboard components.</li>
+        <li>Route-only priority ordering and route-only responsive classes or container-query variants.</li>
+        <li>Focused automated browser coverage and post-execution acceptance artifacts.</li>
+      </ul>
+
+      <h3>Explicitly Out Of Scope</h3>
+      <ul>
+        <li><code>AppShell</code>, the sidebar or navigation sheet, top bar, notification UI, account UI, shell breakpoints, and router-outlet geometry.</li>
+        <li><code>/map</code> dashboard-panel dimensions, hidden/docked/full state transitions, map reserve width, bottom map strip, keyboard cycle, animation geometry, and map mounting behavior.</li>
+        <li>Other routes, route registration, permissions or role policy, data selectors, finance calculations, mock generation, APIs, database work, migrations, authentication, and new dependencies.</li>
+        <li>Global typography, theme, color, icon, motion, or broad visual redesign. Existing accessibility/readability changes are a protected baseline.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+
+      <h3>Planning Provenance And No-Worktree Exception</h3>
+      <ul>
+        <li><strong>Planning mode:</strong> <code>--start --no-worktree</code>, explicitly requested by the user to keep this feature on its dedicated branch.</li>
+        <li><strong>Repository:</strong> <code>/home/jovanie_getalla/projects/shelter</code>.</li>
+        <li><strong>Planning branch:</strong> <code>jovanie/dashboard-screen-responsiveness</code>.</li>
+        <li><strong>Execution branch:</strong> <code>jovanie/dashboard-screen-responsiveness-execution</code>.</li>
+        <li><strong>Execution worktree:</strong> <code>/tmp/shelter-dashboard-content-responsiveness</code>.</li>
+        <li><strong>Baseline HEAD:</strong> <code>0fc8a80ece60872a550894836d9aca8130babd68</code>.</li>
+        <li><strong>Upstream baseline:</strong> <code>origin/main</code> at the same commit; ahead/behind was <code>0/0</code> immediately before spec creation.</li>
+        <li><strong>Planning worktree exception:</strong> no secondary linked worktree was created during <code>-s</code>, by explicit authorization.</li>
+        <li><strong>Execution isolation revision:</strong> the user explicitly required <code>-x</code> to run in a separate linked worktree so concurrent agents do not share application files. Execution therefore uses the branch and path recorded above, derived directly from the planning baseline.</li>
+        <li><strong>Unrelated working-tree state:</strong> untracked <code>AGENTS.md:Zone.Identifier</code> existed before this plan and is excluded. Do not edit, delete, stage, or attribute it to this feature.</li>
+        <li><strong>Template fallback:</strong> canonical <code>~/.claude/templates/spec.html</code> is missing. This document uses only the structure and embedded presentation styles from <code>/home/jovanie_getalla/projects/shelter-worktrees/accessibility-readability-foundation/plans/08022026-accessibility-readability-foundation/spec.html</code>, as explicitly authorized. No feature requirements were copied.</li>
+      </ul>
+
+      <h3>Execution Branch Contract</h3>
+      <ul>
+        <li>Before any application edit, verify the absolute repository path, current branch, current HEAD, concise status, and relationship to the recorded baseline. A branch mismatch is a hard stop because this is a shared checkout.</li>
+        <li>Execute only on <code>jovanie/dashboard-screen-responsiveness-execution</code> inside <code>/tmp/shelter-dashboard-content-responsiveness</code>. The primary checkout and planning branch are source/reference surfaces only.</li>
+        <li>If <code>origin/main</code> or this branch advances, inspect the diff. If it changes dashboard, shell, QA, conventions, or plan assumptions, update this spec and append the Revision Log before implementation.</li>
+        <li>Pre-existing unrelated files remain untouched. Execution does not authorize pushing, merging, rebasing, deleting, or modifying other plan folders.</li>
+        <li><strong>Observed shared-checkout churn:</strong> another workflow switched this checkout to the map branch before creation and to the sales branch during the first readiness audit. No active Git process was visible when inspected. The branch was restored each time, but execution must treat a changed branch between any two mutation steps as an immediate stop, not automatically switch while another write may be active.</li>
+      </ul>
+
+      <h3>Current Implementation Baseline</h3>
+      <ul>
+        <li><code>DashboardPage.tsx</code> owns the standalone route, but passes <code>layout="full"</code> to <code>CardGrid</code> and imports the shared <code>DashboardHeader</code>.</li>
+        <li><code>DashboardPanel.tsx</code> owns the protected <code>/map</code> hidden, docked, and full panel behavior. Its full state also uses <code>DashboardHeader</code> and <code>CardGrid layout="full"</code>.</li>
+        <li><code>CardGrid.tsx</code> splits cards into hero and small groups and chooses columns with viewport-prefixed classes. That is not reliable when the router outlet or panel is narrower than the viewport.</li>
+        <li><code>CardShell.tsx</code> always offers Open full screen for <code>layout="full"</code>. On standalone <code>/dashboard</code>, this writes panel state without changing the route and is therefore a dead panel-only action.</li>
+        <li><code>cards.config.ts</code> assigns Needs Attention order 80 and size small. Globally changing that manifest would alter the map panel and still would not put it before the hero group.</li>
+        <li><code>usePanel</code> owns shared reporting period, panel state, and collapsed-card persistence. Its schema is not changing.</li>
+        <li>The accessibility/readability foundation already supplies semantic type roles, 40px secondary controls, 44px primary-target guidance, wrapping repairs, reduced-motion handling, and responsive AppShell behavior. This plan preserves that work and only closes dashboard-specific gaps.</li>
+      </ul>
+
+      <h3>Closest Implementation And QA Analogs</h3>
+      <ul>
+        <li><strong>Standalone page containment:</strong> <code>src/features/sales/SalesPage.tsx</code> uses a centered, bounded page wrapper; <code>DashboardPage.tsx</code> remains the owner of this route's wrapper.</li>
+        <li><strong>Shared surface isolation:</strong> the existing <code>layout</code> prop in <code>CardGrid.tsx</code> and <code>CardProps</code> is the local typed-composition analog. Add a separate surface prop instead of overloading layout semantics.</li>
+        <li><strong>Protected map behavior:</strong> the docked and full branches in <code>DashboardPanel.tsx</code> and the docked branch of <code>CardGrid.tsx</code> are the regression baseline.</li>
+        <li><strong>Container utility strategy:</strong> Tailwind CSS v4 is installed. Use a named route container and scoped container-query variants or equivalent dashboard-local utilities; do not add a plugin or global breakpoint system.</li>
+        <li><strong>Browser QA:</strong> <code>qa/accessibility-smoke.mjs</code> is the closest runner analog for <code>BASE_URL</code>, <code>BROWSER_PATH</code>, deterministic localStorage seeding, multiple roles and sizes, page-error capture, target measurement, and overflow assertions.</li>
+        <li><strong>Acceptance viewer:</strong> after execution, copy the repository-owned <code>plans/08022026-accessibility-readability-foundation/test.html</code> viewer verbatim and pair it with this plan's own <code>test-results.json</code>. Do not create either during planning.</li>
+      </ul>
+
+      <h3>Code Constitution Constraints</h3>
+      <ul>
+        <li><code>DISC-1.1</code>, <code>DISC-1.2</code>, and <code>DISC-1.3</code>: <code>AGENTS.md</code>, <code>CONVENTIONS.md</code>, <code>DEVIATIONS.md</code>, package scripts, and live React/TypeScript/Tailwind evidence define the baseline.</li>
+        <li><code>CORE-2.1</code> and <code>CORE-2.3</code>: the standalone route owns route geometry; the map panel owns panel state and geometry; shared components receive explicit context rather than infer it from the viewport or URL.</li>
+        <li><code>CORE-2.4</code>: follow the local dashboard, bounded-page, and Puppeteer analogs named above.</li>
+        <li><code>CORE-5.2</code>: use existing React, Tailwind v4, Radix/shadcn, Framer Motion, and Puppeteer capabilities; add no dependency.</li>
+        <li><code>CORE-6.1</code>: responsive ordering, route isolation, target behavior, and overflow changes require automated regression coverage.</li>
+        <li><code>FE-1.3</code> and <code>STACK-TSJS-3.2</code>: keep layout decisions in focused route/grid/shell components and keep card data logic in existing selectors.</li>
+        <li><code>FE-2.2</code>: do not add state or change the Zustand panel persistence schema for responsive presentation.</li>
+        <li><code>STACK-TSJS-1.1</code> and <code>STACK-TSJS-1.2</code>: preserve ESM, aliases, strict types, and no new <code>any</code>.</li>
+        <li><code>VER-1.1</code>, <code>VER-1.3</code>, <code>VER-2.1</code>, <code>VER-3.2</code>, and <code>VER-3.3</code>: use repository-owned commands, isolate environment-dependent browser checks, scale proof to the shared-component risk, and keep Layer 1 and Layer 2 acceptance aligned.</li>
+        <li>The generic <code>frontend/src/api/</code> reference analog does not exist in this repository and no API boundary is touched. The concrete local analogs above are authoritative.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="contract">
+      <h2>Responsive Product Contract</h2>
+
+      <h3>Surface Isolation</h3>
+      <ul>
+        <li>Add a typed surface discriminator with exactly two meanings: <code>standalone</code> and <code>map-panel</code>. Keep <code>DashboardLayout</code> responsible only for <code>docked</code> versus <code>full</code> card density.</li>
+        <li><code>DashboardPage</code> passes <code>surface="standalone"</code>. Every <code>DashboardPanel</code> state passes <code>surface="map-panel"</code>. Shared components must not infer surface from <code>window.innerWidth</code>, pathname, or panel state.</li>
+        <li>Standalone-only responsive classes, ordering, menu visibility, and header behavior branch on the explicit surface. The map-panel branch preserves its current layout classes and behavior.</li>
+        <li>Do not change <code>PanelState</code>, <code>DASHBOARD_PANEL_WIDTH</code>, <code>DASHBOARD_RAIL_WIDTH</code>, <code>DASHBOARD_MAP_STRIP_HEIGHT</code>, <code>useReserveMapWidth</code>, map-store integration, or panel animation transitions.</li>
+      </ul>
+
+      <h3>Standalone Structure And Width</h3>
+      <ul>
+        <li>The route exposes <code>data-dashboard-surface="standalone"</code> on its dashboard-owned outer scroll surface and <code>data-dashboard-content</code> on the centered inner content wrapper.</li>
+        <li>The outer surface owns vertical scrolling. The inner wrapper is full width, centered, and capped at exactly 1400px, following the bounded-page direction used by Sales.</li>
+        <li>The inner wrapper is a named inline-size container. Standalone layout changes key off that container, not viewport breakpoints. Existing viewport classes may remain only in the protected map-panel branch.</li>
+        <li>Express the standalone contract with Tailwind v4 container utilities and dashboard-local class composition. Do not modify <code>src/styles/globals.css</code>, add a Tailwind plugin, or introduce a parallel breakpoint/token system. If the installed toolchain cannot express the contract locally, revise this spec before widening the file boundary.</li>
+        <li>Inline padding is 16px below a 640px available container and 24px at 640px and above. Card gaps are 12px below 640px and 16px at 640px and above.</li>
+        <li>No dashboard-owned descendant may increase the standalone surface's horizontal <code>scrollWidth</code> by more than 1px. Vertical page scrolling is expected.</li>
+      </ul>
+
+      <h3>Order And Role Behavior</h3>
+      <ul>
+        <li>For owner, admin, and manager when authorized, Needs Attention is the first card in DOM order and visual order at every available width. Render it as a full-width priority row before the hero and supporting grids.</li>
+        <li>Do not change the global order or size in <code>cards.config.ts</code>. Route-only composition extracts the authorized attention card, then renders the remaining authorized cards in their existing manifest order.</li>
+        <li>Do not use CSS <code>order</code> to create a different visual sequence. Keyboard, screen-reader, animation, DOM, and visual ordering must agree.</li>
+        <li>Agents do not receive Needs Attention or hidden financial cards. Their existing authorized order remains Inventory, Top Agents, Sales Activity, Commission Payout at every width.</li>
+        <li>No responsive breakpoint changes permissions, location scope, agent scoping, card count, card variant, data selector, or empty-state behavior.</li>
+      </ul>
+
+      <h3>Header And Period Controls</h3>
+      <ul>
+        <li>Below a 768px available container, the greeting/scope block and control block stack without overlap. The control block uses the full row.</li>
+        <li>Below 480px, the four period controls use visible labels Today, Week, Month, and Quarter in four equal-width slots; each retains its complete accessible name. At 480px and above, show Today, This week, This month, and This quarter.</li>
+        <li>The standalone Open the map action occupies a separate full-width row below 480px, remains at least 44px high, and becomes intrinsic-width when space permits. Period controls remain at least 40px high.</li>
+        <li>At 768px and above, the title and controls share the header row when they fit and may wrap cleanly. Greeting, frozen mock date, and location scope remain visible at every width.</li>
+        <li>The map-full Back to the map header keeps its current presentation unless an explicit regression fix is required for shared-component parity.</li>
+      </ul>
+
+      <h3>Cards, Values, Charts, And Touch</h3>
+      <ul>
+        <li>Standalone hero grid: one column below 640px, two columns from 640px through 959px, and no more than three columns at 960px and above.</li>
+        <li>Standalone supporting grid: one column below 640px, two from 640px through 895px, three from 896px through 1199px, four from 1200px through 1359px, and no more than five at 1360px and above.</li>
+        <li>Needs Attention, when present, spans the full standalone content width above both grids. Without it, no empty slot or placeholder is rendered.</li>
+        <li>Cards remain intrinsically tall. Do not use fixed card heights, content clipping, mobile-only detail removal, or automatic responsive collapse. Existing user-controlled collapsed state remains authoritative.</li>
+        <li>Formatted currency and numeric values keep the existing <code>formatPeso</code> options and semantic type roles. Values may wrap within their card and use safe overflow wrapping; they may not truncate, ellipsize, overlap controls, escape the card, or be reformatted solely to make layout pass.</li>
+        <li>Charts, legends, labels, deltas, subtitles, footers, rows, and drill-down routes remain present. Charts may resize, and text may wrap, but mobile must not substitute an information-poor summary.</li>
+        <li>On standalone, each options trigger is visibly discoverable without hover, has an accessible name, and is at least 40px square. The map panel may retain its current hover/focus reveal.</li>
+        <li>Primary route actions are at least 44px in one dimension. Secondary dashboard controls and actionable rows are at least 40px. A narrow visual chart segment is never the only touch path; its matching legend or named row provides the usable target.</li>
+        <li>The standalone card menu omits Open full screen because the route already is the full dashboard destination. Collapse/Expand and authorized detail actions remain. Map-panel menus retain Open full screen.</li>
+        <li>Do not convert non-interactive containers into custom buttons. Named native buttons and links remain the keyboard and touch paths; hover decoration is supplementary.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="role-matrix">
+      <h2>Role-Specific Consumer Matrix</h2>
+      <table>
+        <thead><tr><th>Role / QA identity</th><th>Expected standalone card order</th><th>Scope that must remain intact</th></tr></thead>
+        <tbody>
+          <tr><td>Owner / <code>usr_001</code></td><td>Needs Attention; Collections; Receivables; Inventory; Trust Fund; Top Agents; Upcoming Burials; Sales Activity; Commission Payout</td><td>All-location financial oversight; Needs Attention via payout approval.</td></tr>
+          <tr><td>Admin / <code>usr_002</code></td><td>Needs Attention; Collections; Receivables; Inventory; Trust Fund; Top Agents; Upcoming Burials; Sales Activity; Commission Payout</td><td>Existing full-permission regression consumer; no new admin-specific design.</td></tr>
+          <tr><td>Manager / <code>usr_004</code></td><td>Needs Attention; Collections; Receivables; Inventory; Top Agents; Upcoming Burials; Sales Activity; Commission Payout</td><td>Location-bound data; no Trust Fund; Needs Attention via hold approval.</td></tr>
+          <tr><td>Agent / <code>usr_012</code></td><td>Inventory; Top Agents; Sales Activity; Commission Payout</td><td>Own-record variants and permission-safe inventory; no Needs Attention or financial overview cards.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Ordering definition:</strong> the sequence above is both DOM and visual order. Grid wrapping changes only row placement, never sequence.</p>
+    </section>
+
+    <section class="spec-card" id="responsive-matrix">
+      <h2>Exact Responsive Acceptance Matrix</h2>
+      <p>Widths below are the available width of <code>[data-dashboard-surface="standalone"]</code>, not a promise about the external AppShell viewport. The focused runner records both the requested constraint and measured surface/content rectangles.</p>
+      <table>
+        <thead><tr><th>Available container × test height</th><th>Header / controls</th><th>Hero / supporting columns</th><th>Required observations</th></tr></thead>
+        <tbody>
+          <tr><td>320 × 568</td><td>Stacked; short period labels; four equal period slots; map action full row</td><td>1 / 1</td><td>No dashboard horizontal overflow; all values wrap; 40/44px targets; first eligible card is Needs Attention.</td></tr>
+          <tr><td>360 × 640</td><td>Same as 320</td><td>1 / 1</td><td>All card menus and details reachable by touch and keyboard; no clipped currency.</td></tr>
+          <tr><td>390 × 844</td><td>Same as 320</td><td>1 / 1</td><td>Stable DOM order and normal vertical scrolling with every authorized card present.</td></tr>
+          <tr><td>430 × 932</td><td>Stacked; short period labels through 479px; map action full row</td><td>1 / 1</td><td>No overlap at the widest narrow-phone case.</td></tr>
+          <tr><td>667 × 375</td><td>Stacked header/control rows; full period labels; intrinsic map action</td><td>2 / 2</td><td>Landscape remains vertically scrollable; no height clipping or horizontal page scroll.</td></tr>
+          <tr><td>768 × 1024</td><td>Inline when it fits; clean wrapping is allowed</td><td>2 / 2</td><td>Priority row stays full width; all remaining cards preserve sequence.</td></tr>
+          <tr><td>1024 × 768</td><td>Inline</td><td>3 / 3</td><td>Cards use measured container width, not shell viewport assumptions.</td></tr>
+          <tr><td>1280 × 720</td><td>Inline</td><td>3 / 4</td><td>No stretched singletons beyond the bounded grid contract; values remain readable.</td></tr>
+          <tr><td>1440 × 900</td><td>Inline</td><td>3 / 5</td><td>Inner content is at most 1400px and centered; priority row spans that inner width.</td></tr>
+          <tr><td>1920 × 1080</td><td>Inline</td><td>3 / 5</td><td>Outer surface may be wider, but inner content remains exactly capped at 1400px and centered.</td></tr>
+        </tbody>
+      </table>
+      <h3>Breakpoint Boundary Probes</h3>
+      <table>
+        <thead><tr><th>Probe widths</th><th>Assertion</th></tr></thead>
+        <tbody>
+          <tr><td>479 / 480</td><td>Period text changes from short to full labels without changing values, accessible names, selection, or order.</td></tr>
+          <tr><td>639 / 640</td><td>Page padding/gap changes and both grids move from one to two columns without overflow or reordered cards.</td></tr>
+          <tr><td>767 / 768</td><td>Header becomes inline-capable without overlap; wrapping remains valid on both sides.</td></tr>
+          <tr><td>895 / 896</td><td>Supporting grid changes from two to three columns; hero grid remains two.</td></tr>
+          <tr><td>959 / 960</td><td>Hero grid changes from two to three columns; supporting grid remains three.</td></tr>
+          <tr><td>1199 / 1200</td><td>Supporting grid changes from three to four columns.</td></tr>
+          <tr><td>1359 / 1360</td><td>Supporting grid changes from four to five columns.</td></tr>
+          <tr><td>1399 / 1400 / 1401</td><td>Content grows through 1400px, then remains capped and centered while the outer surface continues to grow.</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Run the full width matrix for owner. Run 320, 768, and 1440 for manager and agent. Run 320 and 1440 for admin as the full-permission regression consumer.</li>
+        <li>Run owner at 320, 768, and 1400 with the existing Extra Large text preference in addition to Standard. Target, overflow, order, content-presence, and value-bound assertions remain identical.</li>
+        <li>Run all paired breakpoint probes for owner using a stable desktop browser viewport while constraining the marked dashboard surface to each exact available width.</li>
+        <li>At every tested role/width: no uncaught page error; no dashboard-owned horizontal overflow; expected card count and order; each card inside content bounds; visible named controls; no clipped value; all period options operable.</li>
+        <li>At 320 and 667, emulate a touch-capable/coarse-pointer context when supported and verify that hover is not required to discover card actions.</li>
+        <li>Separately verify <code>/map</code> at docked and full panel states for owner at 1440 × 900 and manager at 1024 × 768. Assert current card ordering, panel controls, map persistence, map strip behavior, and panel geometry remain unchanged.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="blast-radius">
+      <h2>Risk, Mitigation, And Complete Blast Radius</h2>
+
+      <h3>Risk Assessment</h3>
+      <table>
+        <thead><tr><th>Level</th><th>Risk</th><th>Required mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>3 — Structural</td><td><code>/dashboard</code> and <code>/map</code> share header, grid, card shell, period controls, chart helpers, card components, and panel state.</td><td>Use an explicit typed surface contract, preserve the map-panel branch, prohibit global manifest reordering, and run map docked/full regression checks. If isolation cannot be maintained, stop and revise the spec before continuing.</td></tr>
+          <tr><td>2 — Concern</td><td>AppShell may make viewport width differ from available dashboard width and may still impose shell-level mobile limitations.</td><td>Mark and measure the route-owned surface directly. Word acceptance only around dashboard content in the router outlet. Report shell failures as external observations, not false dashboard passes or unauthorized fixes.</td></tr>
+          <tr><td>2 — Concern</td><td>Making Needs Attention first through CSS could create visual, DOM, keyboard, and animation order drift.</td><td>Compose the route-only array in source order before render and test the DOM sequence. Do not use CSS <code>order</code>.</td></tr>
+          <tr><td>2 — Concern</td><td>Long peso values, translated-size equivalents, or larger accessibility text can overflow cards.</td><td>Preserve finance formatting and permit safe wrapping within <code>min-width: 0</code> boundaries. Test representative longest rendered values at 320px and with the existing Extra Large text preference.</td></tr>
+          <tr><td>2 — Concern</td><td>Touch fixes can regress desktop density or turn charts into oversized controls.</td><td>Keep the existing 40px secondary / 44px primary contract, provide legend/row alternatives for thin chart segments, and scope always-visible menus to standalone.</td></tr>
+          <tr><td>2 — Concern</td><td>A browser check can pass by measuring the document while a nested dashboard region still overflows.</td><td>Assert both marked dashboard rectangles, each card bound, representative value bounds, and document health. Save actual dimensions in evidence.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Direct Mutation Allowlist</h3>
+      <ul>
+        <li><code>src/features/dashboard/DashboardPage.tsx</code></li>
+        <li><code>src/features/dashboard/DashboardPanel.tsx</code></li>
+        <li><code>src/features/dashboard/CardGrid.tsx</code></li>
+        <li><code>src/features/dashboard/CardShell.tsx</code></li>
+        <li><code>src/features/dashboard/PeriodSelector.tsx</code></li>
+        <li><code>src/features/dashboard/types.ts</code></li>
+        <li><code>src/features/dashboard/charts.tsx</code></li>
+        <li>The nine existing card files under <code>src/features/dashboard/cards/</code>, but only where T0 proves a standalone wrapping or target failure. Passing card files remain unchanged.</li>
+        <li>Create <code>qa/dashboard-responsive-smoke.mjs</code>; modify <code>package.json</code> only to add <code>qa:dashboard-responsive</code>.</li>
+        <li>After implementation, create this plan's <code>test-results.json</code> and <code>test.html</code>.</li>
+      </ul>
+
+      <h3>Read-Only Or Protected Consumers</h3>
+      <ul>
+        <li><code>src/features/map/MapPage.tsx</code> consumes <code>DashboardPanel</code>; it is a regression consumer, not a mutation target.</li>
+        <li><code>src/features/dashboard/cards.config.ts</code> and <code>src/domain/permissions.ts</code> define card visibility/order inputs and role policy. Read for proof; do not modify.</li>
+        <li><code>src/features/dashboard/selectors.ts</code>, dashboard data hooks, <code>src/lib/money.ts</code>, <code>src/lib/dates.ts</code>, and mock time/data are semantic consumers; do not modify.</li>
+        <li><code>src/stores/panel.ts</code>, <code>src/stores/session.ts</code>, <code>src/stores/dataset.ts</code>, and <code>src/stores/map.ts</code> are state consumers; do not change state shape or behavior.</li>
+        <li><code>src/components/shell/AppShell.tsx</code>, <code>src/App.tsx</code>, router definitions, shell controls, and all non-dashboard features are out of scope and protected.</li>
+        <li>Every dashboard card is a consumer of <code>CardProps</code>, <code>CardShell</code>, <code>DashboardPeriod</code>, role/location state, collapse state, and the grid: Collections, Receivables, Inventory, Trust Fund, Top Agents, Upcoming Burials, Sales Activity, Needs Attention, and Commission Payout.</li>
+      </ul>
+      <p>Any required application file outside the mutation allowlist is scope drift. Stop, update this spec with the reason and blast-radius change, and resume only when the revision remains below Level 3. A new Level 3 issue requires user discussion.</p>
+    </section>
+
+    <section class="spec-card" id="execution-loop">
+      <h2>Execution Loop And Dependency Chain</h2>
+      <ol>
+        <li>T0 revalidates branch/provenance, current dashboard behavior, exact role cards, card bounds, long-value cases, and map-panel baseline. Material drift updates this same spec before code.</li>
+        <li>T1 establishes the typed surface boundary and route-owned header/container contract.</li>
+        <li>T2 establishes standalone ordering, grids, shared card/menu context, value containment, and chart/legend target rules while preserving map branches.</li>
+        <li>T3A, T3B, and T3C may run in parallel only after T2 passes and only with exclusive card-file ownership.</li>
+        <li>T4 integrates all changes, adds the focused runner, runs every repository and browser gate, and generates acceptance artifacts.</li>
+      </ol>
+      <p>Every task uses the same bounded loop: inspect the live baseline; implement only the task; run typecheck plus the task's focused checks; fix only task-caused failures; rerun; compare implementation to this spec; then advance. Never weaken an assertion to make a failure disappear.</p>
+      <p>T4 routes a failed check back to the owning task, applies the smallest scope-preserving correction, reruns the failed check, and then reruns the full matrix. If the same Level 3 isolation or architecture failure survives two correction passes, set the spec status to Blocked and request direction.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Dependency-Ordered Tasks</h2>
+
+      <article class="task-card">
+        <h3>T0: Freeze the execution baseline</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Enforce the branch contract; record current role card lists and DOM order; capture standalone and map-panel screenshots/measurements; identify the longest rendered financial values; audit card-local actionable target sizes; and confirm every expected file and package script.</dd></div>
+          <div><dt>Files</dt><dd>Read-only inspection of dashboard, map consumer, stores, permissions, conventions, deviations, package scripts, and QA analogs. Update only this spec if material drift exists.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Parallel</dt><dd>No. It freezes the shared baseline.</dd></div>
+          <div><dt>Loop gate</dt><dd>Branch/path match; baseline differences are resolved in the Revision Log; role matrices match live permissions; protected map behavior is recorded; no unexplained file is in the mutation set.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T1: Establish standalone surface and header ownership</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add the typed surface discriminator; mark the standalone outer and inner regions; implement the centered 1400px named container and exact padding; make the shared header and period selector respond to standalone context; remove no content.</dd></div>
+          <div><dt>Files</dt><dd><code>types.ts</code>, <code>DashboardPage.tsx</code>, <code>DashboardPanel.tsx</code>, <code>PeriodSelector.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T0</dd></div>
+          <div><dt>Parallel</dt><dd>No. This is the boundary every later task consumes.</dd></div>
+          <div><dt>Loop gate</dt><dd>Typecheck passes; the two data markers exist only on standalone; 320/480/768 header rules pass; map-full header action and panel state remain unchanged.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Build route-only priority, grids, and shared card behavior</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Render authorized Needs Attention first only on standalone; keep DOM and visual order aligned; implement exact container column bands; pass surface through card props; scope menu visibility and menu items; add stable card identifiers for QA; harden shared value/chart/legend containment only where required.</dd></div>
+          <div><dt>Files</dt><dd><code>CardGrid.tsx</code>, <code>CardShell.tsx</code>, <code>types.ts</code>, <code>charts.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Parallel</dt><dd>No. These are shared composition files.</dd></div>
+          <div><dt>Loop gate</dt><dd>Typecheck passes; owner, admin, manager, and agent order/count assertions pass at representative widths; map-panel sequence/classes/Open full screen remain unchanged; no global card manifest or store mutation exists.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3A: Verify financial hero and fund cards</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Test Collections, Receivables, and Trust Fund at 320px with representative longest values and Extra Large text. Apply only local wrapping/min-width/target fixes proven necessary; preserve <code>formatPeso</code> options and drill-down behavior.</dd></div>
+          <div><dt>Files</dt><dd><code>CollectionsCard.tsx</code>, <code>ReceivablesCard.tsx</code>, <code>TrustFundCard.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T3B and T3C; exclusive file ownership.</dd></div>
+          <div><dt>Loop gate</dt><dd>No clipped or reformatted financial value; every chart/legend/detail remains available; focused role and width checks pass.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3B: Verify priority, inventory, and burial cards</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Test Needs Attention, Inventory, and Upcoming Burials for source order, rows, thin chart alternatives, badges, timestamps, and touch access. Apply only local failures.</dd></div>
+          <div><dt>Files</dt><dd><code>AttentionCard.tsx</code>, <code>InventoryCard.tsx</code>, <code>BurialsCard.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T3A and T3C; exclusive file ownership.</dd></div>
+          <div><dt>Loop gate</dt><dd>Needs Attention remains first and complete for eligible roles; agent never receives it; rows and details are keyboard/touch reachable; no content clipping.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3C: Verify people, sales activity, and payout cards</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Test Top Agents, Sales Activity, and Commission Payout for owner/manager versus agent variants, ranking/value wrapping, legend access, approval content, and details navigation. Apply only local failures.</dd></div>
+          <div><dt>Files</dt><dd><code>LeaderboardCard.tsx</code>, <code>SalesActivityCard.tsx</code>, <code>PayoutCard.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T3A and T3B; exclusive file ownership.</dd></div>
+          <div><dt>Loop gate</dt><dd>Role-scoped variants and destinations match baseline; all values/rows fit at 320px; no hidden or unauthorized information appears.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Automate, integrate, and close the loop</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Create a focused Puppeteer runner using the established environment and seeding analog; add its package script; run repository gates, the exact container/role matrix, accessibility regression, and map-panel regression. Generate Layer 2 artifacts from the Done criteria and record evidence.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>qa/dashboard-responsive-smoke.mjs</code>; modify <code>package.json</code>; after implementation create <code>test-results.json</code> and copy the approved repository-owned <code>test.html</code> viewer.</dd></div>
+          <div><dt>Depends on</dt><dd>T3A, T3B, T3C</dd></div>
+          <div><dt>Parallel</dt><dd>No. This is integration and acceptance preparation.</dd></div>
+          <div><dt>Loop gate</dt><dd>All in-scope automated commands pass; every matrix observation is recorded; no page errors or dashboard overflow remain; map panel is unchanged; acceptance files exactly trace the Done list. Any broader repository-suite failure must be evidenced and waived narrowly rather than hidden or converted into out-of-scope work.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="verification">
+      <h2>Verification Commands And Evidence</h2>
+
+      <h3>Preflight</h3>
+      <ul>
+        <li><code>git branch --show-current</code> must return <code>jovanie/dashboard-screen-responsiveness-execution</code> inside <code>/tmp/shelter-dashboard-content-responsiveness</code>.</li>
+        <li><code>git rev-parse HEAD</code>, <code>git status --short</code>, and <code>git diff --name-only 0fc8a80ece60872a550894836d9aca8130babd68...HEAD</code> establish execution drift and pre-existing changes.</li>
+      </ul>
+
+      <h3>Layer 1: Repository Gates</h3>
+      <ul>
+        <li><code>npx tsc --noEmit -p tsconfig.app.json</code></li>
+        <li><code>npm run lint</code></li>
+        <li><code>npm run build</code></li>
+        <li><code>npm run validate:mock</code></li>
+        <li><code>BASE_URL=http://127.0.0.1:1616 BROWSER_PATH=/path/to/chromium npm run qa:dashboard-responsive</code></li>
+        <li><code>BASE_URL=http://127.0.0.1:1616 BROWSER_PATH=/path/to/chromium npm run qa:accessibility</code></li>
+      </ul>
+      <p>No <code>check:all</code> or <code>check:conventions</code> script exists in the recorded <code>package.json</code>. Do not invent or silently skip a claimed command; the project-specific typecheck, lint, build, mock validation, and browser gates above are the executable baseline. If such a script exists at execution time, run it and record the new baseline in the Revision Log.</p>
+
+      <h3>Execution Evidence</h3>
+      <ul>
+        <li>Typecheck, lint, production build, mock validation, focused QA lint, and <code>git diff --check</code> exited zero. Repository lint retains existing warnings, including the established Fast Refresh warning in <code>DashboardPanel.tsx</code>; no new lint error was introduced.</li>
+        <li>The focused browser runner passed <strong>977 of 977</strong> checks across the exact owner, admin, manager, agent, Extra Large text, breakpoint-boundary, coarse-pointer, keyboard, representative-long-value, and protected map-panel matrices.</li>
+        <li>The broad accessibility runner passed its first 12 checks, then stopped in its out-of-scope map/list section waiting for <code>[data-lot-list-action="true"]</code>. <code>validate:mock</code> confirms the current baseline has zero blocks and lots, and <code>seed-park.ts</code> documents that the park intentionally boots empty until a hand-tuned layout exists. <code>test-results.json</code> records a narrow waiver; the repository-wide suite is not represented as passing.</li>
+        <li>Code Constitution recheck found no new dependency, unsafe type escape, global CSS, state-schema mutation, permission drift, formatter rewrite, or out-of-scope consumer change. The explicit surface prop keeps standalone and map-panel behavior isolated under CORE-2.1, CORE-2.3, CORE-2.4, CORE-5.2, CORE-6.1, FE-1.3, FE-2.2, STACK-TSJS-1.1, STACK-TSJS-1.2, STACK-TSJS-3.2, VER-1.1, VER-1.3, VER-2.1, VER-3.2, and VER-3.3.</li>
+      </ul>
+
+      <h3>Focused Runner Contract</h3>
+      <ul>
+        <li>Follow <code>qa/accessibility-smoke.mjs</code>: accept <code>BASE_URL</code> and <code>BROWSER_PATH</code>, use local port 1616 only as the documented default, use <code>puppeteer-core</code>, support <code>--headful</code>, and capture uncaught page errors.</li>
+        <li>Seed deterministic identities <code>usr_001</code>, <code>usr_002</code>, <code>usr_004</code>, and <code>usr_012</code>. Reset only relevant local state so role and collapse assertions do not leak between cases.</li>
+        <li>Measure <code>[data-dashboard-surface="standalone"]</code> and <code>[data-dashboard-content]</code> directly. To test an available width independent of AppShell, constrain the marked outer surface inside a sufficiently wide browser viewport, record its actual rectangle, and restore styles after each case.</li>
+        <li>Assert expected card IDs, DOM order, computed grid columns, card and value bounds, target dimensions, period labels and selected state, option-menu visibility, map action behavior, and <code>scrollWidth - clientWidth &lt;= 1</code>.</li>
+        <li>For the protected map consumer, verify docked and full states without altering geometry: expected panel controls, unchanged card sequence, Open full screen availability in map context, persistent map canvas, and bottom-strip return behavior.</li>
+        <li>Browser unavailability is an environment blocker, not a pass. Record the exact missing prerequisite and leave affected acceptance items pending.</li>
+      </ul>
+
+      <h3>Layer 2: Behavioral Acceptance</h3>
+      <ul>
+        <li>Generate <code>test-results.json</code> from the responsive and role matrices with UI steps, expected observations, pending status, and evidence fields. Do not mark an item passed without running it.</li>
+        <li>Copy the approved repository-owned <code>test.html</code> viewer verbatim. It reflects JSON state and keeps the file-picker, roll-up, and download behavior.</li>
+        <li>Manually verify at least one 320px touch/coarse-pointer run and keyboard-only traversal of header, periods, every visible card menu, card rows, and detail links.</li>
+        <li>Manually compare <code>/map</code> docked/full screenshots against T0 to catch visual geometry regressions that DOM assertions miss.</li>
+        <li>Finalization remains blocked until every item passes or each failure has a written waiver.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Observable Done Criteria</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" disabled checked> <code>/dashboard</code> exposes distinct standalone surface and content markers and uses an explicit typed standalone context through shared dashboard components.</li>
+        <li><input type="checkbox" disabled checked> Dashboard-owned content has no horizontal overflow from a measured 320px available container through 1920px, within the 1px tolerance.</li>
+        <li><input type="checkbox" disabled checked> The centered inner content grows fluidly and never exceeds 1400px at 1440px and 1920px available widths.</li>
+        <li><input type="checkbox" disabled checked> Header and period controls meet the exact 320/480/768 behavior and 40/44px target rules without hiding greeting, date, scope, period, or Open the map.</li>
+        <li><input type="checkbox" disabled checked> Eligible owner, admin, and manager dashboards render Needs Attention first in DOM and visual order at every tested width.</li>
+        <li><input type="checkbox" disabled checked> Owner, manager, admin, and agent card counts, variants, data scope, and exact ordering match the role matrix.</li>
+        <li><input type="checkbox" disabled checked> Hero and supporting grids match every column count in the responsive matrix and preserve sequence while wrapping.</li>
+        <li><input type="checkbox" disabled checked> Every authorized card, value, chart, legend, label, subtitle, footer, row, menu, and detail action remains accessible; no responsive auto-collapse or information removal was introduced.</li>
+        <li><input type="checkbox" disabled checked> Long financial and numeric values preserve existing formatters and are not truncated, overlapped, clipped, or pushed outside their card at 320px and Extra Large text.</li>
+        <li><input type="checkbox" disabled checked> Standalone card options are discoverable without hover; primary actions are at least 44px; secondary actions/rows are at least 40px; thin charts have usable named alternatives.</li>
+        <li><input type="checkbox" disabled checked> Standalone menus omit the dead Open full screen action while map-panel menus retain it.</li>
+        <li><input type="checkbox" disabled checked> <code>/map</code> hidden/docked/full state, panel geometry, map reservation, map persistence, bottom strip, card ordering, keyboard cycle, and animation behavior match the baseline.</li>
+        <li><input type="checkbox" disabled checked> No AppShell, sidebar, top-bar, overlay, route, other-feature, domain, permission, selector, finance, date, store-schema, API, database, or dependency change was introduced.</li>
+        <li><input type="checkbox" disabled checked> Typecheck, lint, build, mock validation, and focused dashboard browser checks pass; the repository accessibility regression was run and its pre-existing empty-park fixture failure is evidenced and narrowly waived without claiming a pass.</li>
+        <li><input type="checkbox" disabled checked> Post-execution <code>test-results.json</code> and <code>test.html</code> exist, trace this contract, and do not fabricate manual results.</li>
+        <li><input type="checkbox" disabled checked> The final report states that Done covers dashboard-owned content inside the router outlet and does not claim complete shell-level mobile readiness.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="parity">
+      <h2>Spec-Code Parity And Stop Conditions</h2>
+      <ul>
+        <li>This document is the source of truth for intent and acceptance. Code is the source of truth for implementation. Every execution loop compares both before advancing.</li>
+        <li>If implementation requires changing an excluded file, role policy, data/finance behavior, panel geometry, state schema, dependency, content order, width band, or Done criterion, stop and revise this spec before making that change.</li>
+        <li>Every revision records date, reason, scope impact, risk change, affected tasks, and verification changes in the append-only Revision Log.</li>
+        <li>Below-Level-3 implementation discoveries may be incorporated into this same spec and execution may resume after the revision is rechecked. Level 3 or 4 divergence requires user discussion.</li>
+        <li>Do not mark the hero status Completed until all Done criteria are evidenced and Layer 2 rolls up to Passed under the project finalization rules.</li>
+        <li>A shell-level failure is reported as an external limitation. It must not be silently fixed, hidden, or used to expand this plan.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="readiness">
+      <h2>Execution Readiness Decision</h2>
+      <ul>
+        <li><strong>Decision:</strong> Execution started after the mandatory branch/path/status preflight. No unresolved product, architecture, dependency, database, migration, or acceptance blocker remains in the spec.</li>
+        <li><strong>First-pass findings resolved:</strong> added exact breakpoint-edge probes, explicit Extra Large text cases, a no-global-CSS/tooling boundary, and the observed shared-checkout churn stop condition.</li>
+        <li><strong>Operational condition:</strong> execution completed in the verified secondary worktree <code>/tmp/shelter-dashboard-content-responsiveness</code> on <code>jovanie/dashboard-screen-responsiveness-execution</code>. The shared checkout and planning branch were not used as write surfaces.</li>
+        <li><strong>Scope truth:</strong> readiness applies only to dashboard-owned content in the router outlet. AppShell remains an external limitation and complete route-level mobile readiness is not claimed.</li>
+        <li><strong>Planning boundary:</strong> this readiness decision authorizes no application code in <code>-s</code>; implementation begins only under a later <code>-x</code>.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <ul>
+        <li><strong>Rev 1 — 2026-08-03:</strong> Created the planning baseline from accumulated context on <code>jovanie/dashboard-screen-responsiveness</code> at <code>0fc8a80</code>. Recorded the explicit <code>--no-worktree</code> exception, standalone-only boundary, shared-component risk, exact role and width matrices, task loop, verification contract, and honest AppShell limitation.</li>
+        <li><strong>Rev 2 — 2026-08-03:</strong> Readiness tightening added all container-query boundary probes, owner Extra Large text coverage, the dashboard-local Tailwind/no-global-CSS constraint, and a hard stop for observed shared-checkout branch churn. Recheck found no unresolved spec blocker; scope did not expand.</li>
+        <li><strong>Rev 3 — 2026-08-03:</strong> Execution started in user-requested isolation on <code>jovanie/dashboard-screen-responsiveness-execution</code> at <code>/tmp/shelter-dashboard-content-responsiveness</code>, derived from baseline <code>0fc8a80</code>. This replaces the planning-only no-worktree execution assumption without changing product scope.</li>
+        <li><strong>Rev 4 — 2026-08-03:</strong> Completed the standalone implementation and 977-check responsive acceptance loop. Scope remains dashboard-only. Verification recorded zero-exit type, lint, build, mock, focused-browser, focused-QA-lint, and diff gates; a broad accessibility run exposed the pre-existing intentional empty-park fixture mismatch after 12 passing checks. Risk remains Level 2 because the failure is outside this plan; mitigation is the explicit narrow waiver in <code>test-results.json</code>, with no map/mock-data or accessibility-suite mutation.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

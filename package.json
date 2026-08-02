@@ -12,6 +12,7 @@
     "qa:headful": "node qa/walkthrough.mjs --headful",
     "qa:smoke": "node qa/smoke.mjs",
     "qa:accessibility": "node qa/accessibility-smoke.mjs",
+    "qa:dashboard-responsive": "node qa/dashboard-responsive-smoke.mjs",
     "qa:walkthrough": "node qa/walkthrough.mjs",
     "validate:mock": "vite-node qa/validate-mock.ts"
   },

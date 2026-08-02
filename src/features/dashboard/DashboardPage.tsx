@@ -13,21 +13,30 @@ export default function DashboardPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="h-full overflow-y-auto">
-      <DashboardHeader
-        action={
-          <button
-            type="button"
-            onClick={() => navigate('/map')}
-            className="flex min-h-10 items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-control text-muted transition-colors hover:text-ink"
-          >
-            <Icon icon={IconMap} size={14} />
-            Open the map
-          </button>
-        }
-      />
-      <div className="px-5 pb-8">
-        <CardGrid layout="full" />
+    <div
+      data-dashboard-surface="standalone"
+      className="h-full min-w-0 overflow-y-auto"
+    >
+      <div
+        data-dashboard-content
+        className="@container/dashboard mx-auto w-full max-w-[1400px]"
+      >
+        <DashboardHeader
+          surface="standalone"
+          action={
+            <button
+              type="button"
+              onClick={() => navigate('/map')}
+              className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-3 py-2 text-control text-muted transition-colors hover:text-ink @min-[480px]/dashboard:w-auto"
+            >
+              <Icon icon={IconMap} size={14} />
+              Open the map
+            </button>
+          }
+        />
+        <div className="px-4 pb-8 @min-[640px]/dashboard:px-6">
+          <CardGrid layout="full" surface="standalone" />
+        </div>
       </div>
     </div>
   )

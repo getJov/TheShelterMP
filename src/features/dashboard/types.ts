@@ -5,9 +5,13 @@ import type { DashboardPeriod } from '@/stores/panel'
 /** Which of the two grids a card is rendering into. */
 export type DashboardLayout = 'docked' | 'full'
 
+/** Which product surface owns the dashboard presentation. */
+export type DashboardSurface = 'map-panel' | 'standalone'
+
 export interface CardProps {
   def: CardDef
   layout: DashboardLayout
+  surface: DashboardSurface
   period: DashboardPeriod
   user: User
   /** Non-null only when the viewer is an agent. */

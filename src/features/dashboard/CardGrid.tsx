@@ -8,7 +8,7 @@ import { usePanel } from '@/stores/panel'
 import { useCurrentUserOrNull } from '@/lib/permissions'
 import { CARD_STAGGER, CARD_STAGGER_CAP, PANEL_TRANSITION } from './constants'
 import { visibleCards } from './cards.config'
-import type { CardDef, DashboardLayout } from './types'
+import type { CardDef, DashboardLayout, DashboardSurface } from './types'
 
 /**
  * Both grids derive from `size` alone, so changing one word in cards.config
@@ -16,9 +16,11 @@ import type { CardDef, DashboardLayout } from './types'
  */
 export function CardGrid({
   layout,
+  surface,
   className,
 }: {
   layout: DashboardLayout
+  surface: DashboardSurface
   className?: string
 }) {
   const user = useCurrentUserOrNull()
@@ -43,8 +45,10 @@ export function CardGrid({
     )
   }
 
-  const heroes = cards.filter((c) => c.size === 'hero')
-  const smalls = cards.filter((c) => c.size === 'small')
+  const priority = surface === 'standalone' ? cards.find((card) => card.id === 'attention') : undefined
+  const sequencedCards = priority ? cards.filter((card) => card !== priority) : cards
+  const heroes = sequencedCards.filter((card) => card.size === 'hero')
+  const smalls = sequencedCards.filter((card) => card.size === 'small')
 
   let index = -1
   const render = (def: CardDef) => {
@@ -66,6 +70,7 @@ export function CardGrid({
         <Component
           def={def}
           layout={layout}
+          surface={surface}
           period={period}
           user={user}
           agent={agent}
@@ -84,6 +89,40 @@ export function CardGrid({
         {heroes.map(render)}
         {smalls.length > 0 && (
           <div className="grid grid-cols-1 gap-3">{smalls.map(render)}</div>
+        )}
+      </div>
+    )
+  }
+
+  if (surface === 'standalone') {
+    return (
+      <div className={cn('space-y-3 @min-[640px]/dashboard:space-y-4', className)}>
+        {priority && (
+          <div data-dashboard-grid="priority" className="grid grid-cols-1 gap-3 @min-[640px]/dashboard:gap-4">
+            {render(priority)}
+          </div>
+        )}
+        {heroes.length > 0 && (
+          <div
+            data-dashboard-grid="hero"
+            className={cn(
+              'grid gap-3 @min-[640px]/dashboard:gap-4',
+              STANDALONE_HERO_COLS[Math.min(heroes.length, 3)],
+            )}
+          >
+            {heroes.map(render)}
+          </div>
+        )}
+        {smalls.length > 0 && (
+          <div
+            data-dashboard-grid="supporting"
+            className={cn(
+              'grid gap-3 @min-[640px]/dashboard:gap-4',
+              STANDALONE_SMALL_COLS[Math.min(smalls.length, 5)],
+            )}
+          >
+            {smalls.map(render)}
+          </div>
         )}
       </div>
     )
@@ -122,4 +161,18 @@ const SMALL_COLS: Record<number, string> = {
   3: 'sm:grid-cols-2 lg:grid-cols-3',
   4: 'sm:grid-cols-2 xl:grid-cols-4',
   5: 'sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5',
+}
+
+const STANDALONE_HERO_COLS: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2',
+  3: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2 @min-[960px]/dashboard:grid-cols-3',
+}
+
+const STANDALONE_SMALL_COLS: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2',
+  3: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2 @min-[896px]/dashboard:grid-cols-3',
+  4: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2 @min-[896px]/dashboard:grid-cols-3 @min-[1200px]/dashboard:grid-cols-4',
+  5: 'grid-cols-1 @min-[640px]/dashboard:grid-cols-2 @min-[896px]/dashboard:grid-cols-3 @min-[1200px]/dashboard:grid-cols-4 @min-[1360px]/dashboard:grid-cols-5',
 }
