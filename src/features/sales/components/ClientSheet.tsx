@@ -15,6 +15,7 @@ import { IconMail, IconPhone, IconStar } from '@/components/ui-brand/icons'
 import { ASSUMPTIONS } from '@/domain'
 import { useDataset, indexes } from '@/stores/dataset'
 import { fmtDate } from '@/lib/dates'
+import { cn } from '@/lib/utils'
 import { ContractStatusChip, FieldRow, HealthChip } from './chips'
 import { buildRow } from '../lib'
 
@@ -51,11 +52,11 @@ export function ClientSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[560px]">
+      <SheetContent className="flex h-dvh max-h-dvh w-full flex-col gap-0 p-0 sm:h-full sm:max-h-none sm:max-w-[560px]">
         {model ? (
           <>
-            <SheetHeader className="gap-1 border-b border-line px-5 py-4">
-              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[22px]">
+            <SheetHeader className="shrink-0 gap-1 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 sm:px-5 sm:py-4 sm:pr-12">
+              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[20px] leading-tight sm:text-[22px]">
                 {clientFullName(model.client)}
                 {model.client.seniorCitizen && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-gold/45 bg-gold/12 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold-deep dark:text-gold">
@@ -69,8 +70,8 @@ export function ClientSheet({
               </SheetDescription>
             </SheetHeader>
 
-            <ScrollArea className="min-h-0 flex-1 overflow-y-auto">
-              <div className="space-y-5 p-5">
+            <ScrollArea className="min-h-0 flex-1 overscroll-contain">
+              <div className="space-y-5 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">
                 <section className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5">
                   <FieldRow label="Address">
                     {model.client.address}, {model.client.city}, {model.client.province}
@@ -83,7 +84,7 @@ export function ClientSheet({
                   </FieldRow>
                   <FieldRow label="Email">
                     {model.client.email ? (
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex min-w-0 items-center gap-1.5 break-all">
                         <Icon icon={IconMail} size={13} className="text-muted" />
                         {model.client.email}
                       </span>
@@ -98,7 +99,7 @@ export function ClientSheet({
                   </FieldRow>
                   {model.client.seniorCitizen && (
                     <FieldRow label="Senior citizen">
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex min-w-0 items-center gap-1.5 break-all">
                         {model.client.seniorCitizenId ?? 'ID not captured'}
                         <AssumedChip
                           why={ASSUMPTIONS.seniorCitizenDiscount.why}
@@ -109,10 +110,14 @@ export function ClientSheet({
                   )}
                 </section>
 
-                <section className="grid gap-2 sm:grid-cols-3">
+                <section className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   <Tile label="Contracts" value={String(model.rows.length)} />
                   <Tile label="Contracted" centavos={model.totalCentavos} />
-                  <Tile label="Outstanding" centavos={model.outstandingCentavos} />
+                  <Tile
+                    label="Outstanding"
+                    centavos={model.outstandingCentavos}
+                    className="col-span-2 sm:col-span-1"
+                  />
                 </section>
 
                 <section>
@@ -130,21 +135,23 @@ export function ClientSheet({
                           <button
                             type="button"
                             onClick={() => onOpenContract?.(r.contract.id)}
-                            className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-3.5 py-2.5 text-left transition-colors hover:bg-surface-2"
+                            className="grid min-h-11 w-full gap-2 px-3.5 py-3 text-left transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:flex sm:min-h-0 sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1 sm:py-2.5"
                           >
-                            <span className="font-mono text-[12.5px] text-ink">
-                              {r.contractNo}
+                            <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                              <span className="font-mono text-[12.5px] text-ink">
+                                {r.contractNo}
+                              </span>
+                              <span className="font-mono text-[12px] text-muted">
+                                {r.lotCode}
+                              </span>
+                              <span className="text-[12px] text-muted">{r.tier}</span>
                             </span>
-                            <span className="font-mono text-[12px] text-muted">
-                              {r.lotCode}
-                            </span>
-                            <span className="text-[12px] text-muted">{r.tier}</span>
-                            <span className="ml-auto flex items-center gap-2">
+                            <span className="flex min-w-0 flex-wrap items-center gap-2 sm:ml-auto">
                               <ContractStatusChip status={r.contract.status} />
                               <HealthChip health={r.health} dense />
                               <MoneyText
                                 centavos={r.outstandingCentavos}
-                                className="w-24 text-right text-[13px] text-ink"
+                                className="ml-auto text-right text-[13px] text-ink"
                               />
                             </span>
                             <span className="w-full text-[11.5px] text-muted">
@@ -171,13 +178,20 @@ function Tile({
   label,
   value,
   centavos,
+  className,
 }: {
   label: string
   value?: string
   centavos?: number
+  className?: string
 }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5">
+    <div
+      className={cn(
+        'rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5',
+        className,
+      )}
+    >
       <p className="eyebrow text-muted">{label}</p>
       {centavos !== undefined ? (
         <MoneyText

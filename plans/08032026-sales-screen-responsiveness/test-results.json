@@ -1,0 +1,136 @@
+{
+  "plan": "plans/08032026-sales-screen-responsiveness",
+  "generatedAt": "2026-08-03",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Responsive sales matrix across roles and target viewports",
+      "surface": "ui",
+      "precondition": "Isolated worktree app running with deterministic mock identities for owner, admin, manager, and agent.",
+      "steps": [
+        "Open /sales as each role at 320, 360, 390, 768, 1024, and 1440px, plus 844x390 landscape.",
+        "Check the route, visible lookup, all four tabs, record presentation, console, and document width.",
+        "Open the mobile navigation and filter sheet below 1024px; confirm desktop tables at 1024px and above."
+      ],
+      "expected": "Every matrix case renders without page-level horizontal overflow or console errors; mobile uses prioritized records and desktop retains tables.",
+      "status": "pass",
+      "evidence": "npm run qa:sales-responsive — ALL PASSED; evidence/{owner,admin,manager,agent}-{320,390,768,1440}.png",
+      "notes": "The mobile shell and record presentation remain active through 1023px; the 232px rail and desktop tables return at 1024px.",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Accessible shell, filters, zoom, and keyboard sorting",
+      "surface": "ui",
+      "precondition": "Owner or admin session at a responsive viewport.",
+      "steps": [
+        "Open and dismiss mobile navigation and secondary filters by keyboard.",
+        "Select Dashboard from mobile navigation, then return to /sales.",
+        "Apply 200% browser page scale at 390px and inspect page overflow.",
+        "At 1024px, focus a sortable table header and press Enter."
+      ],
+      "expected": "Overlays return focus, route selection closes navigation, 200% zoom remains contained, and keyboard sorting updates aria-sort.",
+      "status": "pass",
+      "evidence": "evidence/primary-flow-results.json; evidence/shell-cross-route-results.json; npm run qa:sales-responsive reported route-selection and aria-sort checks passed.",
+      "notes": "Focused QA was also run with prefers-reduced-motion: reduce for the owner 320px case.",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Lookup, tabs, filters, and mobile record priorities",
+      "surface": "ui",
+      "precondition": "Any deterministic role on /sales.",
+      "steps": [
+        "Confirm search remains immediately visible.",
+        "Open Contracts, Payments, Receivables, and Clients at phone, tablet, and desktop widths.",
+        "Open the compact secondary-filter sheet below 1024px and inspect the visible record layout."
+      ],
+      "expected": "All views remain reachable and scannable, no narrow layout forces a visible table, and no page overflow occurs.",
+      "status": "pass",
+      "evidence": "npm run qa:sales-responsive — all tab, filter, table-visibility, and overflow assertions passed; evidence/manager-390.png and evidence/owner-1440.png.",
+      "notes": "Desktop and mobile presenters consume the same filtered row objects and formatters.",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Agent requests a hold at 320px",
+      "surface": "ui",
+      "precondition": "Agent usr_012 with an available lot and client in deterministic mock data.",
+      "steps": [
+        "Open Request hold at 320x700.",
+        "Select an available lot and buyer.",
+        "Submit the request and wait for the success state."
+      ],
+      "expected": "The dialog stays inside the visual viewport and the hold request completes with observable success.",
+      "status": "pass",
+      "evidence": "evidence/primary-flow-results.json; evidence/hold-ready-agent-320.png; evidence/hold-success-agent-320.png",
+      "notes": "Measured dialog bounds: 8,159 to 312,541 inside 320x700.",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Manager posts a payment at 320px",
+      "surface": "ui",
+      "precondition": "Manager usr_004 with payment:post and an outstanding receivable.",
+      "steps": [
+        "Open Receivables and select Post payment.",
+        "Enter a valid amount and submit.",
+        "Wait for the posted-payment success state."
+      ],
+      "expected": "The payment workflow fits 320x700, preserves the preview, and posts successfully.",
+      "status": "pass",
+      "evidence": "evidence/primary-flow-results.json; evidence/payment-ready-manager-320.png; evidence/payment-success-manager-320.png",
+      "notes": "Measured dialog bounds: 8,8 to 312,692 inside 320x700.",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Admin completes contract and nested-client creation at 320px",
+      "surface": "ui",
+      "precondition": "Admin usr_002 with an available lot and contract:create/client:manage permissions.",
+      "steps": [
+        "Open New contract and select an available lot.",
+        "Create a nested client, confirm focus returns to the buyer combobox, and keep the new client selected.",
+        "Advance through Terms, Services, and Review by keyboard, then create the contract."
+      ],
+      "expected": "Every builder step and footer action stays reachable, nested focus is restored, and contract creation succeeds.",
+      "status": "pass",
+      "evidence": "evidence/primary-flow-results.json; evidence/nested-client-admin-320.png; evidence/contract-terms-admin-320.png; evidence/contract-review-admin-320.png; evidence/contract-success-admin-320.png",
+      "notes": "Builder and review bounds remained 8,8 to 312,692 inside 320x700.",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Details, invoice, transfer, cancellation, and void dialogs fit mobile",
+      "surface": "ui",
+      "precondition": "Admin usr_002 on /sales at 390x844 with a contract containing a posted payment.",
+      "steps": [
+        "Open contract details and invoice preview.",
+        "Open and safely dismiss ownership transfer and cancellation.",
+        "Open and safely dismiss void payment without committing either destructive action."
+      ],
+      "expected": "The detail sheet and every nested transaction surface remain inside the viewport with reachable actions.",
+      "status": "pass",
+      "evidence": "evidence/primary-flow-results.json; evidence/invoice-admin-390.png; evidence/transfer-admin-390.png; evidence/cancel-admin-390.png; evidence/void-admin-390.png",
+      "notes": "Invoice print CSS is unchanged; the mobile schedule is print-hidden and the existing print table is explicitly retained.",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "Repository, data, desktop, and spec-parity gates",
+      "surface": "cli",
+      "precondition": "Run from codex/sales-screen-responsiveness-execution in the isolated linked worktree.",
+      "steps": [
+        "Run npx tsc --noEmit -p tsconfig.app.json.",
+        "Run npm run lint, npm run validate:mock, npm run build, and git diff --check.",
+        "Inspect the diff for dependency, route, permission, store, finance, domain, migration, and print-CSS drift."
+      ],
+      "expected": "All commands exit successfully; only pre-existing lint warnings remain; implementation matches the approved responsive-only scope.",
+      "status": "pass",
+      "evidence": "Typecheck PASS; lint PASS with pre-existing warnings only; validate:mock PASS; build PASS; git diff --check PASS; evidence/shell-cross-route-results.json (29 route-role cases); evidence/owner-1440.png and evidence/admin-1440.png",
+      "notes": "No package-lock, dependency, route, permission, store, finance, domain, schema, or migration changes are present. Local origin/main remains 16 commits ahead and was not synchronized without authorization.",
+      "waiver": ""
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "status": "Passed",
+  "results": [
+    {
+      "title": "hold dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "hold dialog fits 320px viewport",
+      "status": "pass",
+      "detail": "{\"left\":8,\"top\":159,\"right\":312,\"bottom\":541,\"viewportWidth\":320,\"viewportHeight\":700}"
+    },
+    {
+      "title": "available lot can be selected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "buyer can be selected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "hold request submits",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "hold success state is observable",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "receivables tab opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "payment dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "payment dialog fits 320px viewport",
+      "status": "pass",
+      "detail": "{\"left\":8,\"top\":8,\"right\":312,\"bottom\":692,\"viewportWidth\":320,\"viewportHeight\":700}"
+    },
+    {
+      "title": "payment submits",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "payment success state is observable",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "contract builder opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "contract builder fits 320px viewport",
+      "status": "pass",
+      "detail": "{\"left\":8,\"top\":8,\"right\":312,\"bottom\":692,\"viewportWidth\":320,\"viewportHeight\":700}"
+    },
+    {
+      "title": "builder lot can be selected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "nested client dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "nested client dialog fits 320px viewport",
+      "status": "pass",
+      "detail": "{\"left\":8,\"top\":26,\"right\":312,\"bottom\":674,\"viewportWidth\":320,\"viewportHeight\":700}"
+    },
+    {
+      "title": "nested client submits",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "focus returns to buyer combobox",
+      "status": "pass",
+      "detail": "cb-buyer"
+    },
+    {
+      "title": "new client remains selected",
+      "status": "pass",
+      "detail": "Mobile Acceptance"
+    },
+    {
+      "title": "builder advances to terms",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "builder advances to services",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "builder advances to review",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "builder review fits 320px viewport",
+      "status": "pass",
+      "detail": "{\"left\":8,\"top\":8,\"right\":312,\"bottom\":692,\"viewportWidth\":320,\"viewportHeight\":700}"
+    },
+    {
+      "title": "contract creation submits",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "contract creation success state is observable",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "mobile navigation returns focus to trigger",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "filter sheet returns focus to trigger",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "200% zoom is active",
+      "status": "pass",
+      "detail": "{\"scale\":2,\"scrollWidth\":390,\"clientWidth\":390}"
+    },
+    {
+      "title": "200% zoom keeps page overflow contained",
+      "status": "pass",
+      "detail": "{\"scale\":2,\"scrollWidth\":390,\"clientWidth\":390}"
+    },
+    {
+      "title": "contract details open",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "contract detail sheet fits mobile viewport",
+      "status": "pass",
+      "detail": "{\"left\":0,\"top\":0,\"right\":390,\"bottom\":844,\"viewportWidth\":390,\"viewportHeight\":844}"
+    },
+    {
+      "title": "invoice dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "invoice dialog fits mobile viewport",
+      "status": "pass",
+      "detail": "{\"left\":0,\"top\":0,\"right\":390,\"bottom\":844,\"viewportWidth\":390,\"viewportHeight\":844}"
+    },
+    {
+      "title": "ownership transfer dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "ownership transfer dialog fits mobile viewport",
+      "status": "pass",
+      "detail": "{\"left\":0,\"top\":104,\"right\":390,\"bottom\":741,\"viewportWidth\":390,\"viewportHeight\":844}"
+    },
+    {
+      "title": "cancellation dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "cancellation dialog fits mobile viewport",
+      "status": "pass",
+      "detail": "{\"left\":0,\"top\":0,\"right\":390,\"bottom\":844,\"viewportWidth\":390,\"viewportHeight\":844}"
+    },
+    {
+      "title": "cancellation can be dismissed safely",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "void-payment dialog opens",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "title": "void-payment dialog fits mobile viewport",
+      "status": "pass",
+      "detail": "{\"left\":0,\"top\":0,\"right\":390,\"bottom\":844,\"viewportWidth\":390,\"viewportHeight\":844}"
+    },
+    {
+      "title": "void-payment can be dismissed safely",
+      "status": "pass",
+      "detail": ""
+    }
+  ]
+}

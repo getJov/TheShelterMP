@@ -82,11 +82,11 @@ export function ContractDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[720px]">
+      <SheetContent className="flex h-dvh max-h-dvh w-full flex-col gap-0 p-0 sm:h-full sm:max-h-none sm:max-w-[720px]">
         {contract ? (
           <>
-            <SheetHeader className="gap-1 border-b border-line px-5 py-4">
-              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[22px]">
+            <SheetHeader className="shrink-0 gap-1 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 sm:px-5 sm:py-4 sm:pr-12">
+              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[20px] leading-tight sm:text-[22px]">
                 <span className="font-mono text-[17px]">{contract.contractNo}</span>
                 <ContractStatusChip status={contract.status} />
                 <HealthChip health={paymentHealth(contract, TODAY)} />
@@ -98,7 +98,7 @@ export function ContractDetailSheet({
               </SheetDescription>
             </SheetHeader>
 
-            <ScrollArea className="min-h-0 flex-1 overflow-y-auto">
+            <ScrollArea className="min-h-0 flex-1 overscroll-contain">
               <ContractDetailBody contract={contract} onClose={() => onOpenChange(false)} />
             </ScrollArea>
           </>
@@ -157,7 +157,7 @@ export function ContractDetailBody({
     !cancelled && model.balance.outstandingCentavos <= 0 && !contract.certificateNo
 
   return (
-    <div className="space-y-5 p-5">
+    <div className="space-y-5 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">
       {cancelled && (
         <div className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] text-ink">
           <Icon icon={IconWarning} size={16} className="mt-0.5 text-danger" />
@@ -173,15 +173,20 @@ export function ContractDetailBody({
 
       {/* actions */}
       {!cancelled && (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           {canPost && contract.status === 'active' && (
-            <Button size="sm" onClick={() => setPayOpen(true)}>
+            <Button
+              size="sm"
+              className="col-span-2 min-h-11 sm:min-h-0 sm:w-auto"
+              onClick={() => setPayOpen(true)}
+            >
               Post payment
             </Button>
           )}
           {canApprove && contract.status === 'pending_approval' && (
             <Button
               size="sm"
+              className="col-span-2 min-h-11 sm:min-h-0 sm:w-auto"
               onClick={() => {
                 if (!user) return
                 approveContract(contract.id, user)
@@ -195,7 +200,7 @@ export function ContractDetailBody({
             <Button
               size="sm"
               variant="outline"
-              className="gap-1.5"
+              className="col-span-2 min-h-11 gap-1.5 sm:min-h-0 sm:w-auto"
               onClick={() => {
                 if (!user) return
                 const no = issueCertificate(contract.id, user)
@@ -210,7 +215,7 @@ export function ContractDetailBody({
           <Button
             size="sm"
             variant="outline"
-            className="gap-1.5"
+            className="min-h-11 gap-1.5 sm:min-h-0 sm:w-auto"
             onClick={() => setInvoiceOpen(true)}
           >
             <Icon icon={IconInvoice} size={15} />
@@ -220,7 +225,7 @@ export function ContractDetailBody({
             <Button
               size="sm"
               variant="outline"
-              className="gap-1.5"
+              className="min-h-11 gap-1.5 sm:min-h-0 sm:w-auto"
               onClick={() => setTransferOpen(true)}
             >
               <Icon icon={IconTransfer} size={15} />
@@ -231,7 +236,7 @@ export function ContractDetailBody({
             <Button
               size="sm"
               variant="ghost"
-              className="text-danger hover:text-danger"
+              className="col-span-2 min-h-11 text-danger hover:text-danger sm:min-h-0 sm:w-auto"
               onClick={() => setCancelOpen(true)}
             >
               Cancel contract
@@ -355,18 +360,22 @@ export function ContractDetailBody({
                   {p.orNo}
                 </span>
                 <span className="text-[12px] text-muted">{fmtDate(p.paidAt)}</span>
-                <span className="text-[12px] text-muted">
+                <span className="hidden text-[12px] text-muted sm:inline">
                   {PAYMENT_METHOD_LABEL[p.method]}
                   {p.referenceNo ? ` · ${p.referenceNo}` : ''}
                 </span>
-                <span className="ml-auto flex items-center gap-3">
+                <span className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 pl-6 sm:ml-auto sm:w-auto sm:pl-0">
+                  <span className="text-[12px] text-muted sm:hidden">
+                    {PAYMENT_METHOD_LABEL[p.method]}
+                    {p.referenceNo ? ` · ${p.referenceNo}` : ''}
+                  </span>
                   <span className="text-[11.5px] text-muted">
                     trust <MoneyText centavos={p.trustFundCentavos} className="text-green" />
                   </span>
                   <MoneyText
                     centavos={p.amountCentavos}
                     className={cn(
-                      'text-[13.5px] text-ink',
+                      'ml-auto text-[13.5px] text-ink sm:ml-0',
                       p.status === 'void' && 'line-through',
                     )}
                   />
@@ -374,7 +383,7 @@ export function ContractDetailBody({
                     <Button
                       size="xs"
                       variant="ghost"
-                      className="text-danger hover:text-danger"
+                      className="min-h-11 text-danger hover:text-danger sm:min-h-0"
                       onClick={() => setVoidTarget(p)}
                     >
                       Void
@@ -415,7 +424,9 @@ export function ContractDetailBody({
               />
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] text-ink">{d.label}</span>
-                <span className="block truncate text-[11.5px] text-muted">{d.detail}</span>
+                <span className="block break-words text-[11.5px] text-muted sm:truncate">
+                  {d.detail}
+                </span>
               </span>
               <span
                 className={cn(
@@ -498,7 +509,10 @@ function CommissionByLevel({ entries }: { entries: CommissionEntry[] }) {
           const total = rows.reduce((s, r) => s + r.amountCentavos, 0)
           const live = rows.filter((r) => r.status !== 'voided')
           return (
-            <li key={level} className="flex items-center justify-between gap-3 px-3.5 py-2">
+            <li
+              key={level}
+              className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2"
+            >
               <span className="min-w-0">
                 <span className="block text-[13px] text-ink">
                   {agentNameOf(rows[0]!.agentId)}
@@ -509,13 +523,13 @@ function CommissionByLevel({ entries }: { entries: CommissionEntry[] }) {
                   entries live
                 </span>
               </span>
-              <MoneyText centavos={total} className="text-[13.5px] text-ink" />
+              <MoneyText centavos={total} className="ml-auto text-[13.5px] text-ink" />
             </li>
           )
         })}
       </ul>
-      <div className="flex items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[11.5px] text-muted">
-        <span className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[11.5px] text-muted">
+        <span className="flex flex-wrap items-center gap-1.5">
           Basis <MoneyText centavos={basis} className="text-ink" /> — the full collected
           amount
           <AssumedChip why={ASSUMPTIONS.commissionRates.why} label="Rates assumed" />

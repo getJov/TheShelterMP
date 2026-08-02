@@ -16,6 +16,7 @@ export function DateField({
   min,
   id,
   className,
+  label,
 }: {
   value: ISODate
   onChange: (v: ISODate) => void
@@ -23,6 +24,7 @@ export function DateField({
   min?: ISODate
   id?: string
   className?: string
+  label?: string
 }) {
   const [open, setOpen] = useState(false)
 
@@ -32,13 +34,19 @@ export function DateField({
         <Button
           id={id}
           variant="outline"
+          aria-label={label}
+          aria-expanded={open}
           className={cn('w-full justify-start gap-2 font-normal', className)}
         >
           <Icon icon={IconBurials} size={15} className="opacity-70" />
           <span className="tabular">{fmtDate(value)}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-0">
+      <PopoverContent
+        align="start"
+        collisionPadding={8}
+        className="max-h-[var(--radix-popover-content-available-height)] w-auto max-w-[calc(100vw-1rem)] overflow-auto p-0"
+      >
         <Calendar
           mode="single"
           defaultMonth={toDate(value)}

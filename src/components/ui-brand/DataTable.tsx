@@ -92,33 +92,53 @@ export function DataTable<T>({
               <TableHead
                 key={c.key}
                 style={c.width ? { width: c.width } : undefined}
-                className={cn(
-                  pad,
-                  'eyebrow h-auto bg-surface-2 text-gold-deep dark:text-gold',
-                  c.align === 'right' && 'text-right',
-                  c.align === 'center' && 'text-center',
-                  c.sortBy && 'cursor-pointer select-none hover:text-ink',
-                  c.headClassName,
-                )}
-                onClick={
+                aria-sort={
                   c.sortBy
-                    ? () =>
-                        setSort((s) =>
-                          s?.key === c.key
-                            ? { key: c.key, dir: s.dir === 'asc' ? 'desc' : 'asc' }
-                            : { key: c.key, dir: 'asc' },
-                        )
+                    ? sort?.key === c.key
+                      ? sort.dir === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
                     : undefined
                 }
+                className={cn(
+                  'eyebrow h-auto bg-surface-2 text-gold-deep dark:text-gold',
+                  c.sortBy ? 'p-0' : pad,
+                  !c.sortBy && c.align === 'right' && 'text-right',
+                  !c.sortBy && c.align === 'center' && 'text-center',
+                  c.headClassName,
+                )}
               >
-                <span className="inline-flex items-center gap-1">
-                  {c.header}
-                  {sort?.key === c.key && (
-                    <span aria-hidden className="text-[9px]">
-                      {sort.dir === 'asc' ? '▲' : '▼'}
-                    </span>
-                  )}
-                </span>
+                {c.sortBy ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSort((current) =>
+                        current?.key === c.key
+                          ? {
+                              key: c.key,
+                              dir: current.dir === 'asc' ? 'desc' : 'asc',
+                            }
+                          : { key: c.key, dir: 'asc' },
+                      )
+                    }
+                    className={cn(
+                      pad,
+                      'inline-flex w-full cursor-pointer select-none items-center gap-1 rounded-sm text-inherit outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                      c.align === 'right' && 'justify-end text-right',
+                      c.align === 'center' && 'justify-center text-center',
+                    )}
+                  >
+                    {c.header}
+                    {sort?.key === c.key && (
+                      <span aria-hidden className="text-[9px]">
+                        {sort.dir === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
+                ) : (
+                  <span className="inline-flex items-center gap-1">{c.header}</span>
+                )}
               </TableHead>
             ))}
           </TableRow>

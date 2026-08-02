@@ -68,8 +68,8 @@ export function TransferOwnershipDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
+      <DialogContent className="flex max-h-dvh w-full max-w-none flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[520px] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 text-left sm:px-6 sm:pt-6 sm:pr-12">
           <DialogTitle className="font-display text-[22px]">
             Change of ownership
           </DialogTitle>
@@ -81,18 +81,22 @@ export function TransferOwnershipDialog({
         </DialogHeader>
 
         {contract && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
+            <div className="flex flex-col items-stretch gap-3 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3 sm:flex-row sm:items-center">
               <div className="min-w-0 flex-1">
                 <p className="eyebrow text-muted">Current owner</p>
-                <p className="truncate text-[13.5px] text-ink">
+                <p className="break-words text-[13.5px] text-ink sm:truncate">
                   {clientNameOf(contract.clientId)}
                 </p>
               </div>
-              <Icon icon={IconTransfer} size={18} className="shrink-0 text-gold-deep dark:text-gold" />
+              <Icon
+                icon={IconTransfer}
+                size={18}
+                className="shrink-0 self-center text-gold-deep dark:text-gold"
+              />
               <div className="min-w-0 flex-1">
                 <p className="eyebrow text-muted">New owner</p>
-                <p className="truncate text-[13.5px] text-ink">
+                <p className="break-words text-[13.5px] text-ink sm:truncate">
                   {to ? clientNameOf(to) : '—'}
                 </p>
               </div>
@@ -136,11 +140,16 @@ export function TransferOwnershipDialog({
           </div>
         )}
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="shrink-0 border-t border-line px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-6">
+          <Button
+            variant="ghost"
+            className="min-h-11 sm:min-h-0"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
           <Button
+            className="min-h-11 sm:min-h-0"
             onClick={submit}
             disabled={!to || reason.trim().length < 4}
           >

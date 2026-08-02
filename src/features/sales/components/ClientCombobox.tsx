@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { clientFullName, type Client, type ClientId } from '@/domain'
 import { useDataset } from '@/stores/dataset'
 import { Button } from '@/components/ui/button'
@@ -38,6 +38,20 @@ export function ClientCombobox({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [createOpen, setCreateOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const restoreCreateFocus = useRef(false)
+
+  useEffect(() => {
+    if (createOpen) {
+      restoreCreateFocus.current = true
+      return
+    }
+    if (!restoreCreateFocus.current) return
+
+    restoreCreateFocus.current = false
+    const frame = requestAnimationFrame(() => triggerRef.current?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [createOpen])
 
   const matches = useMemo(() => {
     void version
@@ -66,6 +80,7 @@ export function ClientCombobox({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             id={id}
             variant="outline"
             role="combobox"
@@ -81,7 +96,8 @@ export function ClientCombobox({
 
         <PopoverContent
           align="start"
-          className="w-[var(--radix-popover-trigger-width)] min-w-[320px] p-0"
+          collisionPadding={8}
+          className="w-[var(--radix-popover-trigger-width)] min-w-0 max-w-[calc(100vw-1rem)] p-0"
         >
           <Command shouldFilter={false}>
             <CommandInput
@@ -91,7 +107,7 @@ export function ClientCombobox({
             />
             <button
               type="button"
-              className="flex w-full items-center gap-2 border-b border-line px-2 py-2 text-left text-[13px] font-medium text-ink hover:bg-surface-2"
+              className="flex min-h-11 w-full items-center gap-2 border-b border-line px-2 py-2 text-left text-[13px] font-medium text-ink outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               onClick={() => {
                 setOpen(false)
                 setCreateOpen(true)
@@ -100,7 +116,7 @@ export function ClientCombobox({
               <Icon icon={IconAdd} size={15} className="text-gold-deep dark:text-gold" />
               Create new client
             </button>
-            <CommandList className="max-h-[260px]">
+            <CommandList className="max-h-[min(260px,var(--radix-popover-content-available-height,260px))]">
               {matches.length === 0 && (
                 <CommandEmpty>
                   {trimmed ? `No client matches "${trimmed}".` : 'No clients yet.'}
@@ -150,7 +166,11 @@ function ClientOption({
   onSelect: () => void
 }) {
   return (
-    <CommandItem value={client.id} onSelect={onSelect} className="gap-2">
+    <CommandItem
+      value={client.id}
+      onSelect={onSelect}
+      className="min-h-11 gap-2 py-2 sm:min-h-0 sm:py-1.5"
+    >
       <Icon
         icon={IconUser}
         size={15}

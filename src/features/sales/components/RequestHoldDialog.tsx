@@ -124,101 +124,139 @@ export function RequestHoldDialog({
         onOpenChange(v)
       }}
     >
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
+      <DialogContent className="max-h-[calc(100dvh-1rem)] !w-[calc(100%-1rem)] !max-w-[520px] grid-rows-[auto_minmax(0,1fr)_auto] !gap-0 !overflow-hidden !p-0 sm:max-h-[calc(100dvh-2rem)] [&>[data-slot=dialog-close]]:right-2 [&>[data-slot=dialog-close]]:top-2 [&>[data-slot=dialog-close]]:grid [&>[data-slot=dialog-close]]:size-11 [&>[data-slot=dialog-close]]:place-items-center">
+        <DialogHeader className="shrink-0 px-4 pb-3 pt-4 pr-14 text-left sm:px-6 sm:pt-6 sm:pr-16">
           <DialogTitle className="font-display text-[22px]">Request a hold</DialogTitle>
           <DialogDescription>
             A hold reserves the lot while the family decides. A manager approves it.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {!presetLotId && (
-            <div className="space-y-1.5">
-              <Label htmlFor="hold-lot" className="text-[12.5px] text-muted">
-                Lot
-              </Label>
-              <LotCombobox id="hold-lot" value={pickedLotId} onChange={setPickedLotId} />
-            </div>
-          )}
-        </div>
-
-        {!lot ? (
-          <p className="text-[13px] text-muted">
-            Pick an available lot to continue.
-          </p>
-        ) : (
+        <div className="min-h-0 overflow-y-auto overscroll-contain border-t border-line-soft px-4 py-4 scroll-pb-24 sm:px-6">
           <div className="space-y-4">
-            <div className="flex items-start justify-between gap-4 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3">
-              <div className="min-w-0">
-                <p className="font-mono text-[14px] text-ink">{lotCodeOf(lot)}</p>
-                <p className="mt-0.5 text-[12.5px] text-muted">
-                  {tier?.name ?? '—'} · {lot.areaSqm.toFixed(1)} sqm · capacity{' '}
-                  {lot.capacity}
-                </p>
+            {!presetLotId && (
+              <div className="space-y-1.5">
+                <Label htmlFor="hold-lot" className="text-[12.5px] text-muted">
+                  Lot
+                </Label>
+                <LotCombobox
+                  id="hold-lot"
+                  value={pickedLotId}
+                  onChange={setPickedLotId}
+                />
               </div>
-              <StatusChip status={lot.status} />
-            </div>
+            )}
 
-            {blocked ? (
-              <div className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] text-ink">
-                <Icon icon={IconWarning} size={16} className="mt-0.5 text-danger" />
-                <span>
-                  This lot is{' '}
-                  <span className="font-medium">
-                    {STATUS_APPEARANCE[lot.status].label.toLowerCase()}
-                  </span>
-                  . {STATUS_APPEARANCE[lot.status].description}. Only available lots can
-                  be held.
-                </span>
-              </div>
+            {!lot ? (
+              <p className="text-[13px] text-muted" role="status">
+                Pick an available lot to continue.
+              </p>
             ) : (
-              <>
-                {resolved && (
-                  <PriceCard
-                    resolved={resolved}
-                    tierName={tier?.name ?? '—'}
-                    needType="pre_need"
-                    paymentMode="spot_cash"
-                    asOf={TODAY}
-                  />
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-3 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3">
+                  <div className="min-w-0">
+                    <p className="break-all font-mono text-[14px] text-ink">
+                      {lotCodeOf(lot)}
+                    </p>
+                    <p className="mt-0.5 break-words text-[12.5px] text-muted">
+                      {tier?.name ?? '—'} · {lot.areaSqm.toFixed(1)} sqm · capacity{' '}
+                      {lot.capacity}
+                    </p>
+                  </div>
+                  <StatusChip status={lot.status} />
+                </div>
+
+                {blocked ? (
+                  <div
+                    className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] text-ink"
+                    role="alert"
+                  >
+                    <Icon
+                      icon={IconWarning}
+                      size={16}
+                      className="mt-0.5 shrink-0 text-danger"
+                    />
+                    <span className="min-w-0 break-words">
+                      This lot is{' '}
+                      <span className="font-medium">
+                        {STATUS_APPEARANCE[lot.status].label.toLowerCase()}
+                      </span>
+                      . {STATUS_APPEARANCE[lot.status].description}. Only available lots
+                      can be held.
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    {resolved && (
+                      <PriceCard
+                        resolved={resolved}
+                        tierName={tier?.name ?? '—'}
+                        needType="pre_need"
+                        paymentMode="spot_cash"
+                        asOf={TODAY}
+                      />
+                    )}
+
+                    <div
+                      className="space-y-1.5"
+                      role="group"
+                      aria-describedby={!buyer ? 'hold-buyer-help' : undefined}
+                    >
+                      <Label htmlFor="hold-buyer" className="text-[12.5px] text-muted">
+                        Buyer
+                      </Label>
+                      <ClientCombobox
+                        id="hold-buyer"
+                        value={buyer}
+                        onChange={setBuyer}
+                      />
+                      {!buyer && (
+                        <p id="hold-buyer-help" className="text-[11.5px] text-muted">
+                          Select the buyer whose family is requesting this hold.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="hold-note" className="text-[12.5px] text-muted">
+                        Note <span className="text-muted/70">(optional)</span>
+                      </Label>
+                      <Textarea
+                        id="hold-note"
+                        rows={2}
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder="Family is deciding between this and the next row."
+                      />
+                    </div>
+
+                    <p className="flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
+                      <span>
+                        Hold expires in {HOLD_DURATION_DAYS} days —{' '}
+                        {fmtDate(addDays(TODAY, HOLD_DURATION_DAYS))}
+                      </span>
+                      <AssumedChip why={ASSUMPTIONS.holdDurationDays.why} />
+                    </p>
+                  </>
                 )}
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="hold-buyer" className="text-[12.5px] text-muted">
-                    Buyer
-                  </Label>
-                  <ClientCombobox id="hold-buyer" value={buyer} onChange={setBuyer} />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="hold-note" className="text-[12.5px] text-muted">
-                    Note <span className="text-muted/70">(optional)</span>
-                  </Label>
-                  <Textarea
-                    id="hold-note"
-                    rows={2}
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="Family is deciding between this and the next row."
-                  />
-                </div>
-
-                <p className="flex items-center gap-1.5 text-[12px] text-muted">
-                  Hold expires in {HOLD_DURATION_DAYS} days —{' '}
-                  {fmtDate(addDays(TODAY, HOLD_DURATION_DAYS))}
-                  <AssumedChip why={ASSUMPTIONS.holdDurationDays.why} />
-                </p>
-              </>
+              </div>
             )}
           </div>
-        )}
+        </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="shrink-0 border-t border-line bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6">
+          <Button
+            variant="ghost"
+            className="min-h-11 w-full sm:min-h-9 sm:w-auto"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
-          <Button onClick={submit} disabled={!lot || !!blocked || !buyer || busy}>
+          <Button
+            className="min-h-11 w-full sm:min-h-9 sm:w-auto"
+            onClick={submit}
+            disabled={!lot || !!blocked || !buyer || busy}
+          >
             Request hold
           </Button>
         </DialogFooter>

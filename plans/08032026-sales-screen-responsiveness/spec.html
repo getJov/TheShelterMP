@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales screen responsiveness Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; background: var(--soft); }
+    .task-card + .task-card { margin-top: 12px; }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 840px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; overflow-wrap: anywhere; }
+    li + li { margin-top: 6px; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    .task-card dl { margin-bottom: 0; }
+    .task-card dl > div { padding: 10px 0; border-top: 1px solid var(--line); }
+    .task-card dl > div:first-child { padding-top: 0; border-top: 0; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .task-card dd { font-weight: 500; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    .note { border-left: 1px solid var(--ink); padding-left: 16px; }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+      .task-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Sales screen responsiveness</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/08032026-sales-screen-responsiveness</dd></div>
+        <div><dt>Size</dt><dd>Large</dd></div>
+        <div><dt>Risk</dt><dd>Level 3 — Mitigated</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The <code>/sales</code> route is a desktop-first operational surface inside a fixed-width application rail. At narrow widths, the shell consumes space the page cannot recover, filters retain desktop minimum widths, tables expose up to twelve columns through horizontal scrolling, and transactional overlays retain desktop composition.</p>
+      <p>Agents and managers need fast lookup, contract details, hold requests, and payment posting on phones. Shrinking the desktop layout would make those tasks technically visible but operationally poor. The route needs responsive recomposition while the existing desktop density, calculations, permissions, and workflows remain intact.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Build a responsive presentation contract for the complete sales surface: the route header, metrics, four tab views, filters, records, detail sheets, creation flows, payment and hold workflows, invoice preview, secondary dialogs, and supporting sales controls.</p>
+      <p>Add only the shared shell behavior required to let <code>/sales</code> occupy a mobile viewport. Keep existing data sources and finance helpers authoritative. Desktop keeps its tables and information density; mobile gets task-prioritized record layouts and viewport-safe overlays.</p>
+      <div class="split-grid">
+        <div>
+          <h3>Primary mobile jobs</h3>
+          <ol>
+            <li>Find a contract, payment, receivable, or client quickly.</li>
+            <li>Open the relevant contract or client details.</li>
+            <li>Request a lot hold without viewport or keyboard obstruction.</li>
+            <li>Post a payment and review its schedule, balance, trust-fund, and commission effects.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Secondary mobile jobs</h3>
+          <ul>
+            <li>Create contracts and clients.</li>
+            <li>Review owner-level metrics and oversight details.</li>
+            <li>Print or inspect invoices.</li>
+            <li>Transfer, cancel, or void records when permissions allow.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+      <h3>Planning metadata</h3>
+      <ul>
+        <li><strong>Repository worktree:</strong> <code>/home/jovanie_getalla/projects/shelter-worktrees/sales-screen-responsiveness</code></li>
+        <li><strong>Execution branch:</strong> <code>codex/sales-screen-responsiveness-execution</code></li>
+        <li><strong>Planning branch:</strong> <code>jovanie/sales-screen-responsiveness</code></li>
+        <li><strong>Source branch:</strong> local <code>main</code></li>
+        <li><strong>Source and planning HEAD:</strong> <code>bc2f60c116820773968fb3f9be6c7934e6dfcfa5</code></li>
+        <li><strong>Planning worktree exception:</strong> the user explicitly selected <code>-s --no-worktree</code>, so planning was created in the primary checkout.</li>
+        <li><strong>Execution isolation:</strong> the user explicitly requested <code>-x</code> in a separate linked worktree. Execution therefore moved to the worktree and branch above before any application edit.</li>
+        <li><strong>Dirty-state exclusion:</strong> untracked <code>AGENTS.md:Zone.Identifier</code> is unrelated and must remain untouched.</li>
+        <li><strong>Base drift note:</strong> execution rechecked the branch before application edits. Local <code>main</code> and the execution branch both point to <code>bc2f60c116820773968fb3f9be6c7934e6dfcfa5</code>; the existing local <code>origin/main</code> ref is sixteen commits ahead. Execution will not fetch, merge, or rebase without an explicit command.</li>
+        <li><strong>Shared-checkout warning:</strong> other processes changed the primary checkout during planning. Execution must stay in the isolated worktree and hard-fail if its active branch is not exactly <code>codex/sales-screen-responsiveness-execution</code>.</li>
+        <li><strong>Template fallback:</strong> <code>~/.claude/templates/spec.html</code> is absent in this environment. This artifact reuses the repository's latest self-contained spec format from <code>plans/07302026-fix-lot-click-flyto-desync/spec.html</code>.</li>
+      </ul>
+
+      <h3>Detected stack</h3>
+      <p>High-confidence React 19, TypeScript 6, Vite 8, Tailwind CSS 4, Radix UI, Framer Motion, Zustand, and Puppeteer Core. No backend, persistence, migration, or dependency work is required.</p>
+
+      <h3>Current failure evidence</h3>
+      <ul>
+        <li><code>src/components/shell/AppShell.tsx</code> keeps a <code>232px</code> or <code>68px</code> rail at every viewport width.</li>
+        <li><code>src/features/sales/SalesPage.tsx</code> uses <code>p-6</code>, a <code>220px</code> minimum search width, fixed filter widths, and four width-to-content tabs.</li>
+        <li>The Contracts, Payments, and Clients views pass twelve, nine, and seven columns to <code>DataTable</code>. Its only narrow-screen strategy is horizontal scrolling.</li>
+        <li>Payment date filters place two <code>148px</code> controls and labels in one non-wrapping row.</li>
+        <li>Sales combobox popovers impose a <code>320px</code> minimum width inside narrower padded dialogs.</li>
+        <li>The contract builder and invoice preview retain desktop padding, step layout, table density, and <code>92vh</code> modal sizing on mobile.</li>
+        <li>Sortable <code>DataTable</code> headers use pointer-only <code>th</code> click handlers without semantic sort buttons or announced sort state.</li>
+      </ul>
+
+      <h3>Existing patterns and analogs</h3>
+      <ul>
+        <li><strong>Shell navigation extraction:</strong> existing <code>ManageSection</code>, <code>NavList</code>, and <code>NavRow</code> in <code>src/components/shell/AppShell.tsx</code>, backed by <code>src/components/shell/nav-items.ts</code>.</li>
+        <li><strong>Focused feature tabs:</strong> <code>src/features/agents/RosterTab.tsx</code>, <code>src/features/pricing/ServicesTab.tsx</code>, and <code>src/features/burials/IntermentsTab.tsx</code>.</li>
+        <li><strong>Sales filter source:</strong> the current <code>FilterBar</code>, <code>SearchBox</code>, and <code>FilterSelect</code> implementations in <code>src/features/sales/SalesPage.tsx</code>.</li>
+        <li><strong>Accessible overlays:</strong> existing Radix-backed <code>Sheet</code>, <code>Dialog</code>, <code>Popover</code>, <code>Tabs</code>, and <code>Drawer</code> primitives in <code>src/components/ui/</code>.</li>
+        <li><strong>Automated browser validation:</strong> <code>qa/smoke.mjs</code> and <code>qa/walkthrough.mjs</code>. The new focused runner must keep their deterministic session seeding while accepting configurable runtime values.</li>
+      </ul>
+
+      <h3>Code Constitution contract</h3>
+      <ul>
+        <li><strong>CORE-2.1 — One Responsibility Per Unit:</strong> “Each file, module, class, or function must have one clear responsibility.” Split the four large tab presenters instead of expanding the 1,089-line page.</li>
+        <li><strong>CORE-2.3 — Boundaries Stay Separate:</strong> “Presentation, transport, business logic, persistence, and infrastructure must stay in their own boundaries.” Responsive presenters may not recompute finance, status, or permissions.</li>
+        <li><strong>CORE-2.4 — Follow Local Analogs:</strong> “New code must follow the closest existing good local analog unless the task explicitly changes the standard.” Use existing tab, shell, overlay, and QA patterns.</li>
+        <li><strong>CORE-5.2 — Dependencies Earn Their Cost:</strong> “Prefer existing utilities and the standard library before adding dependencies.” Existing Radix, Tailwind, Framer Motion, and Puppeteer Core are sufficient.</li>
+        <li><strong>CORE-6.1 — Changed Behavior Has Tests:</strong> “Behavior changes must have automated or explicitly documented verification.” Responsive and role-dependent flows require targeted browser checks plus acceptance evidence.</li>
+        <li><strong>FE-1.3 — Presentation And Logic Are Separated:</strong> “Large UI logic must move into hooks, composables, controllers, view models, stores, or helpers according to local convention.” Keep row derivation and finance helpers shared while presenters remain focused.</li>
+        <li><strong>FE-2.2 — State Systems Stay Limited:</strong> “Do not introduce a new state system when existing local state, context, store, query cache, or framework pattern fits.” Reuse current local and Zustand state.</li>
+        <li><strong>FE-3.3 — Forms Validate At The Edge:</strong> “Forms must validate user input before submission while still relying on server validation for authority.” Responsive changes must preserve current validation and error relationships.</li>
+        <li><strong>STACK-TSJS-1.1 — Use Project Module Style:</strong> “TypeScript and JavaScript code must follow the repository's existing ESM, CommonJS, import alias, and export conventions.” New modules use ESM and <code>@/</code> aliases.</li>
+        <li><strong>STACK-TSJS-1.2 — Avoid any In New TypeScript:</strong> “New TypeScript must avoid <code>any</code>; use explicit types, generics, or <code>unknown</code> with narrowing.”</li>
+        <li><strong>STACK-TSJS-3.2 — Components Stay Focused:</strong> “Large component logic must move into hooks, composables, stores, services, or helpers according to local convention.” Tab extraction is required to prevent responsive markup from enlarging <code>SalesPage</code>.</li>
+        <li><strong>VER-1.1 — Use Existing Verification:</strong> “Run the repository's existing lint, type-check, test, build, and format commands before declaring completion.”</li>
+        <li><strong>VER-2.1 — Tests Match Risk:</strong> “Test scope must match the blast radius and risk of the change.” Shared shell and table changes require cross-route regression coverage.</li>
+        <li><strong>VER-3.2 — Spec And Code Stay Aligned:</strong> “Implementation must match the approved spec; deviations require a spec update or explicit user decision.”</li>
+        <li><strong>VER-3.3 — Acceptance Is Observable:</strong> “Done criteria must be verifiable from tests, commands, API behavior, UI behavior, or explicit manual checks.”</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="responsive-contract">
+      <h2>Responsive and UX contract</h2>
+      <h3>Viewport tiers</h3>
+      <ul>
+        <li><strong>320–639px:</strong> mobile shell, stacked page header, compact two-column metrics, two-column tab grid, visible search, filter sheet, mobile record lists, and viewport-filling transactional overlays.</li>
+        <li><strong>640–767px:</strong> wider mobile composition with the same navigation and record strategy; forms may use two columns only when labels and values fit without truncation.</li>
+        <li><strong>768–1023px:</strong> retain the mobile shell, compact filters, and responsive record presentations. Execution confirmed that returning the <code>232px</code> rail at 768px leaves insufficient operational width; the rail and tables return together at 1024px.</li>
+        <li><strong>1024px and above:</strong> preserve current desktop tables, filters, hierarchy, and density unless an accessibility correction is explicitly listed.</li>
+      </ul>
+
+      <h3>Main sales surface</h3>
+      <ul>
+        <li>Keep the page title and permitted actions visible without horizontal scrolling. Stack actions at very narrow widths and keep the primary action first.</li>
+        <li>Render summary values as a compact, scannable grid on mobile. Secondary hints may collapse visually but must remain available where they affect interpretation.</li>
+        <li>Keep all four tabs discoverable. Use a full-width two-column tab arrangement at the narrowest tier and the existing single-row treatment when space permits.</li>
+        <li>Keep search outside the filter overlay. Put secondary filters in one labeled sheet with active-count text, clear, cancel, and apply/close behavior.</li>
+        <li>Desktop tables remain authoritative presentations of dense data. Mobile record layouts use the same filtered row objects and formatting helpers.</li>
+        <li>Mobile records prioritize identity, financial state, health/status, and the next useful action. They must not duplicate business calculations.</li>
+      </ul>
+
+      <h3>Mobile record priorities</h3>
+      <ul>
+        <li><strong>Contract:</strong> buyer and contract number; lot; balance and payment health; contract status; then terms, agent, and signed date.</li>
+        <li><strong>Payment:</strong> official receipt number and buyer; date; amount and posting status; then method, contract, trust fund, and receiver.</li>
+        <li><strong>Receivable:</strong> buyer and severity; outstanding amount; days past due and next due; then last payment and permitted actions.</li>
+        <li><strong>Client:</strong> name and reference; city; outstanding amount and contract count; then senior status and total contracted.</li>
+      </ul>
+
+      <h3>Overlay and form behavior</h3>
+      <ul>
+        <li>Sales sheets occupy the full mobile width. Long dialog flows use dynamic viewport height, one scrolling content region, safe-area padding, and a persistent action footer.</li>
+        <li>Comboboxes, calendars, selects, and dropdowns must remain within the visual viewport and align to their triggers without a fixed <code>320px</code> floor.</li>
+        <li>The contract stepper remains understandable at 320px. Labels may shorten visually, but step identity and current state remain exposed.</li>
+        <li>The invoice screen preview may reflow for mobile, but print-specific A4 output must not change.</li>
+        <li>On-screen keyboards must not hide the focused field, validation message, or required submit/cancel controls.</li>
+      </ul>
+
+      <h3>Anti-slop direction</h3>
+      <ul>
+        <li>Do not turn every record into a decorative card with repeated borders and shadows. Use restrained list rows and grouping that reflect operational priority.</li>
+        <li>Do not add gradients, glass effects, oversized radii, new colors, decorative motion, or generic dashboard ornaments.</li>
+        <li>Do not hide essential finance, status, or identity data merely to make a screenshot look clean.</li>
+        <li>Motion supports orientation only. Existing reduced-motion behavior remains authoritative.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="accessibility">
+      <h2>Accessibility contract</h2>
+      <p><strong>Goal:</strong> WCAG 2.2 A/AA-oriented operation of lookup, detail, hold, payment, creation, and secondary sales flows across touch, keyboard, zoom, and reduced-motion contexts. This is practical engineering guidance, not legal certification.</p>
+      <ul>
+        <li>Use semantic lists for mobile records. Do not nest buttons. When a row also has actions, expose a separate named detail control.</li>
+        <li>Sortable desktop headers use real buttons and expose <code>aria-sort</code> on the owning column header. Keyboard activation must match pointer sorting.</li>
+        <li>The mobile navigation and filter surface require an accessible name, focus containment through the existing primitive, Escape dismissal, trigger focus return, and visible focus.</li>
+        <li>Tabs retain Radix keyboard behavior, a clear selected state, logical DOM order, and non-color-only state communication.</li>
+        <li>Primary mobile actions target at least <code>44px</code> where layout permits. Every control must meet the WCAG 2.2 <code>24px</code> minimum or a valid spacing exception.</li>
+        <li>Icon-only controls retain explicit accessible names. Badge, health, status, and overdue meaning must not rely on color alone.</li>
+        <li>Labels, helper text, required state, invalid state, and errors remain programmatically associated after responsive rearrangement.</li>
+        <li>Nested dialog flows, including new-client creation from a combobox, must return focus to the invoking control and avoid competing traps.</li>
+        <li>At 200% zoom, content reflows without two-dimensional page scrolling, clipped controls, or loss of information.</li>
+        <li>Automated checks are signals only. Manual keyboard, focus, zoom, on-screen keyboard, and assistive-name checks remain required.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Must</h3>
+          <ul>
+            <li>Keep all money, payment health, balances, schedules, trust-fund, and commissions sourced from existing helpers.</li>
+            <li>Keep role and permission behavior unchanged for owner, admin, manager, and agent.</li>
+            <li>Use existing UI primitives, Hugeicons registry, theme tokens, and responsive utilities.</li>
+            <li>Preserve desktop information density and print output.</li>
+            <li>Keep new responsive modules within their existing feature or shell boundary.</li>
+            <li>Update this same spec before any execution divergence.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Must not</h3>
+          <ul>
+            <li>No new dependencies, state systems, routes, navigation items, permissions, domain types, store actions, or migrations.</li>
+            <li>No native replacement controls where shadcn/Radix primitives already exist.</li>
+            <li>No global responsive redesign of unrelated routes.</li>
+            <li>No finance or status recomputation inside mobile presenters.</li>
+            <li>No mobile implementation that depends only on horizontal table scrolling.</li>
+            <li>No edits to <code>src/index.css</code>, which is not imported by the application entrypoint.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Out of scope</h3>
+      <ul>
+        <li>Changing sales business rules, approval policy, notifications, seeded records, or authorization.</li>
+        <li>Redesigning non-sales page content.</li>
+        <li>Formal WCAG certification, VPAT/ACR work, or legal compliance claims.</li>
+        <li>Performance optimization unrelated to responsive rendering.</li>
+        <li>Refactoring generic UI primitives unless a listed sales requirement cannot be met locally.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="files">
+      <h2>Planned file surface</h2>
+      <h3>Shared shell and semantics</h3>
+      <ul>
+        <li><code>src/components/shell/AppShell.tsx</code> — responsive shell orchestration, mobile menu trigger, top-bar composition.</li>
+        <li><code>src/components/shell/AppNavigation.tsx</code> — new shared permission-aware navigation renderer extracted from <code>AppShell</code>.</li>
+        <li><code>src/components/ui-brand/DataTable.tsx</code> — minimal semantic sort-button and <code>aria-sort</code> correction; no mobile card API.</li>
+      </ul>
+
+      <h3>Main sales views</h3>
+      <ul>
+        <li><code>src/features/sales/SalesPage.tsx</code> — page orchestration, responsive header, metrics, and tabs.</li>
+        <li><code>src/features/sales/ContractsTab.tsx</code> — new focused contracts presenter with desktop table and mobile records.</li>
+        <li><code>src/features/sales/PaymentsTab.tsx</code> — new focused payments presenter with responsive dates and records.</li>
+        <li><code>src/features/sales/ReceivablesTab.tsx</code> — new focused receivables presenter and action layout.</li>
+        <li><code>src/features/sales/ClientsTab.tsx</code> — new focused clients presenter with desktop table and mobile records.</li>
+        <li><code>src/features/sales/components/SalesFilterBar.tsx</code> — new sales-local search and responsive secondary-filter surface.</li>
+      </ul>
+
+      <h3>Sales controls and supporting displays</h3>
+      <ul>
+        <li><code>src/features/sales/components/AgentCombobox.tsx</code></li>
+        <li><code>src/features/sales/components/ClientCombobox.tsx</code></li>
+        <li><code>src/features/sales/components/LotCombobox.tsx</code></li>
+        <li><code>src/features/sales/components/DateField.tsx</code></li>
+        <li><code>src/features/sales/components/PriceCard.tsx</code></li>
+        <li><code>src/features/sales/components/ScheduleTable.tsx</code></li>
+        <li><code>src/features/sales/components/CommissionSplit.tsx</code></li>
+      </ul>
+
+      <h3>Sales workflows</h3>
+      <ul>
+        <li><code>src/features/sales/components/RequestHoldDialog.tsx</code></li>
+        <li><code>src/features/sales/components/PostPaymentDialog.tsx</code></li>
+        <li><code>src/features/sales/components/ContractBuilder.tsx</code></li>
+        <li><code>src/features/sales/components/CreateClientDialog.tsx</code></li>
+        <li><code>src/features/sales/components/ContractDetailSheet.tsx</code></li>
+        <li><code>src/features/sales/components/ClientSheet.tsx</code></li>
+        <li><code>src/features/sales/components/InvoiceDialog.tsx</code></li>
+        <li><code>src/features/sales/components/TransferOwnershipDialog.tsx</code></li>
+        <li><code>src/features/sales/components/CancelContractDialog.tsx</code></li>
+        <li><code>src/features/sales/components/VoidPaymentDialog.tsx</code></li>
+      </ul>
+
+      <h3>Verification</h3>
+      <ul>
+        <li><code>qa/sales-responsive-smoke.mjs</code> — new focused browser regression runner.</li>
+        <li><code>package.json</code> — add the focused QA script only; no dependency changes.</li>
+        <li><code>plans/08032026-sales-screen-responsiveness/test.html</code> and <code>test-results.json</code> — generated during <code>-x</code>, not during planning.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level:</strong> 3 — Structural Risk, discussed and mitigated. The shell change affects every authenticated route even though the feature scope is sales.</p>
+
+      <h3>Risks and mitigations</h3>
+      <ul>
+        <li><strong>Shared shell regression.</strong> A mobile-only sales navigation bypass would introduce architectural drift. <strong>Mitigation:</strong> reuse one extracted permission-aware navigation renderer in the desktop rail and mobile sheet; leave desktop rail persistence and width unchanged.</li>
+        <li><strong>Desktop/mobile presentation drift.</strong> Separate markup can disagree about finance or status. <strong>Mitigation:</strong> both presentations consume the same filtered row objects and existing formatters; presenters do not calculate.</li>
+        <li><strong>Shared <code>DataTable</code> blast radius.</strong> Sort semantics affect every consumer. <strong>Mitigation:</strong> restrict the edit to semantic buttons, <code>aria-sort</code>, keyboard activation, and unchanged visual styling; regression-check all consumers.</li>
+        <li><strong>Nested focus and viewport failure.</strong> Dialogs, sheets, popovers, and calendars can trap focus or escape the viewport. <strong>Mitigation:</strong> retain Radix primitives, apply local viewport constraints, and verify focus return and keyboard visibility for nested client creation.</li>
+        <li><strong>Mobile card overload.</strong> Repeating every desktop column would recreate the table vertically. <strong>Mitigation:</strong> enforce the record priorities in this spec and move secondary data below the primary scan line.</li>
+        <li><strong>Print regression.</strong> Reflowing the invoice preview can affect A4 output. <strong>Mitigation:</strong> change screen-only classes and retain the existing scoped print stylesheet.</li>
+        <li><strong>Stale branch base.</strong> Local <code>main</code> trails <code>origin/main</code>. <strong>Mitigation:</strong> execution reports the current divergence before code changes; any merge or rebase needs an explicit user command.</li>
+        <li><strong>QA portability.</strong> Existing browser scripts assume a Mac Chrome path and fixed port. <strong>Mitigation:</strong> the focused runner accepts <code>BASE_URL</code> and <code>CHROME_PATH</code>, reuses Puppeteer Core, and adds no dependency.</li>
+      </ul>
+
+      <h3>Blast radius</h3>
+      <ul>
+        <li><strong><code>AppShell</code>:</strong> <code>/map</code>, <code>/dashboard</code>, <code>/sales</code>, <code>/burials</code>, <code>/agents</code>, <code>/approvals</code>, <code>/pricing</code>, <code>/map-editor</code>, and <code>/audit</code>.</li>
+        <li><strong><code>DataTable</code>:</strong> lot ledger, agent detail, commissions, services, payouts, earnings, roster, interments, sales, and approval history consumers.</li>
+        <li><strong>Sales comboboxes:</strong> contract builder, hold request, ownership transfer, and nested client creation.</li>
+        <li><strong>Sales finance displays:</strong> contract builder, contract detail, hold, payment preview, and invoice-related views.</li>
+      </ul>
+
+      <h3>Alternatives considered</h3>
+      <ul>
+        <li><strong>A — Recommended:</strong> one responsive shell path, sales-local mobile presenters, and minimal shared sort semantics.</li>
+        <li><strong>B — Rejected:</strong> keep the rail and add more horizontal scrolling. This fails the 320px goal.</li>
+        <li><strong>C — Rejected:</strong> fork shared tables and navigation inside <code>/sales</code>. Future-us would maintain two permission and interaction systems.</li>
+        <li><strong>D — Deferred:</strong> redesign every application route for mobile. That expands beyond the approved sales scope.</li>
+      </ul>
+
+      <h3>Rollback boundary</h3>
+      <p>Keep each task independently reviewable. If a shared shell or table change regresses unrelated routes, revert that task without discarding sales-local presenters. If mobile presenters drift from desktop data, stop and reconcile the shared row model before continuing.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+      <p class="note">Execution uses dependency waves. Independent tasks may run through separate sub-agents only within their listed files. The orchestrator owns integration and prevents cross-task edits.</p>
+
+      <article class="task-card">
+        <h3>T1: Build the responsive shell and semantic table foundation</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Extract the existing permission-aware navigation renderer, reuse it in the desktop rail and a Radix-backed mobile navigation surface, keep location/account access available, preserve badges and role labels, and make the top bar fit 320px. Convert sortable table headers to semantic controls with announced sort state without adding a shared mobile-card abstraction.</dd></div>
+          <div><dt>Files</dt><dd><code>src/components/shell/AppShell.tsx</code>; new <code>src/components/shell/AppNavigation.tsx</code>; <code>src/components/ui-brand/DataTable.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Existing <code>ManageSection</code>, <code>NavList</code>, and <code>NavRow</code> in <code>AppShell.tsx</code>; existing Radix <code>Sheet</code>; existing <code>DataTable</code> styling.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>All role-specific navigation remains correct. Mobile menu opens, traps focus, closes by route selection and Escape, returns focus, and causes no page overflow. Every existing <code>DataTable</code> consumer retains its appearance and pointer sorting; keyboard sorting announces direction.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Create the sales-local responsive filter and field controls</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Create a visible-search plus secondary-filter surface for sales tabs. Make comboboxes and dates viewport-bound, full-width when narrow, and safe inside nested overlays. Preserve current state ownership, labels, values, and validation.</dd></div>
+          <div><dt>Files</dt><dd>new <code>src/features/sales/components/SalesFilterBar.tsx</code>; <code>AgentCombobox.tsx</code>; <code>ClientCombobox.tsx</code>; <code>LotCombobox.tsx</code>; <code>DateField.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Current filter helpers in <code>SalesPage.tsx</code>; existing sales combobox structures; Radix <code>Sheet</code>, <code>Popover</code>, <code>Command</code>, and <code>Calendar</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Search stays visible. Filter count, clear, cancel, and close are named and keyboard operable. Popovers remain inside 320px viewports and return focus correctly.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3: Recompose shared sales finance displays</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Make price, installment schedule, trust-fund, and commission displays reflow without changing values or formulas. Use compact semantic rows on mobile and retain dense desktop tables where appropriate.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/components/PriceCard.tsx</code>; <code>ScheduleTable.tsx</code>; <code>CommissionSplit.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Existing components in place; <code>MoneyText</code>, <code>FieldRow</code>, finance helpers, and theme tokens remain authoritative.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Long labels, peso values, assumption chips, schedule statuses, and commission rows fit at 320px. Totals match desktop output exactly.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Split and recompose the four main sales views</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Reduce <code>SalesPage</code> to route orchestration and responsive page chrome. Move each tab into a focused module. Keep desktop tables, add prioritized mobile record layouts, and preserve filtering, sorting, totals, empty states, permissions, and row-opening behavior.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/SalesPage.tsx</code>; new <code>ContractsTab.tsx</code>; new <code>PaymentsTab.tsx</code>; new <code>ReceivablesTab.tsx</code>; new <code>ClientsTab.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Current tab implementations in <code>SalesPage.tsx</code>; focused tab files in agents, pricing, and burials.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Verify</dt><dd>Contracts, Payments, Receivables, and Clients expose the defined mobile priorities. Search and filters produce identical row sets and totals across mobile and desktop. Agent, manager, admin, and owner views retain their permission-specific content.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T5: Make hold and payment workflows mobile-operable</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Recompose request-hold and post-payment dialogs for dynamic viewport height, scrolling content, persistent actions, responsive option groups, and on-screen keyboard use. Preserve all validation, previews, finance effects, permission gates, and notifications.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/components/RequestHoldDialog.tsx</code>; <code>PostPaymentDialog.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Existing dialog flows and Radix <code>Dialog</code>; responsive controls from T2; displays from T3.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T3</dd></div>
+          <div><dt>Verify</dt><dd>An agent can request a hold. A manager or admin can post a payment. Both flows complete at 320px without hidden validation, clipped previews, or inaccessible actions.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T6: Make contract and client creation mobile-operable</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Turn the four-step contract builder into a mobile-safe workflow with a readable stepper, responsive option and service rows, one scroll region, and stable actions. Make nested client creation fit and return focus to its combobox trigger.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/components/ContractBuilder.tsx</code>; <code>CreateClientDialog.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Existing builder step state and motion; responsive controls from T2; finance displays from T3; existing dialog focus management.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T3</dd></div>
+          <div><dt>Verify</dt><dd>A permitted user completes each builder step at 320px, creates a nested client, returns to the buyer field, reviews exact totals, and reaches Back/Next/Create without viewport loss.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T7: Recompose details, invoice, and secondary actions</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Make contract and client sheets full-width and scannable on mobile. Reflow action groups, history, documents, payments, schedules, and ownership details. Make invoice screen preview responsive without changing print CSS. Verify transfer, cancellation, and void dialogs at narrow widths.</dd></div>
+          <div><dt>Files</dt><dd><code>ContractDetailSheet.tsx</code>; <code>ClientSheet.tsx</code>; <code>InvoiceDialog.tsx</code>; <code>TransferOwnershipDialog.tsx</code>; <code>CancelContractDialog.tsx</code>; <code>VoidPaymentDialog.tsx</code></dd></div>
+          <div><dt>Analog</dt><dd>Existing sales sheets and dialogs in place; responsive controls from T2; displays from T3; current scoped invoice print stylesheet.</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T3</dd></div>
+          <div><dt>Verify</dt><dd>All permitted detail and secondary actions remain reachable at 320px. Nested dialogs return focus correctly. Invoice preview fits the screen and A4 print output remains unchanged.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T8: Add focused responsive regression coverage and acceptance artifacts</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add a Puppeteer Core sales runner with configurable <code>BASE_URL</code> and <code>CHROME_PATH</code>. Cover representative viewports, roles, tabs, filter opening, record details, primary actions, page overflow, runtime errors, and core focus behavior. During <code>-x</code>, generate and run the required acceptance checklist and store real evidence.</dd></div>
+          <div><dt>Files</dt><dd>new <code>qa/sales-responsive-smoke.mjs</code>; <code>package.json</code>; execution-generated <code>test.html</code> and <code>test-results.json</code> in this plan folder</dd></div>
+          <div><dt>Analog</dt><dd><code>qa/smoke.mjs</code>; <code>qa/walkthrough.mjs</code>; deterministic role IDs and localStorage session bootstrap.</dd></div>
+          <div><dt>Depends on</dt><dd>T1–T7</dd></div>
+          <div><dt>Verify</dt><dd>Focused QA passes at 320, 360, 390, 768, 1024, and 1440px with no uncaught page errors or page-level horizontal overflow. Layer 2 acceptance records screenshots and results for each required flow.</dd></div>
+        </dl>
+      </article>
+
+      <h3>Execution waves</h3>
+      <ol>
+        <li><strong>Wave 1:</strong> T1, T2, and T3 may run in parallel because their file boundaries do not overlap.</li>
+        <li><strong>Wave 2:</strong> T4, T5, T6, and T7 may run after their dependencies. Assign distinct files and keep cross-task edits out.</li>
+        <li><strong>Wave 3:</strong> T8 runs after integration. The orchestrator verifies imports, visual consistency, spec parity, and shared-consumer regressions.</li>
+      </ol>
+    </section>
+
+    <section class="spec-card" id="verification">
+      <h2>Verification plan</h2>
+      <h3>Layer 1 — repository and automated gates</h3>
+      <ol>
+        <li>Run <code>npx tsc --noEmit -p tsconfig.app.json</code>.</li>
+        <li>Run <code>npm run lint</code>.</li>
+        <li>Run <code>npm run build</code>.</li>
+        <li>Run <code>npm run validate:mock</code> to prove data invariants did not drift.</li>
+        <li>Run the new focused sales responsive QA command against the documented local runtime.</li>
+        <li>Run existing cross-role smoke coverage when its Chrome/runtime prerequisites are available; otherwise record the exact environment limitation and complete focused route smoke checks through the available browser harness.</li>
+      </ol>
+
+      <h3>Layer 2 — behavioral acceptance</h3>
+      <ul>
+        <li><strong>Viewports:</strong> 320, 360, 390, 768, 1024, and 1440px; phone portrait and landscape.</li>
+        <li><strong>Roles:</strong> owner, admin, manager, and agent using deterministic mock identities.</li>
+        <li><strong>Zoom and input:</strong> 200% browser zoom, keyboard-only flow, touch-sized targets, reduced motion, and mobile on-screen keyboard checks.</li>
+        <li><strong>Shell:</strong> open navigation, inspect current route, switch routes, close, and return focus without overflow.</li>
+        <li><strong>Main views:</strong> search, open and clear filters, switch all tabs, inspect records, open details, and validate totals.</li>
+        <li><strong>Primary actions:</strong> request a hold and post a payment through their observable success states.</li>
+        <li><strong>Creation:</strong> complete contract steps and nested client creation without hidden controls.</li>
+        <li><strong>Secondary actions:</strong> inspect invoice, transfer, cancel, and void flows for permitted roles without committing unintended mutations during layout-only checks.</li>
+        <li><strong>Desktop:</strong> compare 1024px and 1440px against existing density, table content, permissions, and print behavior.</li>
+      </ul>
+
+      <h3>Evidence requirements</h3>
+      <ul>
+        <li>Record viewport, role, route/tab, actual result, and screenshot path for every acceptance item.</li>
+        <li>Record computed <code>documentElement.scrollWidth</code> and <code>clientWidth</code> for no-overflow checks.</li>
+        <li>Record keyboard focus order and focus return for mobile navigation, filter sheet, nested client dialog, and contract/payment overlays.</li>
+        <li>Do not mark automated scans as complete accessibility proof.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" checked disabled> The application shell gives <code>/sales</code> the full usable width on mobile while preserving desktop rail behavior.</li>
+        <li><input type="checkbox" checked disabled> No tested viewport has page-level horizontal overflow, clipped controls, or inaccessible off-screen actions.</li>
+        <li><input type="checkbox" checked disabled> Contracts, Payments, Receivables, and Clients use task-prioritized mobile presentations and unchanged desktop tables.</li>
+        <li><input type="checkbox" checked disabled> Search remains visible and every secondary filter is usable, named, clearable, and state-consistent.</li>
+        <li><input type="checkbox" checked disabled> Sales sheets, dialogs, popovers, calendars, and menus fit the visual viewport and manage focus correctly.</li>
+        <li><input type="checkbox" checked disabled> Hold request, payment posting, contract creation, nested client creation, invoice, transfer, cancel, and void surfaces remain usable at 320px.</li>
+        <li><input type="checkbox" checked disabled> Mobile and desktop show identical finance, status, permission, and record results for the same state.</li>
+        <li><input type="checkbox" checked disabled> Sortable desktop headers work by pointer and keyboard and expose their sort state.</li>
+        <li><input type="checkbox" checked disabled> Primary mobile actions provide comfortable targets; all controls meet WCAG 2.2 target minimums or valid spacing exceptions.</li>
+        <li><input type="checkbox" checked disabled> 200% zoom, reduced motion, keyboard navigation, visible focus, labels, errors, and non-color-only state checks pass.</li>
+        <li><input type="checkbox" checked disabled> Other authenticated routes pass the responsive shell smoke check and all shared <code>DataTable</code> consumers retain behavior.</li>
+        <li><input type="checkbox" checked disabled> Invoice A4 print output remains unchanged.</li>
+        <li><input type="checkbox" checked disabled> No dependency, route, permission, store, finance, domain, or migration change enters the diff.</li>
+        <li><input type="checkbox" checked disabled> Typecheck, lint, build, mock validation, focused responsive QA, and relevant smoke checks pass or classify pre-existing environment failures.</li>
+        <li><input type="checkbox" checked disabled> <code>test-results.json</code> rolls up to <code>Passed</code>, with real evidence or explicit written waivers for every accepted failure.</li>
+        <li><input type="checkbox" checked disabled> The implementation matches this spec, or this spec contains the approved revision before completion.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision log</h2>
+      <ul>
+        <li><strong>2026-08-03 — Execution completed:</strong> Implemented T1–T8 in the isolated execution worktree. The shared permission-aware navigation now serves the desktop rail and mobile sheet; sales owns its mobile records and compact filters; every listed sales workflow was recomposed without business-logic changes. Kept the mobile shell and record strategy through 1023px because the desktop rail at 768px left insufficient operational width. During browser QA, corrected a two-row tab-list height collision and aligned the filter breakpoint with the record/shell breakpoint. Typecheck, lint, build, mock validation, focused role/viewport QA, 29 cross-route shell cases, primary transactions, nested focus, 200% zoom, keyboard sorting, and <code>git diff --check</code> pass. Acceptance rolls up to <code>Passed</code> in <code>test-results.json</code>.</li>
+        <li><strong>2026-08-03 — Execution isolation:</strong> Changed status to <code>In Progress</code> and moved execution from the planning checkout to a dedicated linked worktree on <code>codex/sales-screen-responsiveness-execution</code>, as explicitly requested. Rechecked the base and recorded that the existing local <code>origin/main</code> ref is sixteen commits ahead; no synchronization was authorized. Scope and acceptance remain unchanged.</li>
+        <li><strong>2026-08-03 — Planning:</strong> Created from the approved context. Scope includes every sales-related UI surface reachable from <code>/sales</code> and only the minimum necessary shared shell/table changes.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

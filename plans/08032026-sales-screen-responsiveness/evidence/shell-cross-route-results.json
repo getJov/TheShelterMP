@@ -1,0 +1,382 @@
+{
+  "status": "Passed",
+  "results": [
+    {
+      "role": "owner",
+      "route": "/map",
+      "status": "pass",
+      "actual": {
+        "pathname": "/map",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Park Map",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/dashboard",
+      "status": "pass",
+      "actual": {
+        "pathname": "/dashboard",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Dashboard",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/sales",
+      "status": "pass",
+      "actual": {
+        "pathname": "/sales",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Sales & Payments",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/burials",
+      "status": "pass",
+      "actual": {
+        "pathname": "/burials",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Burials",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/agents",
+      "status": "pass",
+      "actual": {
+        "pathname": "/agents",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Agents",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/approvals",
+      "status": "pass",
+      "actual": {
+        "pathname": "/approvals",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Approvals",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/pricing",
+      "status": "pass",
+      "actual": {
+        "pathname": "/pricing",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Pricing & Tiers",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "owner",
+      "route": "/audit",
+      "status": "pass",
+      "actual": {
+        "pathname": "/audit",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Audit Log",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/map",
+      "status": "pass",
+      "actual": {
+        "pathname": "/map",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Park Map",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/dashboard",
+      "status": "pass",
+      "actual": {
+        "pathname": "/dashboard",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Dashboard",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/sales",
+      "status": "pass",
+      "actual": {
+        "pathname": "/sales",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Sales & Payments",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/burials",
+      "status": "pass",
+      "actual": {
+        "pathname": "/burials",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Burials",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/agents",
+      "status": "pass",
+      "actual": {
+        "pathname": "/agents",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Agents",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/approvals",
+      "status": "pass",
+      "actual": {
+        "pathname": "/approvals",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Approvals",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/pricing",
+      "status": "pass",
+      "actual": {
+        "pathname": "/pricing",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Pricing & Tiers",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/map-editor",
+      "status": "pass",
+      "actual": {
+        "pathname": "/map-editor",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Map Editor",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "admin",
+      "route": "/audit",
+      "status": "pass",
+      "actual": {
+        "pathname": "/audit",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Audit Log",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/map",
+      "status": "pass",
+      "actual": {
+        "pathname": "/map",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Park Map",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/dashboard",
+      "status": "pass",
+      "actual": {
+        "pathname": "/dashboard",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Dashboard",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/sales",
+      "status": "pass",
+      "actual": {
+        "pathname": "/sales",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Sales & Payments",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/burials",
+      "status": "pass",
+      "actual": {
+        "pathname": "/burials",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Burials",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/agents",
+      "status": "pass",
+      "actual": {
+        "pathname": "/agents",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Agents",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/approvals",
+      "status": "pass",
+      "actual": {
+        "pathname": "/approvals",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Approvals",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "manager",
+      "route": "/pricing",
+      "status": "pass",
+      "actual": {
+        "pathname": "/pricing",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Pricing & Tiers",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "agent",
+      "route": "/map",
+      "status": "pass",
+      "actual": {
+        "pathname": "/map",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Park Map",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "agent",
+      "route": "/dashboard",
+      "status": "pass",
+      "actual": {
+        "pathname": "/dashboard",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Dashboard",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "agent",
+      "route": "/sales",
+      "status": "pass",
+      "actual": {
+        "pathname": "/sales",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Sales & Payments",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "agent",
+      "route": "/agents",
+      "status": "pass",
+      "actual": {
+        "pathname": "/agents",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Agents",
+        "viewportWidth": 320
+      },
+      "errors": []
+    },
+    {
+      "role": "agent",
+      "route": "/pricing",
+      "status": "pass",
+      "actual": {
+        "pathname": "/pricing",
+        "menuVisible": true,
+        "railVisible": false,
+        "heading": "Pricing & Tiers",
+        "viewportWidth": 320
+      },
+      "errors": []
+    }
+  ]
+}

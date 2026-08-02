@@ -85,7 +85,8 @@ export function LotCombobox({
 
       <PopoverContent
         align="start"
-        className="w-[var(--radix-popover-trigger-width)] min-w-[320px] p-0"
+        collisionPadding={8}
+        className="w-[var(--radix-popover-trigger-width)] min-w-0 max-w-[calc(100vw-1rem)] p-0"
       >
         <Command shouldFilter={false}>
           <CommandInput
@@ -93,7 +94,7 @@ export function LotCombobox({
             value={query}
             onValueChange={setQuery}
           />
-          <CommandList className="max-h-[300px]">
+          <CommandList>
             {matches.length === 0 && <CommandEmpty>No available lot matches.</CommandEmpty>}
             {matches.length > 0 && (
               <CommandGroup heading={`Available & held (${matches.length})`}>
@@ -105,7 +106,7 @@ export function LotCombobox({
                       onChange(r.lot.id)
                       setOpen(false)
                     }}
-                    className="gap-2"
+                    className="min-h-11 gap-2 py-2 sm:min-h-0 sm:py-1.5"
                   >
                     <StatusDot status={r.lot.status} size={15} />
                     <span className="min-w-0 flex-1">
