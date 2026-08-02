@@ -107,7 +107,9 @@ export function validateLayoutGeometry(
     tierMismatchLotIds,
     conflictingLotIds,
     blockingCount: conflicts.length,
-    canPublish: conflicts.length === 0,
+    // Advisory by decision (2026-07-31): messy in-progress layouts are the
+    // point of the editor — conflicts warn, they never block publishing.
+    canPublish: true,
   }
 }
 

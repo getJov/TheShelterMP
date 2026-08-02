@@ -1,0 +1,109 @@
+{
+  "plan": "plans/07312026-editor-lot-authoring-tools",
+  "generatedAt": "2026-07-31",
+  "status": "In Progress",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Selection bar shows the Position cluster with protection notice",
+      "surface": "ui",
+      "precondition": "Map Editor as Administrator, Lots step (press V), ⌘A to select the active block",
+      "steps": ["1. Press V, then ⌘A", "2. Look at the selection bar"],
+      "expected": "Nudge pad, step cycler (0.05/0.25/1 m), rotate ±, Duplicate, and the banner counting protected lots ('never deleted, moved, or rotated')",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: 432 selected — full cluster rendered; banner reported 108 protected",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Arrow keys nudge the selection in metre steps",
+      "surface": "ui",
+      "precondition": "Lots selected in inventory mode",
+      "steps": ["1. Press → three times", "2. Compare lots against their block outline"],
+      "expected": "Selection shifts 0.75 m east (Alt = 0.05 m, Shift = 1 m steps); protected lots stay put",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: visible eastward shift of B01 lots relative to the dotted outline",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "[ and ] rotate the selection in 0.5° steps",
+      "surface": "ui",
+      "precondition": "Lots selected in inventory mode",
+      "steps": ["1. Press ] four times (or Shift+] for 5°)", "2. Undo restores the exact original geometry"],
+      "expected": "Selection rotates around its centre; undo returns it flush",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: rotation applied; two undos restored the layout flush to the outline",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Nudge/rotate bursts coalesce into few undo entries",
+      "surface": "ui",
+      "precondition": "After a burst of arrow/rotate presses",
+      "steps": ["1. Press → ×3 then ] ×4 quickly", "2. Count the undos needed to restore"],
+      "expected": "A handful of presses in one gesture = one undo entry (900 ms window)",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: 7 keypresses reverted by 2 undo clicks",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Duplicate stamps clones one pitch along the row, selected",
+      "surface": "ui",
+      "precondition": "Lots selected in inventory mode",
+      "steps": ["1. Click Duplicate", "2. Watch counts, selection, and the review state", "3. Undo once"],
+      "expected": "Clones appear beside the originals and become the selection; lot counts update; overlaps flagged if they collide; ONE undo removes all clones",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: 432 duplicated (904→1,336, B01 432→864, review flagged 819 overlap issues); single undo restored 904/ready",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Draw → one-card create: tier prices, auto-fill count, estimated value, single undo",
+      "surface": "ui",
+      "precondition": "Blocks step, Block tool (press B), real mouse",
+      "steps": [
+        "1. Drag a rectangle on open ground",
+        "2. Open the tier select — each tier shows its current price",
+        "3. Read the auto-fill line (rows × cols ≈ N lots · est. ₱)",
+        "4. Click 'Create block + fill N lots'",
+        "5. Undo once"
+      ],
+      "expected": "Block and all its lots appear together; the estimate matches count × tier price; one undo removes block and lots together",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Drawing needs a real drag — the embedded QA pane cannot dispatch it. Store path (planGrid/buildLots inside one mutate) is the same machinery the passing duplicate/undo tests exercised.",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Delete is visibly blocked for protected-only selections",
+      "surface": "ui",
+      "precondition": "Select only sold/occupied lots (click one with a real mouse, or Select by → status)",
+      "steps": ["1. Select an occupied lot", "2. Look at Delete in the bar"],
+      "expected": "Delete is disabled with the explanation tooltip; mixed selections keep Delete enabled but only remove unprotected lots (existing store guard)",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Guard verified in code (isProtected covers sold/occupied/contract/interments; deleteLots filters); disabled state needs a protected-only selection to eyeball",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "Single-lot click select → nudge → duplicate flow feels right",
+      "surface": "ui",
+      "precondition": "Real mouse",
+      "steps": ["1. Click one lot", "2. Alt+arrows for 5 cm nudges", "3. Duplicate a few times along the row"],
+      "expected": "Fine positioning works lot-by-lot; duplicates chain along messy rows",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Click-select is pre-existing behavior the embedded pane could not drive; all the invoked actions are covered by T2–T5",
+      "waiver": ""
+    }
+  ]
+}

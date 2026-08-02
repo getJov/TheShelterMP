@@ -10,7 +10,14 @@ import {
 import type { Rng } from './rng'
 import { NOW } from './time'
 import { NOT_FOR_SALE_REASONS } from './names'
-import { areaSqm, boundsOf, generateGrid, offsetMetres, rectAt } from './geo'
+import {
+  areaSqm,
+  boundsOf,
+  generateGrid,
+  offsetMetres,
+  offsetMetresRotated,
+  rectAt,
+} from './geo'
 import {
   LOC_ILANGAY,
   TIER_FG_PRIME,
@@ -19,6 +26,7 @@ import {
   TIER_LAWN_PRIME,
   TIER_LAWN_STD,
 } from './seed-catalog'
+import { PARK_LAYOUT } from './park-layout'
 
 const t = { createdAt: NOW, updatedAt: NOW }
 
@@ -88,7 +96,39 @@ export interface ParkSeed {
   overlays: MapOverlay[]
 }
 
-export function seedPark(rng: Rng, tiers: Tier[]): ParkSeed {
+export function seedPark(_rng: Rng, _tiers: Tier[]): ParkSeed {
+  // A hand-tuned layout (pasted from the editor's getpropsie()) wins over the
+  // procedural one. Geometry only — business state is normalised so the
+  // deterministic sales/burial seeds layer on cleanly.
+  if (PARK_LAYOUT) {
+    const blocks = PARK_LAYOUT.blocks.map((b) => ({ ...b, ...t }))
+    const lots = PARK_LAYOUT.lots.map((l) => ({
+      ...l,
+      status: 'available' as const,
+      activeHoldId: null,
+      currentContractId: null,
+      currentOwnerClientId: null,
+      intermentCount: 0,
+      notForSaleReason: null,
+      ...t,
+    }))
+    const overlays = PARK_LAYOUT.overlays.map((o) => ({ ...o, ...t }))
+    return { blocks, lots, overlays }
+  }
+  // No hand-tuned layout yet: the park boots EMPTY (user decision
+  // 2026-07-31). Geometry now comes from the Map Editor; once its
+  // getpropsie() JSON is pasted into park-layout.ts, the deterministic
+  // sales/agent/burial seeds light up on top of it with the same
+  // distributions they use today — they all scale to the lots that exist.
+  return { blocks: [], lots: [], overlays: [] }
+}
+
+/**
+ * The previous generated demo layout, kept for reference. Not called while
+ * the park boots empty; wire it back in seedPark if a synthetic layout is
+ * ever wanted again.
+ */
+export function seedProceduralPark(rng: Rng, tiers: Tier[]): ParkSeed {
   const tierById = new Map(tiers.map((x) => [x.id, x]))
   const blocks: Block[] = []
   const lots: Lot[] = []
@@ -112,13 +152,17 @@ export function seedPark(rng: Rng, tiers: Tier[]): ParkSeed {
 
     const blockId = asId<'Block'>(`blk_${spec.code.toLowerCase()}`)
 
-    // Block outline: the grid extent plus a 2 m verge.
+    // Block outline: the grid extent plus a 2 m verge. The centre offset
+    // lives in the grid's ROTATED frame — the lots are placed with rotated
+    // offsets, so an axis-aligned offset here would shear the outline off
+    // its own lots (the pre-fix 8-metre drift).
     const widthM = spec.cols * (baseTier.widthM + spec.gutterM) + 4
     const lengthM = spec.rows * (baseTier.lengthM + spec.rowGutterM) + 4
-    const blockCentre = offsetMetres(
+    const blockCentre = offsetMetresRotated(
       origin,
       widthM / 2 - 2,
       -(lengthM / 2 - 2),
+      ROT,
     )
     const polygon = rectAt(blockCentre, widthM, lengthM, ROT)
 

@@ -46,7 +46,7 @@ import { IconMap, IconPayment } from '@/components/ui-brand/icons'
 5. **Recompute nothing the finance layer already computes.** Import it.
 6. **Respect `lotVisibility()`** everywhere a lot's detail could leak — fill, badge, tooltip, table cell, drawer.
 7. **Every ASSUMPTIONS value shown on screen needs an `<AssumedChip why={...} />`.**
-8. Motion: framer-motion, ease `[0.22, 1, 0.36, 1]`, duration 0.32s, list stagger 0.04s capped at 12. **Never wrap a Leaflet layer in framer-motion.**
+8. Motion: framer-motion, ease `[0.22, 1, 0.36, 1]`, duration 0.32s, list stagger 0.04s capped at 12. **Never wrap Google Maps overlays in framer-motion.**
 9. Routes and nav entries are **already registered** in `src/routes.tsx` and `src/components/shell/nav-items.ts`. Replace your page component in place; do not edit those two files.
 10. Finish with `npx tsc --noEmit -p tsconfig.app.json` passing clean, and `npm run build` succeeding.
 

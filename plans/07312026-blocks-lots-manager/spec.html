@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blocks &gt; Lots Manager Spec</title>
+  <style>
+    :root { color-scheme: light; --paper:#fff; --ink:#080808; --muted:#5f5f5f; --line:#d8d8d8; --soft:#f5f5f5; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.5; }
+    .spec-shell { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:48px 0; }
+    .spec-hero,.spec-card,.task-card { border:1px solid var(--line); border-radius:8px; background:var(--paper); }
+    .spec-hero { border-color:var(--ink); padding:32px; margin-bottom:20px; }
+    .hero-topline { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .spec-card { padding:28px; margin-top:16px; }
+    .task-card { padding:20px; background:var(--soft); margin-top:12px; }
+    .eyebrow,dt { color:var(--muted); font-size:.78rem; font-weight:700; text-transform:uppercase; }
+    .eyebrow { margin:0; }
+    .status-pill { display:inline-flex; align-items:center; min-height:34px; padding:0 12px; border:1px solid var(--ink); border-radius:999px; background:var(--ink); color:var(--paper); font-size:.78rem; font-weight:800; text-transform:uppercase; }
+    .status-card { border-color:var(--ink); }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { max-width:840px; margin-bottom:24px; font-size:clamp(2.25rem,6vw,5rem); line-height:.95; }
+    h2 { font-size:1.35rem; } h3 { font-size:1rem; }
+    code { padding:.1rem .3rem; border:1px solid var(--line); border-radius:4px; background:var(--soft); font-size:.92em; }
+    .meta-grid,.split-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+    .meta-grid { margin:0; }
+    .meta-grid div,.split-grid > div { border:1px solid var(--line); border-radius:8px; padding:16px; }
+    dd { margin:4px 0 0; font-weight:700; }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-top:1px solid var(--line); }
+    @media (max-width:640px) { .spec-shell { width:min(100% - 20px,1120px); padding:24px 0; } .spec-hero,.spec-card { padding:20px; } }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Blocks &gt; Lots Manager</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed — acceptance: 5 pass, 4 pending human run</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/07312026-blocks-lots-manager</dd></div>
+        <div><dt>Size</dt><dd>Large (10+ files)</dd></div>
+        <div><dt>Risk</dt><dd>Level 3 — discussed and approved by user Q&amp;A</dd></div>
+        <div><dt>Mode</dt><dd>--instant (-i), decisions gathered via grill Q&amp;A first</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The step-by-step wizard fights the actual job: tracing a messy, surveyed reality. The user wants a flat two-level manager — blocks, then lots — with free-form drawing, bulk generation to avoid one-by-one work, and precise per-lot adjustment. Confirmed by user Q&amp;A on 2026-07-31.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What — the locked design</h2>
+      <ul>
+        <li><strong>Sidebar home:</strong> list of blocks (+ Add block) only, plus compact Site plan and Base map sections. No steps, no modes.</li>
+        <li><strong>Add block:</strong> Rect or Free-form draw → card offers <em>Free form</em> (empty) or <em>Autofill R × C</em>. Autofill divides the block into exactly R × C cells (cells ≈ 86% of pitch, centred; tier sets price/colour, not the footprint). All generated lots stay individually editable (move / retier / delete).</li>
+        <li><strong>Block view</strong> (click a block): d-pad move (step cycle 0.05/0.25/1 m), rotate ±0.5°/±5°, scale steppers + on-map handles, rename/code/tier, delete block (with its lots), and the lot tools below.</li>
+        <li><strong>Lot tools:</strong> Rect + free-form lot drawing; selection (click, band); generators — 10 / 100 / fill copies of the selected lot <em>or group tiled as a unit</em> toward left/right/top/bottom, clipped to the block (place what fits, report the rest); selection d-pad + width/length steppers; tier (with price), status, renumber, delete.</li>
+        <li><strong>Drag-move on map</strong> for blocks (block + its lots move together) and for selected lots; d-pad remains the precision path.</li>
+        <li><strong>Shrink guard:</strong> a block can never scale below its content. Outcast lots relocate to free interior space when possible; otherwise unprotected outcasts are deleted (single undo, counted in a toast). Protected lots (sold/occupied/contract/interments) are never moved or deleted — they define the hard minimum.</li>
+        <li><strong>Block delete</strong> refuses while the block contains protected lots.</li>
+        <li><strong>Validation is advisory:</strong> overlaps/out-of-block show as a warning badge and a list in the publish dialog; publishing is never blocked by them.</li>
+        <li><strong>Draft survives reload:</strong> dirty drafts auto-save to localStorage and restore on load (same location, same dataset version rules as today; publish/discard clears).</li>
+        <li><strong><code>getpropsie()</code>:</strong> global devtools function returning + logging + copying the draft's {blocks, lots, overlays} JSON. The seed accepts a literal layout module (<code>src/mock/park-layout.ts</code>, default null) that, when set from a paste, becomes the demo default.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context &amp; strategy</h2>
+      <h3>Reuse over rewrite (the store already knows how)</h3>
+      <ul>
+        <li>Move/rotate = existing <code>applyAlignmentTransform</code> (target 'lots' / 'block'); drag sessions copy the proven alignmentSession pattern (base snapshot → live preview → one undo commit).</li>
+        <li>Generators build on <code>duplicateLots</code> mechanics + <code>buildLots</code>; autofill divides the block's local extent (via <code>toLocal</code>/<code>fromLocal</code>).</li>
+        <li>Block scale handles = existing <code>editingBlock</code> machinery, its commit routed through the new outcast guard.</li>
+        <li>Store keeps vestigial mode fields pinned (<code>editorMode: 'inventory'</code>, <code>layerMode: 'lots'</code>) so untouched internals keep working; dead-code sweep is a follow-up, not this change.</li>
+      </ul>
+      <h3>Removed UI (full replace, per user)</h3>
+      <p><code>GuidedWorkflowPanel</code>, step cards, Align-mode panel, <code>GridPanel</code> flow, <code>BulkActionsBar</code> (its tools consolidate into the block view). <code>OverlayPanel</code> is reused on the home screen.</p>
+      <p><strong>Reference analogs:</strong> sidebar structure follows the existing <code>Sidebar.tsx</code> conventions (PanelSection/bits.tsx); new store actions follow <code>duplicateLots</code>/<code>commitBlockEdit</code> shapes.</p>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level 3 (approved):</strong> replaces the editor shell. Mitigations: store contract stays additive; geometry math reuses proven helpers; acceptance list drives a full browser pass; the old flow is deleted only at the UI layer this round.</p>
+      <ul>
+        <li>Outcast relocation is a heuristic (nearest free interior slot, greedy). <strong>Mitigation:</strong> if no slot in a bounded search, fall to remove-with-count; document; everything is one undo.</li>
+        <li>Context/turn budget: build is sequenced store → surface → sidebar → seed so any interruption leaves a compiling app. Spec is the continuation contract.</li>
+      </ul>
+      <p><strong>Blast radius:</strong> map-editor feature folder, <code>helpers.ts</code> validation, <code>PublishDialog</code>, seed (<code>seed-park.ts</code>), <code>MapEditorPage</code>. Park Map untouched.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+      <article class="task-card"><h3>T1: Store — manager state + actions</h3>
+        <dl><div><dt>Do</dt><dd><code>view</code> (home/block), tools ('select' | 'blockRect' | 'blockFree' | 'lotRect' | 'lotFree'), <code>autofillBlock</code>, <code>generateFromSelection(dir, count|'fill')</code>, <code>resizeBlockGuarded</code> (outcast relocate/remove, protected hard-stop), drag sessions for lots/blocks, <code>resizeLots(dW,dL)</code> steppers, draft persistence (localStorage, dirty-only), advisory validation flag.</dd></div>
+        <div><dt>Files</dt><dd><code>store.ts</code></dd></div><div><dt>Depends on</dt><dd>none</dd></div><div><dt>Verify</dt><dd>tsc</dd></div></dl>
+      </article>
+      <article class="task-card"><h3>T2: Surface — tools + drag-move</h3>
+        <dl><div><dt>Do</dt><dd>Remove mode gating; add lotRect + blockFree draw modes; drag-move on selected lots and on blocks (via drag sessions); keep band select, readouts, block handles.</dd></div>
+        <div><dt>Files</dt><dd><code>EditorSurface.tsx</code>, <code>chrome-canvas.ts</code> (if labels need states)</dd></div><div><dt>Depends on</dt><dd>T1</dd></div><div><dt>Verify</dt><dd>tsc + browser</dd></div></dl>
+      </article>
+      <article class="task-card"><h3>T3: Sidebar — Blocks list / Block view</h3>
+        <dl><div><dt>Do</dt><dd>Home: block list + Add block (Rect/Free) + Site plan (reuse OverlayPanel) + Base map + warnings badge. Block view: block d-pad/rotate/scale/rename/tier/delete; lot draw buttons; generators (direction × 10/100/fill); selection d-pad + size steppers + tier(price)/status/renumber/delete. New-block card: Free form vs Autofill R × C (with price + est. value).</dd></div>
+        <div><dt>Files</dt><dd><code>Sidebar.tsx</code> (rewrite), <code>bits.tsx</code> (small additions), delete usages of retired panels</dd></div><div><dt>Depends on</dt><dd>T1</dd></div><div><dt>Verify</dt><dd>tsc + browser</dd></div></dl>
+      </article>
+      <article class="task-card"><h3>T4: Page + publish — advisory validation</h3>
+        <dl><div><dt>Do</dt><dd>Drop BulkActionsBar; keyboard unchanged (arrows/[ ]/⌘A/Delete); publish button always enabled with "· K warnings"; PublishDialog lists warnings instead of blocking; <code>useLayoutValidation</code> → advisory shape.</dd></div>
+        <div><dt>Files</dt><dd><code>MapEditorPage.tsx</code>, <code>PublishDialog.tsx</code>, <code>helpers.ts</code></dd></div><div><dt>Depends on</dt><dd>T1–T3</dd></div><div><dt>Verify</dt><dd>tsc + browser</dd></div></dl>
+      </article>
+      <article class="task-card"><h3>T5: getpropsie + literal seed layout</h3>
+        <dl><div><dt>Do</dt><dd><code>window.getpropsie()</code> (log + clipboard + return JSON of draft blocks/lots/overlays); <code>src/mock/park-layout.ts</code> literal module (default null) consumed by <code>seedPark</code> verbatim when set.</dd></div>
+        <div><dt>Files</dt><dd><code>MapEditorPage.tsx</code> (mount hook), <code>src/mock/park-layout.ts</code> (new), <code>seed-park.ts</code></dd></div><div><dt>Depends on</dt><dd>T1</dd></div><div><dt>Verify</dt><dd>tsc + validate:mock + console call</dd></div></dl>
+      </article>
+      <article class="task-card"><h3>T6: Verification + acceptance artifacts</h3>
+        <dl><div><dt>Do</dt><dd>tsc, lint, validate:mock, browser pass over the whole flow, test.html + test-results.json.</dd></div>
+        <div><dt>Files</dt><dd>plan artifacts</dd></div><div><dt>Depends on</dt><dd>T1–T5</dd></div><div><dt>Verify</dt><dd>artifacts present, roll-up honest</dd></div></dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" checked disabled> tsc + lint + validate:mock clean</li>
+        <li><input type="checkbox" checked disabled> Sidebar = blocks list; block view has d-pad, scale, generators, per-lot tools; no wizard remnants</li>
+        <li><input type="checkbox" disabled> Autofill R × C divides the block; lots individually movable/retierable/deletable after (pending human draw — T6)</li>
+        <li><input type="checkbox" disabled> Generators: 10/100/fill to T/L/B/R for lot and group, clipped to block (pending human — T7)</li>
+        <li><input type="checkbox" disabled> Shrink guard: relocate → remove (unprotected only) → hard stop at protected hull; block delete refuses with protected lots (guard logic in store; visual pass pending — T8)</li>
+        <li><input type="checkbox" checked disabled> Advisory validation; publish never blocked by warnings</li>
+        <li><input type="checkbox" checked disabled> getpropsie() returns paste-ready JSON; literal layout module feeds the seed; draft persistence wired (reload pass pending — T9)</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <article class="revision-entry">
+        <h3>Rev 1 - 2026-07-31</h3>
+        <p><strong>Change:</strong> Map panning restored in the manager. The surface now claims a pointerdown only when it means something (a tool gesture, a lot/selected-lot hit, the viewed block's body, Shift/Alt band, armed lasso); every other drag bubbles to Google Maps and pans. Band select moved to Shift-drag (Alt subtracts, L arms the lasso).</p>
+        <p><strong>Reason:</strong> User QA: "now i cannot pan the map" — the always-on surface swallowed every drag once the wizard's view-only step was removed.</p>
+        <p><strong>Updated Done criteria:</strong> Acceptance T10 added.</p>
+      </article>
+      <article class="revision-entry">
+        <h3>Rev 2 - 2026-07-31</h3>
+        <p><strong>Change:</strong> The park now boots EMPTY — no blocks, lots, or overlays. The procedural demo layout is retired to an unused reference function. All business seeds (sales, holds, burials, commissions, approvals, notifications) scale to the lots that exist, so the whole app renders clean zero states. When the user's <code>getpropsie()</code> JSON is pasted into <code>src/mock/park-layout.ts</code>, the same deterministic seeds regenerate agents/sales/burials on top of the real geometry with today's distributions.</p>
+        <p><strong>Reason:</strong> User QA: "delete all records of the maps … so that we start with empty data" — the user will author the accurate layout in the editor and hand it back for baking.</p>
+        <p><strong>Updated Done criteria:</strong> Acceptance T11 added.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

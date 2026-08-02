@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map Overlay Sync + Data Parity Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; background: var(--soft); margin-top: 12px; }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 840px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Map Overlay Sync + Data Parity</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed — acceptance: 6 pass, 4 pending human run</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/07312026-map-overlay-sync-data-parity</dd></div>
+        <div><dt>Size</dt><dd>Medium (8 files)</dd></div>
+        <div><dt>Risk</dt><dd>Level 2</dd></div>
+        <div><dt>Mode</dt><dd>--instant (-i)</dd></div>
+        <div><dt>Worktree</dt><dd>Primary checkout, branch <code>jovanie/map-editor-improvements</code> (continues the uncommitted Google Maps migration; no new worktree per -i)</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>After the Leaflet → Google Maps migration, every custom layer (lot canvas, block chrome, site-plan images, cluster chips) is glued to the viewport in <em>container-pixel</em> space but mounted inside (or beside) map surfaces that Google translates and scales during gestures. Result: overlays keep their old size for a beat when zooming, get cut off while panning, and the Map Editor can freeze a stale lot canvas in the wrong place — which reads as "the editor loads different data than the park map".</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>One shared pane-anchored canvas primitive that all map layers render through, in <em>div-pixel</em> space (self-consistent under Google's pane transforms at every frame), plus view-event–driven redraws. Same primitive used by Park Map and Map Editor so both stay in lock-step with the base map during pan and zoom. Editor drafts additionally re-hydrate from the live dataset whenever they are clean, so both screens always show the same published data.</p>
+      <p>Done means: no visible desync between base map and overlays during drag or wheel zoom on either page beyond the sub-frame Google itself allows; the editor never shows a misplaced/stale lot layer; a clean editor draft always equals the live dataset.</p>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+      <h3>Root causes found</h3>
+      <ul>
+        <li><code>src/features/map/lot-canvas.ts</code> — canvas appended to the <code>overlayMouseTarget</code> pane at <code>left/top: 0</code> but drawn in container pixels; <code>draw()</code> only repaints when React pushed props (<code>_dirty</code>), so map-driven <code>draw()</code> calls (pan re-anchor, zoom) show stale bitmaps. Park Map self-heals via hover-driven prop pushes; the editor passes noop handlers, so it freezes misaligned.</li>
+        <li><code>src/features/map/google/image-overlay.ts</code> — site-plan image positioned against the map <em>container</em> div on <code>bounds_changed</code>; no events fire during the zoom animation → image keeps its old size, then snaps.</li>
+        <li><code>src/features/map-editor/chrome-canvas.ts</code> — blocks/preview drawn on a screen-fixed canvas from <code>bounds_changed</code>; same zoom-animation gap, one-frame pan lag.</li>
+        <li><code>src/features/map/BlockClusterLayer.tsx</code> — pane children positioned with <em>container</em> pixels inside <code>draw()</code>; only correct at re-anchor moments.</li>
+        <li><code>src/features/map-editor/store.ts</code> <code>hydrate()</code> — keeps a clean (non-dirty) draft forever once loaded; dataset mutations elsewhere (sales, approvals) never reach the editor until reload.</li>
+      </ul>
+      <h3>Key invariant this build exploits</h3>
+      <p>Content positioned and drawn in <strong>div-pixel space inside a map pane</strong> is correct by construction at all times: during a drag Google translates the pane (content rides along), during the wheel-zoom animation Google scales the pane (content tracks the ground), and at each re-anchor the API calls <code>draw()</code> where we re-position and repaint. Container-pixel space is only valid at the instant of an event.</p>
+      <h3>Relevant Files</h3>
+      <ul>
+        <li><code>src/features/map/google/pane-canvas.ts</code> — NEW shared primitive (analog: overlay plumbing in <code>lot-canvas.ts</code> + <code>projection-bridge.ts</code>).</li>
+        <li><code>src/features/map/lot-canvas.ts</code> — lot rendering + hit testing (both pages via <code>LotCanvasLayer</code>).</li>
+        <li><code>src/features/map/google/image-overlay.ts</code> — site-plan images (Park Map <code>SitePlanOverlay</code>, editor <code>DraftOverlayLayer</code>).</li>
+        <li><code>src/features/map-editor/chrome-canvas.ts</code> — editor block outlines/labels, draw preview, band/lasso/readout.</li>
+        <li><code>src/features/map/BlockClusterLayer.tsx</code> — low-zoom cluster chips + block labels.</li>
+        <li><code>src/features/map-editor/store.ts</code>, <code>src/features/map-editor/MapEditorPage.tsx</code> — draft hydration freshness.</li>
+      </ul>
+      <h3>Patterns To Follow</h3>
+      <ul>
+        <li>Imperative layer classes owned by thin React shells (<code>LotCanvasLayer.tsx</code> pattern) — no per-lot React nodes.</li>
+        <li>Typed-array projection buffers and grouped fills stay exactly as in <code>lot-canvas.ts</code>.</li>
+        <li>Theme colours only via <code>colors.ts</code> helpers.</li>
+      </ul>
+      <p><strong>Reference file:</strong> <code>src/features/map/lot-canvas.ts</code> — closest analog for the new primitive's overlay lifecycle.</p>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Must</h3>
+          <ul>
+            <li>Keep public APIs of <code>LotCanvas</code>, <code>createImageOverlay</code>, <code>ChromeCanvas</code> stable so React shells stay untouched where possible.</li>
+            <li>Redraws rAF-coalesced; full lot repaint stays ≈1–2 ms (verify with <code>?debug=perf</code>).</li>
+            <li>Hover/click hit-testing keeps working on Park Map (tooltip coordinates relative to the map container).</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Must Not</h3>
+          <ul>
+            <li>No new dependencies; no WebGLOverlayView (vector-only — satellite raster is the product default).</li>
+            <li>No behaviour change to editor tools' pointer math (container-space hit paths stay).</li>
+            <li>No touching the in-flight migration's unrelated files.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Out Of Scope</h3>
+      <ul>
+        <li>Editor DOM handles (rotation/resize chips, SVG bits) keep <code>useMapTick</code> container positioning — sub-frame lag on chrome accepted for now.</li>
+        <li>Persisting editor drafts across reloads.</li>
+        <li>Dirty-draft merge/conflict UX (dirty drafts intentionally keep priority over live data until published/discarded).</li>
+      </ul>
+      <h3>Assumptions (-i self-resolved)</h3>
+      <ul>
+        <li>The dirty working tree is the same in-flight Google Maps migration this fixes; work layers on top of it, nothing stashed, nothing committed unless asked.</li>
+        <li>“Load the same data” = clean drafts must track the live dataset (version-aware re-hydrate); the stale-canvas illusion is fixed by the rendering work.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level:</strong> 2 — hot-path rendering rewrite used by both map screens.</p>
+      <h3>Risks Identified</h3>
+      <ul>
+        <li>Regression in hit-testing/tooltips after coordinate-space change. <strong>Mitigation:</strong> hit-test stays canvas-local (rect-derived, scale-corrected); pointer events report map-container coordinates; browser walkthrough covers hover/click.</li>
+        <li>Pane z-ordering differs from previous DOM order (images move from map div into <code>overlayLayer</code> pane). <strong>Mitigation:</strong> lots render in <code>overlayMouseTarget</code> (above), images in <code>overlayLayer</code> (below) — same visual stack as today; per-overlay z-index preserved among siblings.</li>
+        <li>Re-hydrate could clobber an in-progress draft. <strong>Mitigation:</strong> dirty drafts never re-hydrate; version check only refreshes clean drafts; publish records the post-publish version.</li>
+      </ul>
+      <p><strong>Blast radius:</strong> <code>MapCanvas</code> + <code>EditorCanvas</code> (via <code>LotCanvasLayer</code>), <code>SitePlanOverlay</code>, <code>DraftOverlayLayer</code>, <code>EditorSurface</code> (via <code>ChromeCanvas</code>), <code>BlockClusterLayer</code>, <code>MapEditorPage</code>, editor <code>store.ts</code> consumers (<code>helpers.ts</code> report/validation read draft state — untouched fields). QA scripts <code>qa/*.mjs</code> exercise both pages.</p>
+      <h3>Pushback</h3>
+      <ul>
+        <li>Perfect per-frame sync during Google's zoom animation is impossible for viewport-fixed DOM on raster maps — the public API exposes no per-frame camera. The pane-anchored approach is the same mechanism Google's own <code>GroundOverlay</code>/vector shapes use, which is the best achievable; do not chase WebGL for this.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+      <article class="task-card">
+        <h3>T1: Shared pane-anchored canvas primitive</h3>
+        <dl>
+          <div><dt>Do</dt><dd><code>PaneCanvas</code>: OverlayView-managed canvas in a chosen pane, oversized by a bleed margin, re-anchored to the viewport in div-pixel space on every draw, rAF-coalesced redraws on <code>bounds_changed</code>/<code>zoom_changed</code>/<code>idle</code> and on every API <code>draw()</code>; exposes a canvas-local <code>project(ll)</code>.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map/google/pane-canvas.ts</code> (new)</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code></dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T2: LotCanvas on PaneCanvas</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Replace bespoke overlay/canvas lifecycle with T1; project polygons canvas-local; always repaint on view-driven draws; fade canvas anchored identically; hit-test scale-corrected; pointer events report map-container coordinates.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map/lot-canvas.ts</code></dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Verify</dt><dd>Manual: park map pan/zoom shows no cut-offs or stale-size lots; hover tooltip still lands.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T3: Pane-based image overlays</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Rewrite <code>createImageOverlay</code> as an OverlayView child of <code>overlayLayer</code>, positioned via <code>fromLatLngToDivPixel</code> in <code>draw()</code>; drop the <code>bounds_changed</code> sync listener; keep opacity/outline/rotation API.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map/google/image-overlay.ts</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Manual: site plan tracks the ground during drag and wheel zoom on both pages.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T4: ChromeCanvas world/screen split</h3>
+        <dl>
+          <div><dt>Do</dt><dd>World-anchored content (blocks, labels, preview, overlaps, pending, draw points) renders through an internal <code>PaneCanvas</code>; screen-anchored content (band, lasso, readout) stays on the existing fixed canvas. Constructor/set/destroy API unchanged.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/chrome-canvas.ts</code></dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Verify</dt><dd>Manual: editor block outlines/labels track pan and zoom; band/lasso select still work.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T5: Cluster chips in div-pixel space</h3>
+        <dl>
+          <div><dt>Do</dt><dd><code>htmlOverlay.draw()</code> positions via <code>fromLatLngToDivPixel</code>.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map/BlockClusterLayer.tsx</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Manual: zoom out below lot zoom; chips ride the map during drags.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T6: Clean-draft re-hydration (data parity)</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Editor store tracks the dataset <code>version</code> it hydrated from; <code>hydrate()</code> refreshes when the draft is clean and the version or location changed; <code>publish()</code> records the post-publish version; <code>MapEditorPage</code> re-runs hydrate on version changes.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map-editor/store.ts</code>, <code>src/features/map-editor/MapEditorPage.tsx</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Manual: clean editor draft reflects a dataset mutation on return; dirty draft survives navigation.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T8: Editor "Default" base shows the street map (Rev 1)</h3>
+        <dl>
+          <div><dt>Do</dt><dd><code>BaseLayer</code> gains a <code>plain</code> flavour prop: <code>parchment</code> (Park Map "Plain", unchanged) or <code>roadmap</code> (editor "Default" — standard streets as a tracing reference). Editor drops the parchment wrapper class.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/map/BaseLayer.tsx</code>, <code>src/features/map-editor/EditorCanvas.tsx</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd>Manual: editor Default base renders roads/buildings; Park Map Plain stays parchment.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T9: Seed geometry — outlines wrap lots, layout anchored on the oval (Rev 2)</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Fix the rotation bug in seeded block outlines (centre offset must live in the grid's rotated frame — new <code>offsetMetresRotated</code>); re-anchor <code>DEFAULT_PARK_CENTROID</code> so the layout's bounding box centres on the Lupon Sport Oval Ground visible in the imagery.</dd></div>
+          <div><dt>Files</dt><dd><code>src/mock/geo.ts</code>, <code>src/mock/seed-park.ts</code>, <code>src/domain/constants.ts</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd><code>npm run validate:mock</code> · Manual: editor Review shows no out-of-block issues; layout sits on the oval.</dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T7: Verification + acceptance artifacts</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Typecheck, lint, browser walkthrough of both pages (pan, wheel zoom, hover, editor tools), <code>test.html</code> + <code>test-results.json</code>.</dd></div>
+          <div><dt>Files</dt><dd>plan folder artifacts</dd></div>
+          <div><dt>Depends on</dt><dd>T2, T3, T4, T5, T6</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code> · <code>npm run lint</code> · browser evidence</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" checked disabled> <code>npx tsc --noEmit -p tsconfig.app.json</code> — zero errors from this change</li>
+        <li><input type="checkbox" checked disabled> <code>npm run lint</code> — no new failures</li>
+        <li><input type="checkbox" checked disabled> Manual: Park Map — no overlay cut-offs while dragging; no stale-size overlays after wheel zoom</li>
+        <li><input type="checkbox" checked disabled> Manual: Map Editor — lots/blocks/site-plan track the base map; no frozen misplaced lot layer</li>
+        <li><input type="checkbox" disabled> Manual: Park Map and Map Editor render the same lot inventory (904 lots) from the shared dataset; clean drafts refresh on dataset changes</li>
+        <li><input type="checkbox" disabled> No regressions in lot hover/click, editor band/lasso selection, cluster chips</li>
+        <li><input type="checkbox" checked disabled> (Rev 1) Editor "Default" base renders the standard street map; Park Map "Plain" keeps the parchment look</li>
+        <li><input type="checkbox" checked disabled> (Rev 2) Block outlines wrap their lots exactly (editor Review: no issues); layout centred on the oval ground; <code>npm run validate:mock</code> passes</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <article class="revision-entry">
+        <h3>Rev 1 - 2026-07-31</h3>
+        <p><strong>Change:</strong> Editor "Default" base layer now renders Google's standard roadmap (streets, buildings) instead of the feature-hidden parchment mode. Park Map "Plain" is unchanged.</p>
+        <p><strong>Reason:</strong> User QA: "default view should show the street view" — a blank canvas gives the editor no tracing reference.</p>
+        <p><strong>Updated Done criteria:</strong> Added Rev 1 checklist item.</p>
+      </article>
+      <article class="revision-entry">
+        <h3>Rev 2 - 2026-07-31</h3>
+        <p><strong>Change:</strong> Seed geometry fixes — block outline centres now use rotated-frame offsets (<code>offsetMetresRotated</code>), eliminating the ~8.6 m outline-vs-lots drift and all 206 editor review issues; <code>DEFAULT_PARK_CENTROID</code> moved to <code>[6.89854, 126.00991]</code> so the layout's bounding box centres on the Lupon Sport Oval Ground.</p>
+        <p><strong>Reason:</strong> User QA: "the blocks are offset from the outline … reset value here to properly align with the satellite map oval — fix the defaults."</p>
+        <p><strong>Updated Done criteria:</strong> Added Rev 2 checklist item.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

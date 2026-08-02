@@ -1,16 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useMap } from 'react-leaflet'
 import { Icon } from '@/components/ui-brand/Icon'
 import { IconFitBounds } from '@/components/ui-brand/icons'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useGoogleMap } from '@/features/map/google/map-view'
+import { zoomMapIn, zoomMapOut } from '@/features/map/google/helpers'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-/**
- * Leaflet's own control is unstyleable enough to be a liability; this is the
- * same three actions in the brand's own chrome.
- */
 export function ZoomControls({
   moved,
   onFit,
@@ -18,7 +15,7 @@ export function ZoomControls({
   moved: boolean
   onFit: () => void
 }) {
-  const map = useMap()
+  const map = useGoogleMap()
 
   return (
     <div className="pointer-events-none flex flex-col items-end gap-2">
@@ -44,13 +41,13 @@ export function ZoomControls({
       </AnimatePresence>
 
       <div className="pointer-events-auto flex flex-col overflow-hidden rounded-lg border border-line bg-surface/90 shadow-md backdrop-blur">
-        <ZoomButton label="Zoom in" onClick={() => map.zoomIn()}>
+        <ZoomButton label="Zoom in" onClick={() => zoomMapIn(map)}>
           <span aria-hidden className="text-[17px] leading-none">
             +
           </span>
         </ZoomButton>
         <div className="h-px bg-line" />
-        <ZoomButton label="Zoom out" onClick={() => map.zoomOut()}>
+        <ZoomButton label="Zoom out" onClick={() => zoomMapOut(map)}>
           <span aria-hidden className="text-[17px] leading-none">
             −
           </span>

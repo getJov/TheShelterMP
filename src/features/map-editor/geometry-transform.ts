@@ -353,7 +353,7 @@ function polygonFromBounds(bounds: Bounds | null): Polygon {
   ]
 }
 
-function polygonRotationDeg(polygon: Polygon): number {
+export function polygonRotationDeg(polygon: Polygon): number {
   if (polygon.length < 2) return 0
   const local = toLocal(polygon[0]!, polygon[1]!, 0)
   return normalizeDeg((Math.atan2(-local.n, local.e) * 180) / Math.PI)

@@ -1,21 +1,23 @@
 /*
- * Map chrome that has to live inside Leaflet's own panes, where Tailwind
- * classes on React elements cannot reach. Every colour is a theme token.
+ * Map chrome that lives inside the map viewport, where Tailwind cannot reach. Every colour is a theme token.
  */
 
 .shelter-lot-canvas {
   position: absolute;
   left: 0;
   top: 0;
+  z-index: 500;
   pointer-events: none;
-  will-change: transform;
+}
+.shelter-lot-canvas:not(.shelter-lot-fade) {
+  pointer-events: auto;
 }
 .shelter-lot-fade {
   z-index: 1;
 }
 
 /* Plain base layer: parchment ground in light, deep green in dark. */
-.map-plain .leaflet-container {
+.map-plain .shelter-map {
   background:
     radial-gradient(
       circle at 50% 40%,
