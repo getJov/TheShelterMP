@@ -94,7 +94,7 @@ export function IntermentsTab({
       cell: (r) => (
         <span className="inline-flex items-center gap-1.5 text-muted">
           <SlotIcon slot={r.slot} size={13} />
-          <span className="font-mono text-[11.5px]">{slotLabelShort[r.slot]}</span>
+          <span className="text-caption font-mono">{slotLabelShort[r.slot]}</span>
         </span>
       ),
     },
@@ -118,7 +118,7 @@ export function IntermentsTab({
       header: 'Lot',
       width: '104px',
       sortBy: (r) => lotCode(r.lotId),
-      cell: (r) => <span className="font-mono text-[12px]">{lotCode(r.lotId)}</span>,
+      cell: (r) => <span className="text-caption font-mono">{lotCode(r.lotId)}</span>,
     },
     {
       key: 'owner',
@@ -126,7 +126,7 @@ export function IntermentsTab({
       cell: (r) => {
         const lot = indexes().lotsById.get(r.lotId)
         return (
-          <span className="truncate text-muted">{lot ? ownerName(lot) : '—'}</span>
+          <span className="break-words text-muted">{lot ? ownerName(lot) : '—'}</span>
         )
       },
     },
@@ -154,9 +154,9 @@ export function IntermentsTab({
           ? indexes().usersById.get(job.assignedToUserId)?.fullName
           : null
         return name ? (
-          <span className="truncate text-muted">{name}</span>
+          <span className="break-words text-muted">{name}</span>
         ) : (
-          <span className="text-[12px] text-muted/70">Unassigned</span>
+          <span className="text-caption text-muted/70">Unassigned</span>
         )
       },
     },
@@ -165,22 +165,24 @@ export function IntermentsTab({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
+        <div className="relative min-w-0 flex-[1_1_16rem]">
+          <label className="sr-only" htmlFor="interments-search">Search interments</label>
           <Icon
             icon={IconSearch}
             size={15}
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted"
           />
           <Input
+            id="interments-search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search deceased or lot…"
-            className="h-8 w-[230px] pl-8 text-[13px]"
+            className="w-full pl-9"
           />
         </div>
 
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger size="sm" className="w-[142px] text-[12.5px]">
+          <SelectTrigger size="sm" className="min-w-0 flex-[1_1_11rem] sm:w-44" aria-label="Filter by interment status">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -194,7 +196,7 @@ export function IntermentsTab({
         </Select>
 
         <Select value={type} onValueChange={setType}>
-          <SelectTrigger size="sm" className="w-[142px] text-[12.5px]">
+          <SelectTrigger size="sm" className="min-w-0 flex-[1_1_11rem] sm:w-44" aria-label="Filter by interment type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -207,27 +209,27 @@ export function IntermentsTab({
           </SelectContent>
         </Select>
 
-        <div className="w-[150px]">
+        <div className="min-w-0 flex-[1_1_10rem] sm:max-w-48">
           <DatePickerButton
             value={from}
             onChange={setFrom}
             placeholder="From"
-            className="h-8 text-[12.5px]"
+            ariaLabel="Filter from date"
           />
         </div>
-        <div className="w-[150px]">
+        <div className="min-w-0 flex-[1_1_10rem] sm:max-w-48">
           <DatePickerButton
             value={to}
             onChange={setTo}
             placeholder="To"
-            className="h-8 text-[12.5px]"
+            ariaLabel="Filter to date"
           />
         </div>
 
         <Button
           variant={outstandingOnly ? 'default' : 'outline'}
           size="sm"
-          className="h-8 text-[12.5px]"
+          aria-pressed={outstandingOnly}
           onClick={() => setOutstandingOnly((v) => !v)}
         >
           Requirements outstanding
@@ -237,7 +239,7 @@ export function IntermentsTab({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 text-[12.5px] text-muted"
+            className="text-muted"
             onClick={() => {
               setQ('')
               setStatus(ALL)
@@ -252,7 +254,7 @@ export function IntermentsTab({
         )}
 
         {canSchedule && (
-          <Button size="sm" className="ml-auto h-8 gap-1.5" onClick={onSchedule}>
+          <Button size="sm" className="ml-auto gap-1.5" onClick={onSchedule}>
             <Icon icon={IconScheduleBurial} size={15} />
             Schedule burial
           </Button>
@@ -264,6 +266,7 @@ export function IntermentsTab({
         columns={columns}
         rowKey={(r) => r.id}
         onRowClick={onOpen}
+        rowActionLabel={(r) => `View ${deceasedFullName(r)} interment`}
         emptyIcon={IconBurials}
         initialSort={{ key: 'date', dir: 'desc' }}
         empty={{
@@ -271,7 +274,7 @@ export function IntermentsTab({
           body: `The register begins ${fmtDate(FIRST_INTERMENT)}, the park's first interment. Widen the filters to see more.`,
         }}
         footer={
-          <span>
+          <span role="status" aria-live="polite">
             <span className="tabular font-medium text-ink">{rows.length}</span> interment
             {rows.length === 1 ? '' : 's'} · the office register, oldest at the bottom.
           </span>

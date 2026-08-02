@@ -139,22 +139,17 @@ export function CommissionRulesPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[900px] space-y-5 px-6 py-6">
+      <div className="mx-auto max-w-[900px] space-y-5 px-4 py-6 sm:px-6">
         <div>
           <Link
             to="/agents"
-            className="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink"
+            className="inline-flex items-center gap-1.5 text-caption text-muted hover:text-ink"
           >
             <Icon icon={IconChevronLeft} size={14} /> Agents
           </Link>
-          <h2 className="mt-1.5 font-display text-[28px] font-semibold text-ink">
+          <h2 className="mt-1.5 font-display text-page-title font-semibold text-ink">
             Commission structure
           </h2>
-          <p className="mt-0.5 max-w-[74ch] text-[13.5px] text-muted">
-            The client confirmed twelve percent split three ways. Which level gets
-            which slice, and what each level is called, are ours until they say
-            otherwise — so both are editable here.
-          </p>
         </div>
 
         {/* ── editor ─────────────────────────────────────────── */}
@@ -166,7 +161,7 @@ export function CommissionRulesPage() {
           </header>
 
           <div className="divide-y divide-line-soft">
-            <div className="hidden gap-3 px-4 py-2 text-[10.5px] uppercase tracking-[0.08em] text-muted sm:grid sm:grid-cols-[130px_1fr_120px_auto]">
+            <div className="hidden gap-3 px-4 py-2 text-micro uppercase tracking-[0.08em] text-muted sm:grid sm:grid-cols-[130px_1fr_120px_auto]">
               <span>Level</span>
               <span>Label</span>
               <span className="text-right">Rate</span>
@@ -178,7 +173,7 @@ export function CommissionRulesPage() {
                 key={d.level}
                 className="grid items-center gap-3 px-4 py-3 sm:grid-cols-[130px_1fr_120px_auto]"
               >
-                <span className="font-mono text-[12px] text-muted">{d.level}</span>
+                <span className="font-mono text-caption text-muted">{d.level}</span>
                 <Input
                   value={d.label}
                   aria-label={`${d.level} label`}
@@ -189,7 +184,7 @@ export function CommissionRulesPage() {
                       ),
                     )
                   }
-                  className="h-9 text-[13.5px]"
+                  className="text-caption"
                 />
                 <div className="relative">
                   <Input
@@ -205,9 +200,9 @@ export function CommissionRulesPage() {
                         ),
                       )
                     }
-                    className="h-9 pr-7 text-right tabular text-[13.5px]"
+                    className="pr-7 text-right tabular text-caption"
                   />
-                  <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12.5px] text-muted">
+                  <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-muted">
                     %
                   </span>
                 </div>
@@ -217,10 +212,10 @@ export function CommissionRulesPage() {
 
             <div className="grid gap-3 px-4 py-3 sm:grid-cols-[130px_1fr_120px_auto]">
               <span />
-              <span className="text-[13px] text-muted">Total</span>
+              <span className="text-caption text-muted">Total</span>
               <span
                 className={cn(
-                  'text-right font-display text-[19px] font-semibold tabular',
+                  'text-right font-display text-small-title font-semibold tabular',
                   onTwelve ? 'text-green' : 'text-gold-deep dark:text-gold',
                 )}
               >
@@ -233,12 +228,12 @@ export function CommissionRulesPage() {
           <footer className="space-y-3 border-t border-line bg-surface-2 px-4 py-3.5">
             <div className="flex flex-wrap items-end gap-4">
               <div>
-                <Label className="mb-1.5 block text-[12px] text-muted">
+                <Label className="mb-1.5 block text-caption text-muted">
                   Effective from
                 </Label>
                 <DateField value={effectiveFrom} onChange={setEffectiveFrom} />
               </div>
-              <p className="flex-1 min-w-[280px] text-[12px] leading-relaxed text-muted">
+              <p className="min-w-0 flex-[1_1_280px] text-caption leading-relaxed text-muted">
                 <Icon icon={IconInfo} size={13} className="mr-1 inline align-[-2px]" />
                 Existing commission entries keep the rate in force when they were
                 earned. Saving appends a new generation and closes the old one —
@@ -260,7 +255,7 @@ export function CommissionRulesPage() {
                 Reset
               </Button>
               {!onTwelve && (
-                <span className="ml-auto inline-flex items-center gap-1.5 text-[12.5px] text-gold-deep dark:text-gold">
+                <span className="ml-auto inline-flex items-center gap-1.5 text-caption text-gold-deep dark:text-gold">
                   <Icon icon={IconAlert} size={14} />
                   Saving is still allowed — the client may confirm figures that do
                   not sum to twelve.
@@ -281,28 +276,28 @@ export function CommissionRulesPage() {
               return (
                 <li
                   key={r.id}
-                  className="flex flex-wrap items-center gap-3 px-4 py-2.5 text-[13px]"
+                  className="flex flex-wrap items-center gap-3 px-4 py-2.5 text-caption"
                 >
-                  <span className="w-[150px] font-mono text-[11.5px] text-muted">
+                  <span className="w-[150px] font-mono text-caption text-muted">
                     {r.level}
                   </span>
                   <span className="min-w-[150px] flex-1 text-ink">{r.label}</span>
                   <span className="tabular text-ink">{formatPercent(r.ratePercent)}</span>
-                  <span className="w-[210px] text-right text-[12px] text-muted">
+                  <span className="w-[210px] text-right text-caption text-muted">
                     {fmtDate(r.effectiveFrom)} →{' '}
                     {r.effectiveTo ? fmtDate(r.effectiveTo) : 'present'}
                   </span>
                   <span className="w-[70px] text-right">
                     {live ? (
-                      <span className="inline-flex items-center gap-1 text-[11.5px] font-medium text-green">
+                      <span className="inline-flex items-center gap-1 text-caption font-medium text-green">
                         <Icon icon={IconCheck} size={12} /> Live
                       </span>
                     ) : r.effectiveFrom > TODAY ? (
-                      <span className="text-[11.5px] text-gold-deep dark:text-gold">
+                      <span className="text-caption text-gold-deep dark:text-gold">
                         Pending
                       </span>
                     ) : (
-                      <span className="text-[11.5px] text-muted">Closed</span>
+                      <span className="text-caption text-muted">Closed</span>
                     )}
                   </span>
                 </li>
@@ -323,7 +318,7 @@ function TotalIndicator({ total, onTwelve }: { total: number; onTwelve: boolean 
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'ml-auto inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[12.5px] font-medium tabular',
+        'ml-auto inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-caption font-medium tabular',
         onTwelve
           ? 'border-green/45 bg-green/12 text-green'
           : 'border-gold/55 bg-gold/15 text-gold-deep dark:text-gold',
@@ -352,7 +347,7 @@ function ImpactPreview({
 }) {
   if (!dirty) {
     return (
-      <p className="text-[12.5px] text-muted">
+      <p className="text-caption text-muted">
         This month&rsquo;s accrued commission stands at{' '}
         <span className="font-medium text-ink">
           {formatPeso(actual, { decimals: false })}
@@ -363,7 +358,7 @@ function ImpactPreview({
   }
   const delta = hypothetical - actual
   return (
-    <p className="text-[12.5px] text-muted">
+    <p className="text-caption text-muted">
       Impact —{' '}
       <span className="text-ink">
         this month&rsquo;s accrued commission would have been{' '}

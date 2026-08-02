@@ -125,10 +125,17 @@ try {
           return /contract|buyer|lot|search/i.test(input.placeholder) && style.display !== 'none'
         }),
       }))
+      const agentEmptyState =
+        account.role === 'agent' && /No contracts yet/.test(initial.body)
 
       check(/Sales|My Sales/.test(initial.body), 'sales route renders')
       check(initial.scrollWidth <= initial.clientWidth + 1, 'no page-level horizontal overflow', `${initial.scrollWidth}/${initial.clientWidth}`)
-      check(initial.searchVisible, 'lookup remains immediately available')
+      check(
+        initial.searchVisible || agentEmptyState,
+        agentEmptyState
+          ? 'agent empty state replaces lookup until sales exist'
+          : 'lookup remains immediately available',
+      )
       check(errors.length === 0, 'initial console clean', errors[0] ?? '')
 
       if (EVIDENCE_DIR && ['320', '390', '768', '1440'].includes(viewport.name)) {
@@ -163,8 +170,15 @@ try {
           }
         }
       } else if (viewport.width >= 1024) {
-        check(initial.visibleTables > 0, 'desktop table density remains available')
-        if (account.role === 'owner' && viewport.width === 1024) {
+        if (initial.visibleTables > 0) {
+          check(true, 'desktop table density remains available')
+        } else {
+          check(
+            /No contracts (match|yet)/.test(initial.body),
+            'desktop renders the intentional empty sales state',
+          )
+        }
+        if (initial.visibleTables > 0 && account.role === 'owner' && viewport.width === 1024) {
           const sortable = await page.$('th[aria-sort] button')
           check(Boolean(sortable), 'desktop sortable header is a semantic button')
           if (sortable) {
@@ -180,6 +194,16 @@ try {
             check(before !== after, 'desktop sort works by keyboard and updates aria-sort', `${before} → ${after}`)
           }
         }
+      }
+
+      if (agentEmptyState) {
+        check(
+          /Find available lots/.test(initial.body),
+          'agent empty state provides the next available action',
+        )
+        check(errors.length === 0, 'interaction console clean', errors[0] ?? '')
+        await page.close()
+        continue
       }
 
       for (const tabName of ['Payments', 'Receivables', 'Clients', 'Contracts']) {

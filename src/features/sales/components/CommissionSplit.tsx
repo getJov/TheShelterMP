@@ -59,7 +59,7 @@ export function CommissionSplit({
       </div>
 
       <div className="px-3.5 py-2">
-        <dl className="pb-1.5 text-[12px] text-muted">
+        <dl className="pb-1.5 text-caption text-muted">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
             <dt className="min-w-0 break-words">{basisLabel}</dt>
             <dd className="m-0 text-right">
@@ -72,7 +72,7 @@ export function CommissionSplit({
         </dl>
 
         {rows.length === 0 ? (
-          <p className="break-words py-2 text-[12.5px] text-muted">
+          <p className="py-2 text-body text-muted">
             No upline on this contract — nothing to split.
           </p>
         ) : (
@@ -83,16 +83,16 @@ export function CommissionSplit({
                 className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 py-2 sm:items-center sm:py-1.5"
               >
                 <span className="min-w-0">
-                  <span className="block break-words text-[13px] text-ink sm:truncate">
+                  <span className="block whitespace-normal break-words text-body text-ink">
                     {agentNameOf(r.agentId)}
                   </span>
-                  <span className="block text-[11.5px] text-muted">
+                  <span className="block text-caption text-muted">
                     {LEVEL_NAMES[r.level]} · {formatPercent(r.ratePercent, 0)}
                   </span>
                 </span>
                 <MoneyText
                   centavos={r.amountCentavos}
-                  className="whitespace-nowrap text-right text-[13px] text-ink"
+                  className="whitespace-nowrap text-right text-body text-ink"
                 />
               </li>
             ))}
@@ -101,21 +101,17 @@ export function CommissionSplit({
 
         <dl className="mt-1.5 border-t border-line pt-1.5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
-            <dt className="min-w-0 break-words text-[12.5px] font-medium text-ink">
+            <dt className="min-w-0 break-words text-caption font-medium text-ink">
               Total commission
             </dt>
             <dd className="m-0 text-right">
               <MoneyText
                 centavos={total}
-                className="whitespace-nowrap text-[13.5px] font-medium text-ink"
+                className="whitespace-nowrap text-body font-medium text-ink"
               />
             </dd>
           </div>
         </dl>
-        <p className="mt-1.5 break-words text-[11.5px] leading-snug text-muted">
-          Earned as payments are collected, never at signing. The basis is the full
-          payment — the trust-fund accrual is not deducted from it.
-        </p>
       </div>
     </div>
   )
@@ -125,7 +121,6 @@ export function CommissionSplit({
 export function TrustFundNote({
   amountCentavos,
   className,
-  compact,
 }: {
   amountCentavos?: Centavos
   className?: string
@@ -139,7 +134,7 @@ export function TrustFundNote({
       )}
     >
       <Icon icon={IconTrustFund} size={17} className="mt-0.5 shrink-0 text-green" />
-      <div className="min-w-0 break-words text-[12.5px] leading-snug text-ink">
+      <div className="min-w-0 break-words text-body leading-snug text-ink">
         {amountCentavos !== undefined ? (
           <p>
             <MoneyText
@@ -152,12 +147,6 @@ export function TrustFundNote({
           <p>
             <span className="font-medium">{TRUST_FUND_RATE_PERCENT}% of each payment</span>{' '}
             will accrue to the perpetual care fund.
-          </p>
-        )}
-        {!compact && (
-          <p className="mt-0.5 text-muted">
-            Added to a running total — it is not deducted from the balance, the contract
-            price or the commission basis.
           </p>
         )}
       </div>

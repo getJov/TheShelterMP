@@ -205,6 +205,7 @@ export function ClientsTab({
           columns={columns}
           rowKey={(client) => client.id}
           onRowClick={(client) => onOpen(client.id)}
+          rowActionLabel={(client) => `Open ${client.name} details`}
           initialSort={{ key: 'out', dir: 'desc' }}
           emptyIcon={IconContract}
           empty={{ title: 'No clients match', body: 'Adjust the search or filter.' }}

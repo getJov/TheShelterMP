@@ -31,11 +31,11 @@ export function EmptyState({
           <Icon icon={icon} size={19} />
         </div>
       )}
-      <p className="font-display text-ink" style={{ fontSize: compact ? 17 : 20 }}>
+      <p className={cn('font-display text-ink', compact ? 'text-small-title' : 'text-section-title')}>
         {title}
       </p>
       {body && (
-        <p className="mt-1.5 max-w-[46ch] text-[13.5px] leading-relaxed text-muted">{body}</p>
+        <p className="mt-1.5 max-w-[46ch] text-body text-muted">{body}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>

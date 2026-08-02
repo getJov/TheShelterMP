@@ -50,7 +50,7 @@ export function JobChecklist({
             initial={{ opacity: 0, x: -4 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.28, ease: EASE, delay: Math.min(n, 12) * 0.02 }}
-            className="flex items-center gap-2.5 py-0.5"
+            className="flex min-h-10 items-center gap-2.5 py-0.5"
           >
             <Checkbox
               id={id}
@@ -61,7 +61,7 @@ export function JobChecklist({
             <Label
               htmlFor={id}
               className={cn(
-                'text-[12.5px] font-normal',
+                'text-body font-normal',
                 item.done ? 'text-muted line-through' : 'text-ink',
                 !editable && 'cursor-default',
               )}
@@ -104,7 +104,7 @@ export function AssignSelect({
           })
       }}
     >
-      <SelectTrigger size="sm" className="w-[190px] text-[12.5px]">
+      <SelectTrigger size="sm" className="w-full min-w-0 sm:w-52" aria-label="Assign grounds crew">
         <Icon icon={IconAssign} size={14} className="text-muted" />
         <SelectValue placeholder="Assign crew" />
       </SelectTrigger>
@@ -141,11 +141,11 @@ export function PhotoSlots({ compact }: { compact?: boolean }) {
             )}
           >
             <Icon icon={IconPhoto} size={compact ? 15 : 18} />
-            <span className="text-[11px] font-medium">{label}</span>
+            <span className="text-caption font-medium">{label}</span>
           </div>
         ))}
       </div>
-      <p className="mt-1.5 text-[11px] text-muted">Photo capture in a later phase.</p>
+      <p className="text-caption mt-1.5 text-muted">Photo capture unavailable.</p>
     </div>
   )
 }

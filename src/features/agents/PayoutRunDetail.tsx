@@ -125,23 +125,23 @@ export function PayoutRunDetail() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1080px] space-y-5 px-6 py-6">
+      <div className="mx-auto max-w-[1080px] space-y-5 px-4 py-6 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <Link
               to="/agents/payouts"
-              className="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink"
+              className="inline-flex items-center gap-1.5 text-caption text-muted hover:text-ink"
             >
               <Icon icon={IconChevronLeft} size={14} /> Payout runs
             </Link>
-            <h2 className="mt-1.5 font-display text-[27px] font-semibold leading-tight text-ink">
+            <h2 className="mt-1.5 font-display text-page-title font-semibold leading-tight text-ink">
               {fmtDateLong(run.periodStart)} → {fmtDateLong(run.periodEnd)}
             </h2>
-            <p className="mt-1 flex flex-wrap items-center gap-2.5 text-[13.5px] text-muted">
+            <p className="mt-1 flex flex-wrap items-center gap-2.5 text-caption text-muted">
               Release {fmtDateLong(run.releaseDate)}
               <RunStatusChip status={run.status} />
               {run.approvedByUserId && (
-                <span className="text-[12.5px]">
+                <span className="text-caption">
                   Approved by{' '}
                   {indexes().usersById.get(run.approvedByUserId)?.fullName ?? '—'}
                 </span>
@@ -217,7 +217,7 @@ export function PayoutRunDetail() {
           <StatCard
             label="Per level"
             value={
-              <span className="text-[16px]">
+              <span className="text-body">
                 {levelTotals
                   .filter((l) => l.count > 0)
                   .map((l) => formatPeso(l.centavos, { compact: true }))
@@ -241,7 +241,7 @@ export function PayoutRunDetail() {
             <EmptyState
               icon={IconPayout}
               title="Nothing accrued in this window yet"
-              body="Commission is earned when money is collected. As payments are posted they attach to this run."
+              body="Posted payments in this window will appear here."
               compact
             />
           </div>
@@ -293,7 +293,7 @@ function AgentGroupCard({ group }: { group: AgentGroup }) {
             {group.byLevel.map((l) => (
               <span
                 key={l.level}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[11.5px] text-muted"
+                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-caption text-muted"
               >
                 <LevelBadge level={l.level} />
                 <span className="tabular">
@@ -302,12 +302,12 @@ function AgentGroupCard({ group }: { group: AgentGroup }) {
               </span>
             ))}
           </div>
-          <span className="w-[120px] text-right font-display text-[19px] font-semibold tabular text-ink">
+          <span className="w-[120px] text-right font-display text-small-title font-semibold tabular text-ink">
             {formatPeso(group.subtotalCentavos)}
           </span>
           <span
             className={cn(
-              'text-[11px] text-muted transition-transform',
+              'text-micro text-muted transition-transform',
               open && 'rotate-90',
             )}
           >
@@ -318,7 +318,7 @@ function AgentGroupCard({ group }: { group: AgentGroup }) {
 
       <CollapsibleContent>
         <div className="overflow-x-auto border-t border-line-soft">
-          <table className="w-full text-[12.5px]">
+          <table className="w-full text-caption">
             <thead>
               <tr className="bg-surface-2 text-left">
                 <Th>Earned</Th>
@@ -366,7 +366,7 @@ function Th({ children, right }: { children: React.ReactNode; right?: boolean })
   return (
     <th
       className={cn(
-        'px-3.5 py-2 text-[10.5px] uppercase tracking-[0.08em] font-semibold text-gold-deep dark:text-gold',
+        'px-3.5 py-2 text-micro uppercase tracking-[0.08em] font-semibold text-gold-deep dark:text-gold',
         right && 'text-right',
       )}
     >
@@ -393,7 +393,7 @@ function Td({
       className={cn(
         'px-3.5 py-1.5',
         right && 'text-right tabular',
-        mono && 'font-mono text-[11.5px] text-muted',
+        mono && 'font-mono text-caption text-muted',
         muted && 'text-muted',
         strong && 'font-medium text-gold-deep dark:text-gold',
       )}

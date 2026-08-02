@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { useMap } from 'react-leaflet'
-import type L from 'leaflet'
 import type { LotId } from '@/domain'
+import { useGoogleMap } from '@/features/map/google/map-view'
+import type { MapPointerEvent } from '@/features/map/google/types'
 import { LotCanvas, type CanvasFlags, type LotRecord } from './lot-canvas'
 import type { LotPaint } from './paint'
 
@@ -23,13 +23,12 @@ export function LotCanvasLayer({
   paints: LotPaint[]
   flags: CanvasFlags
   active: boolean
-  /** Change this value to crossfade the canvas instead of snapping. */
   crossfadeKey: string
-  onPick: (id: LotId | null, ev: L.LeafletMouseEvent) => void
-  onHover: (id: LotId | null, ev: L.LeafletMouseEvent | null) => void
+  onPick: (id: LotId | null, ev: MapPointerEvent) => void
+  onHover: (id: LotId | null, ev: MapPointerEvent | null) => void
   onStats?: (ms: number, lots: number) => void
 }) {
-  const map = useMap()
+  const map = useGoogleMap()
   const layerRef = useRef<LotCanvas | null>(null)
 
   const pick = useRef(onPick)
@@ -55,7 +54,6 @@ export function LotCanvasLayer({
 
   useEffect(() => {
     layerRef.current?.setLots(records, paints)
-    // paints has its own effect; this one exists for geometry changes only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [records])
 

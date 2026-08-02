@@ -73,7 +73,7 @@ export function PriceMatrix({
               <th
                 key={c.key}
                 className={cn(
-                  'px-4 pb-2 text-center text-[11.5px] font-medium text-muted',
+                  'px-4 pb-2 text-center text-caption font-medium text-muted',
                   (i === 0 || i === 2) && 'border-l border-line',
                 )}
               >
@@ -125,7 +125,6 @@ export function PriceMatrix({
                         tier={tier}
                         needType={c.needType}
                         paymentMode={c.paymentMode}
-                        asOf={asOf}
                         canManage={canManage}
                         onOpenHistory={onOpenHistory}
                         onEditPrice={onEditPrice}
@@ -147,11 +146,11 @@ function TierIdentity({ tier }: { tier: Tier }) {
     <div className="flex items-start gap-2.5">
       <TierSwatch appearance={tier.appearance} size={15} className="mt-0.5" />
       <div className="min-w-0">
-        <p className="text-[14px] font-medium leading-tight text-ink">{tier.name}</p>
-        <p className="tabular mt-0.5 text-[11.5px] text-muted">
+        <p className="text-caption font-medium leading-tight text-ink">{tier.name}</p>
+        <p className="tabular mt-0.5 text-caption text-muted">
           {tier.widthM.toFixed(2)} × {tier.lengthM.toFixed(2)} m
         </p>
-        <p className="mt-0.5 font-mono text-[10.5px] uppercase tracking-wide text-muted">
+        <p className="mt-0.5 font-mono text-micro uppercase tracking-wide text-muted">
           {tier.code}
         </p>
       </div>
@@ -163,14 +162,12 @@ function ContactForPricing({ tier }: { tier: Tier }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="cursor-help text-[13.5px] italic text-muted">
+        <span className="cursor-help text-caption italic text-muted">
           Contact for pricing
         </span>
       </TooltipTrigger>
-      <TooltipContent className="max-w-[300px] text-[12.5px] leading-relaxed">
-        {tier.name} carries no amount in the price book. Rather than substitute
-        a neighbouring tier or another payment mode, the resolver returns
-        nothing — a wrong price on a contract is worse than no price.
+      <TooltipContent className="max-w-[300px] text-caption leading-relaxed">
+        {tier.name} has no price for this combination.
       </TooltipContent>
     </Tooltip>
   )
@@ -181,7 +178,6 @@ function PriceCell({
   tier,
   needType,
   paymentMode,
-  asOf,
   canManage,
   onOpenHistory,
   onEditPrice,
@@ -190,7 +186,6 @@ function PriceCell({
   tier: Tier
   needType: NeedType
   paymentMode: PaymentMode
-  asOf: ISODate
   canManage: boolean
   onOpenHistory: (t: HistoryTarget) => void
   onEditPrice: (p: SetPricePrefill) => void
@@ -204,7 +199,7 @@ function PriceCell({
           <Button
             variant="ghost"
             size="icon"
-            className="size-6 text-muted hover:text-ink"
+            className="size-10 text-muted hover:text-ink"
             onClick={() => onOpenHistory({ tier, needType, paymentMode })}
             aria-label="Price history"
           >
@@ -219,7 +214,7 @@ function PriceCell({
             <Button
               variant="ghost"
               size="icon"
-              className="size-6 text-muted hover:text-ink"
+              className="size-10 text-muted hover:text-ink"
               onClick={() => onEditPrice({ tierId: tier.id, needType, paymentMode })}
               aria-label="Set price"
             >
@@ -252,7 +247,7 @@ function PriceCell({
               <MoneyText
                 centavos={r.amountCentavos}
                 className={cn(
-                  'font-display text-[21px] font-semibold leading-none',
+                  'font-display text-section-title font-semibold leading-none',
                   r.isPromo && 'text-gold-deep dark:text-gold',
                 )}
               />
@@ -265,27 +260,27 @@ function PriceCell({
               )}
             </p>
             {r.isPromo && r.listEntry?.amountCentavos != null && (
-              <p className="tabular mt-1 text-[12.5px] text-muted line-through">
+              <p className="tabular mt-1 text-caption text-muted line-through">
                 {formatPeso(r.listEntry.amountCentavos)}
               </p>
             )}
             {!r.isPromo && r.label && (
-              <p className="mt-1 max-w-[13ch] truncate text-[11.5px] text-muted">
+              <p className="mt-1 max-w-[24ch] break-words text-caption text-muted">
                 {r.label}
               </p>
             )}
           </div>
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-[290px]">
-          <p className="text-[13px] font-semibold text-ink">
+          <p className="text-caption font-semibold text-ink">
             {r.label ?? 'Unlabelled entry'}
           </p>
-          <p className="tabular mt-1 text-[12px] text-muted">
+          <p className="tabular mt-1 text-caption text-muted">
             {fmtDate(r.entry!.effectiveFrom)} →{' '}
             {r.entry!.effectiveTo ? fmtDate(r.entry!.effectiveTo) : 'open'}
           </p>
           {r.isPromo && r.listEntry?.amountCentavos != null && (
-            <p className="mt-2 text-[12.5px]">
+            <p className="mt-2 text-caption">
               <span className="text-muted">List price </span>
               <span className="tabular line-through">
                 {formatPeso(r.listEntry.amountCentavos)}
@@ -296,17 +291,14 @@ function PriceCell({
               </span>
             </p>
           )}
-          <p className="mt-2 border-t border-line-soft pt-2 text-[11.5px] text-muted">
+          <p className="mt-2 border-t border-line-soft pt-2 text-caption text-muted">
             Set by {setter?.fullName ?? 'system'}
           </p>
           {r.entry?.note && (
-            <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
+            <p className="mt-1 text-caption leading-relaxed text-muted">
               {r.entry.note}
             </p>
           )}
-          <p className="mt-1.5 text-[11px] text-muted">
-            Resolved for {fmtDate(asOf)}
-          </p>
         </HoverCardContent>
       </HoverCard>
 

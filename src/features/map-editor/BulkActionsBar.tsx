@@ -32,11 +32,17 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { Icon } from '@/components/ui-brand/Icon'
 import {
+  IconChevronDown,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronUp,
   IconClose,
+  IconCopy,
   IconDelete,
   IconMove,
   IconNumbering,
   IconResize,
+  IconRotate,
   IconWarning,
 } from '@/components/ui-brand/icons'
 import { NUMBERING, type Numbering } from '@/lib/grid-generator'
@@ -47,7 +53,7 @@ import { protectedIn, STATUS_LABEL, useTiers } from './helpers'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-type Sheet = null | 'status' | 'renumber' | 'move' | 'resize'
+type Sheet = null | 'status' | 'renumber' | 'move' | 'syncSize'
 
 /**
  * Slides up the moment anything is selected. Change tier is the headline —
@@ -63,13 +69,16 @@ export function BulkActionsBar() {
   const renumberSelection = useEditor((s) => s.renumberSelection)
   const moveToBlock = useEditor((s) => s.moveToBlock)
   const setMoveTargetBlock = useEditor((s) => s.setMoveTargetBlock)
-  const resizeSelection = useEditor((s) => s.resizeSelection)
+  const syncTierFootprints = useEditor((s) => s.syncTierFootprints)
   const deleteLots = useEditor((s) => s.deleteLots)
+  const transformLots = useEditor((s) => s.transformLots)
+  const duplicateLots = useEditor((s) => s.duplicateLots)
   const { tiers, byId } = useTiers()
 
   const [tierId, setTierId] = useState('')
   const [sheet, setSheet] = useState<Sheet>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [step, setStep] = useState(0.25)
 
   // status sheet
   const [status, setStatus] = useState<LotStatus>('not_for_sale')
@@ -79,10 +88,6 @@ export function BulkActionsBar() {
   const [start, setStart] = useState(1)
   // move sheet
   const [target, setTarget] = useState('')
-  // resize sheet
-  const [widthM, setWidthM] = useState(1)
-  const [lengthM, setLengthM] = useState(2.44)
-
   const ids = useMemo(() => [...selection], [selection])
   const guarded = protectedIn(lots, selection)
   const open = selection.size > 0
@@ -102,6 +107,25 @@ export function BulkActionsBar() {
           ? `${guarded.count} sold or occupied lots included — their contract prices are unaffected.`
           : 'Fill updated. Nothing is live until you publish.',
     })
+  }
+
+  const allProtected = guarded.count > 0 && guarded.count === selection.size
+
+  const nudge = (east: number, north: number) =>
+    transformLots(ids, { eastM: east * step, northM: north * step })
+
+  const rotate = (deg: number) => transformLots(ids, { rotateDeg: deg })
+
+  const cycleStep = () => setStep(step === 0.05 ? 0.25 : step === 0.25 ? 1 : 0.05)
+
+  const duplicate = () => {
+    const created = duplicateLots(ids, byId)
+    if (created.length > 0) {
+      toast.success(`${created.length} lot${created.length === 1 ? '' : 's'} duplicated`, {
+        description:
+          'Placed one pitch along the row and selected — nudge into place, or duplicate again to keep stamping.',
+      })
+    }
   }
 
   const blockOf = (id: string) => blocks.find((b) => b.id === id)
@@ -161,6 +185,51 @@ export function BulkActionsBar() {
                 </Field>
               </div>
 
+              <Field label={`Position · step ${step} m`}>
+                <div className="flex items-center gap-1.5">
+                  <div className="grid grid-cols-3 gap-0.5">
+                    <span />
+                    <PadButton label="Nudge north" icon={IconChevronUp} onClick={() => nudge(0, 1)} />
+                    <span />
+                    <PadButton label="Nudge west" icon={IconChevronLeft} onClick={() => nudge(-1, 0)} />
+                    <PadButton label="Nudge south" icon={IconChevronDown} onClick={() => nudge(0, -1)} />
+                    <PadButton label="Nudge east" icon={IconChevronRight} onClick={() => nudge(1, 0)} />
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="h-7 px-2 font-mono text-[11px]"
+                    title="Nudge step — click to cycle 0.05 / 0.25 / 1 m. Arrow keys nudge too (Alt fine, Shift coarse)."
+                    onClick={cycleStep}
+                  >
+                    {step} m
+                  </Button>
+                  <div className="flex gap-0.5">
+                    <PadButton
+                      label="Rotate counter-clockwise 0.5° — Shift: 5°, or press ["
+                      icon={IconRotate}
+                      flip
+                      onClick={(e) => rotate(e.shiftKey ? -5 : -0.5)}
+                    />
+                    <PadButton
+                      label="Rotate clockwise 0.5° — Shift: 5°, or press ]"
+                      icon={IconRotate}
+                      onClick={(e) => rotate(e.shiftKey ? 5 : 0.5)}
+                    />
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="h-7 gap-1 px-2 text-[11.5px]"
+                    title="Clone the selection one pitch along its row — keep pressing to stamp a row"
+                    onClick={duplicate}
+                  >
+                    <Icon icon={IconCopy} size={12} />
+                    Duplicate
+                  </Button>
+                </div>
+              </Field>
+
               <div className="flex flex-wrap gap-1.5">
                 <Button
                   size="sm"
@@ -192,15 +261,21 @@ export function BulkActionsBar() {
                   size="sm"
                   variant="secondary"
                   className="h-9 gap-1.5 text-[12.5px]"
-                  onClick={() => setSheet('resize')}
+                  onClick={() => setSheet('syncSize')}
                 >
                   <Icon icon={IconResize} size={14} />
-                  Resize
+                  Sync size
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-9 gap-1.5 text-[12.5px] text-danger hover:bg-danger/10 hover:text-danger"
+                  className="h-9 gap-1.5 text-[12.5px] text-danger hover:bg-danger/10 hover:text-danger disabled:opacity-40"
+                  disabled={allProtected}
+                  title={
+                    allProtected
+                      ? 'Every selected lot is sold or occupied — protected lots are never deleted.'
+                      : undefined
+                  }
                   onClick={() => setConfirmDelete(true)}
                 >
                   <Icon icon={IconDelete} size={14} />
@@ -213,9 +288,10 @@ export function BulkActionsBar() {
               <p className="flex items-start gap-1.5 border-t border-line bg-gold/8 px-4 py-2 text-[12px] leading-snug text-gold-deep dark:text-gold">
                 <Icon icon={IconWarning} size={13} className="mt-px shrink-0" />
                 <span>
-                  {guarded.count} of these {guarded.count === 1 ? 'is' : 'are'} sold or occupied.
-                  The tier will change; the price on their existing contracts will not — contracts
-                  snapshot their price when they are written.
+                  {guarded.count} of these {guarded.count === 1 ? 'is' : 'are'} sold or occupied —
+                  protected. They are never deleted, moved, or rotated. Tier changes still apply;
+                  the price on their existing contracts will not — contracts snapshot their price
+                  when they are written.
                 </span>
               </p>
             )}
@@ -396,28 +472,21 @@ export function BulkActionsBar() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Resize ──────────────────────────────────────────────── */}
-      <Dialog open={sheet === 'resize'} onOpenChange={(v) => !v && setSheet(null)}>
+      {/* ── Sync tier footprint ─────────────────────────────────── */}
+      <Dialog open={sheet === 'syncSize'} onOpenChange={(v) => !v && setSheet(null)}>
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
-            <DialogTitle>Resize {selection.size} lots</DialogTitle>
+            <DialogTitle>Sync {selection.size} lot footprints</DialogTitle>
             <DialogDescription>
-              Each lot is re-laid on the new footprint around its existing centre.
+              Each selected lot is re-laid around its existing centre using the width and length
+              from its current tier.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Width">
-              <NumberField value={widthM} min={0.5} max={20} step={0.1} suffix="m" onChange={setWidthM} />
-            </Field>
-            <Field label="Length">
-              <NumberField value={lengthM} min={0.5} max={20} step={0.1} suffix="m" onChange={setLengthM} />
-            </Field>
-          </div>
           {guarded.count > 0 && (
-            <DangerLine>
-              {guarded.count} sold or occupied {guarded.count === 1 ? 'lot' : 'lots'} will be left
-              untouched — a lot with a contract or a burial is never reshaped.
-            </DangerLine>
+            <WarnLine>
+              {guarded.count} sold or occupied {guarded.count === 1 ? 'lot' : 'lots'} will be
+              resized visually only. Contracts, owners, burials and lot numbers stay unchanged.
+            </WarnLine>
           )}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setSheet(null)}>
@@ -425,14 +494,14 @@ export function BulkActionsBar() {
             </Button>
             <Button
               onClick={() => {
-                const refused = resizeSelection(ids, widthM, lengthM)
+                const changed = syncTierFootprints(ids, byId)
                 setSheet(null)
-                toast.success(`${ids.length - refused.length} lots resized`, {
-                  description: `${widthM} × ${lengthM} m.`,
+                toast.success(`${changed.length.toLocaleString()} lot footprints synced`, {
+                  description: 'Publish will stay blocked if the sync created geometry conflicts.',
                 })
               }}
             >
-              Resize
+              Sync size
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -463,8 +532,7 @@ export function BulkActionsBar() {
                 </>
               ) : (
                 <>
-                  This removes {selection.size} lots from the draft. Publish is what makes it real,
-                  and undo will bring them back until then.
+                  This removes {selection.size} lots from the draft. Undo is available until publish.
                 </>
               )}
             </AlertDialogDescription>
@@ -486,5 +554,30 @@ export function BulkActionsBar() {
       </AlertDialog>
 
     </>
+  )
+}
+
+function PadButton({
+  label,
+  icon,
+  onClick,
+  flip,
+}: {
+  label: string
+  icon: typeof IconChevronUp
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+  flip?: boolean
+}) {
+  return (
+    <Button
+      size="icon"
+      variant="secondary"
+      className="size-7"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+    >
+      <Icon icon={icon} size={13} className={flip ? '-scale-x-100' : undefined} />
+    </Button>
   )
 }

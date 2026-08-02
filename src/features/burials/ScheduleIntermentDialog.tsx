@@ -114,6 +114,7 @@ export function ScheduleIntermentDialog({
   const [requirements, setRequirements] = useState<IntermentRequirements>(EMPTY_REQUIREMENTS)
   const [override, setOverride] = useState('')
   const [notes, setNotes] = useState('')
+  const [validationMessage, setValidationMessage] = useState('')
 
   // Reset every time the dialog is opened, so a preset never leaks between uses.
   useEffect(() => {
@@ -131,6 +132,7 @@ export function ScheduleIntermentDialog({
     setRequirements(EMPTY_REQUIREMENTS)
     setOverride('')
     setNotes('')
+    setValidationMessage('')
   }, [open, presetLotId, presetDate, presetSlot])
 
   const openClose = useMemo(
@@ -174,8 +176,28 @@ export function ScheduleIntermentDialog({
     date !== null && slot !== null && free.includes(slot) && (!outside || override.trim().length > 0),
   ]
 
+  const invalidMessage = [
+    'Choose a lot with available capacity.',
+    'Enter the required first name, last name, and date of death.',
+    outside && override.trim().length === 0
+      ? 'Enter a reason for scheduling outside the interment window.'
+      : 'Choose an available date and burial slot.',
+  ]
+
+  const goToNextStep = () => {
+    if (!stepValid[step]) {
+      setValidationMessage(invalidMessage[step] ?? 'Complete the required information.')
+      return
+    }
+    setValidationMessage('')
+    setStep(step + 1)
+  }
+
   const submit = () => {
-    if (!lot || !dod || !date || !slot || !openClose) return
+    if (!stepValid[2] || !lot || !dod || !date || !slot || !openClose) {
+      setValidationMessage(invalidMessage[2] ?? 'Complete the required schedule information.')
+      return
+    }
     try {
       const id = schedule({
         lotId: lot.id,
@@ -202,6 +224,7 @@ export function ScheduleIntermentDialog({
       onOpenChange(false)
       onScheduled?.(id)
     } catch (e) {
+      setValidationMessage(e instanceof Error ? e.message : 'Could not schedule the interment.')
       toast.error('Could not schedule', {
         description: e instanceof Error ? e.message : 'Unknown error',
       })
@@ -212,18 +235,35 @@ export function ScheduleIntermentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[88vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[640px]">
         <DialogHeader className="shrink-0 border-b border-line px-5 pb-4 pt-5">
-          <DialogTitle className="font-display text-[21px] font-semibold">
+          <DialogTitle className="text-section-title font-display font-semibold">
             Schedule a burial
           </DialogTitle>
-          <DialogDescription className="text-[13px]">
+          <DialogDescription className="text-body">
             {user.role === 'agent'
               ? 'Your request goes to the manager for approval before the slot is confirmed.'
               : `A day holds ${MAX_BURIALS_PER_DAY} services — one morning, one afternoon.`}
           </DialogDescription>
-          <Stepper step={step} onStep={setStep} valid={stepValid} />
+          <Stepper
+            step={step}
+            onStep={(nextStep) => {
+              setValidationMessage('')
+              setStep(nextStep)
+            }}
+            valid={stepValid}
+          />
         </DialogHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+          <p
+            id="schedule-interment-error"
+            className={cn(
+              'text-body mb-4 rounded-lg border border-danger/50 bg-danger/10 px-3 py-2 text-danger',
+              !validationMessage && 'sr-only',
+            )}
+            role="alert"
+          >
+            {validationMessage}
+          </p>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
@@ -254,6 +294,7 @@ export function ScheduleIntermentDialog({
                     // Selecting bone_transfer adds the transfer-permit requirement.
                     setRequirements((r) => ({ ...r, transferPermit: t !== 'bone_transfer' ? true : false }))
                   }}
+                  showErrors={Boolean(validationMessage)}
                 />
               )}
 
@@ -281,6 +322,7 @@ export function ScheduleIntermentDialog({
                   onToggleRequirement={(k, v) =>
                     setRequirements((r) => ({ ...r, [k]: v }))
                   }
+                  showErrors={Boolean(validationMessage)}
                 />
               )}
             </motion.div>
@@ -288,22 +330,30 @@ export function ScheduleIntermentDialog({
         </div>
 
         <DialogFooter className="shrink-0 items-center gap-2 border-t border-line bg-surface-2 px-5 py-3.5 sm:justify-between">
-          <span className="text-[12px] text-muted">
+          <span className="text-caption text-muted">
             Step {step + 1} of 3 · {STEPS[step]}
           </span>
           <div className="flex gap-2">
             <Button
               variant="ghost"
-              onClick={() => (step === 0 ? onOpenChange(false) : setStep(step - 1))}
+              onClick={() => {
+                setValidationMessage('')
+                if (step === 0) onOpenChange(false)
+                else setStep(step - 1)
+              }}
             >
               {step === 0 ? 'Cancel' : 'Back'}
             </Button>
             {step < 2 ? (
-              <Button disabled={!stepValid[step]} onClick={() => setStep(step + 1)}>
+              <Button onClick={goToNextStep} aria-describedby="schedule-interment-error">
                 Next
               </Button>
             ) : (
-              <Button disabled={!stepValid[2]} onClick={submit} className="gap-2">
+              <Button
+                onClick={submit}
+                className="gap-2"
+                aria-describedby="schedule-interment-error"
+              >
                 <Icon icon={IconCheck} size={16} />
                 {user.role === 'agent' ? 'Request interment' : 'Schedule interment'}
               </Button>
@@ -325,17 +375,18 @@ function Stepper({
   valid: boolean[]
 }) {
   return (
-    <ol className="mt-3 flex items-center gap-1.5">
+    <ol className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-3">
       {STEPS.map((label, n) => {
         const reachable = n === 0 || valid.slice(0, n).every(Boolean)
         return (
-          <li key={label} className="flex flex-1 items-center gap-1.5">
+          <li key={label}>
             <button
               type="button"
               disabled={!reachable}
               onClick={() => reachable && onStep(n)}
+              aria-current={n === step ? 'step' : undefined}
               className={cn(
-                'flex flex-1 items-center gap-2 rounded-md border px-2 py-1.5 text-left text-[12px] transition-colors',
+                'text-control flex min-h-10 w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left transition-colors',
                 n === step
                   ? 'border-gold bg-gold/12 font-medium text-gold-deep dark:text-gold'
                   : 'border-line text-muted hover:border-gold/50',
@@ -344,7 +395,7 @@ function Stepper({
             >
               <span
                 className={cn(
-                  'grid size-[18px] shrink-0 place-items-center rounded-full font-mono text-[10px]',
+                  'text-micro grid size-6 shrink-0 place-items-center rounded-full font-mono',
                   n === step
                     ? 'bg-gold-deep text-white dark:bg-gold dark:text-black'
                     : valid[n]
@@ -376,7 +427,7 @@ function LotStep({
 }) {
   return (
     <div className="space-y-3">
-      <p className="text-[12.5px] text-muted">
+      <p className="text-body text-muted">
         Only lots with remaining capacity appear here. A lot at capacity is not
         listed at all — there is nothing to reject.
       </p>
@@ -385,10 +436,10 @@ function LotStep({
         <div className="rounded-lg border border-gold/50 bg-gold/8 p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-mono text-[14px] font-medium text-ink">
+              <p className="text-body font-mono font-medium text-ink">
                 {lotCodeFor(selected)}
               </p>
-              <p className="mt-0.5 truncate text-[12.5px] text-muted">
+              <p className="text-caption mt-0.5 break-words text-muted">
                 {ownerName(selected)} · {tierName(selected)}
               </p>
             </div>
@@ -404,7 +455,7 @@ function LotStep({
       <Command className="rounded-lg border border-line bg-surface">
         <CommandInput placeholder="Search lot code or owner…" />
         <CommandList className="max-h-[240px]">
-          <CommandEmpty className="py-6 text-center text-[13px] text-muted">
+          <CommandEmpty className="text-body py-6 text-center text-muted">
             No lot with remaining capacity matches.
           </CommandEmpty>
           {lots.slice(0, 200).map((l) => (
@@ -415,11 +466,11 @@ function LotStep({
               className="flex items-center gap-3"
             >
               <Icon icon={IconLot} size={15} className="text-muted" />
-              <span className="font-mono text-[12.5px] text-ink">{lotCodeFor(l)}</span>
-              <span className="min-w-0 flex-1 truncate text-[12px] text-muted">
+              <span className="text-caption font-mono text-ink">{lotCodeFor(l)}</span>
+              <span className="text-caption min-w-0 flex-1 break-words text-muted">
                 {ownerName(l)}
               </span>
-              <span className="tabular shrink-0 text-[11.5px] text-muted">
+              <span className="text-caption tabular shrink-0 text-muted">
                 {l.intermentCount} of {l.capacity} used
               </span>
             </CommandItem>
@@ -427,7 +478,7 @@ function LotStep({
         </CommandList>
       </Command>
       {lots.length > 200 && (
-        <p className="text-[11.5px] text-muted">
+        <p className="text-caption text-muted" role="status">
           Showing the first 200 of {lots.length} eligible lots — narrow the search.
         </p>
       )}
@@ -450,6 +501,7 @@ function DeceasedStep({
   onDob,
   onDod,
   onType,
+  showErrors,
 }: {
   first: string
   middle: string
@@ -463,24 +515,38 @@ function DeceasedStep({
   onDob: (v: ISODate | null) => void
   onDod: (v: ISODate | null) => void
   onType: (v: IntermentType) => void
+  showErrors: boolean
 }) {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <Field label="First name" required>
-          <Input value={first} onChange={(e) => onFirst(e.target.value)} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Field label="First name" htmlFor="interment-first-name" required>
+          <Input
+            id="interment-first-name"
+            value={first}
+            onChange={(e) => onFirst(e.target.value)}
+            required
+            aria-invalid={showErrors && first.trim().length === 0}
+          />
         </Field>
-        <Field label="Middle name">
-          <Input value={middle} onChange={(e) => onMiddle(e.target.value)} />
+        <Field label="Middle name" htmlFor="interment-middle-name">
+          <Input id="interment-middle-name" value={middle} onChange={(e) => onMiddle(e.target.value)} />
         </Field>
-        <Field label="Last name" required>
-          <Input value={last} onChange={(e) => onLast(e.target.value)} />
+        <Field label="Last name" htmlFor="interment-last-name" required>
+          <Input
+            id="interment-last-name"
+            value={last}
+            onChange={(e) => onLast(e.target.value)}
+            required
+            aria-invalid={showErrors && last.trim().length === 0}
+          />
         </Field>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Date of birth">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Date of birth" htmlFor="interment-date-of-birth">
           <DatePickerButton
+            id="interment-date-of-birth"
             value={dob}
             onChange={onDob}
             placeholder="Optional"
@@ -489,20 +555,22 @@ function DeceasedStep({
             endMonth={toDate(TODAY)}
           />
         </Field>
-        <Field label="Date of death" required>
+        <Field label="Date of death" htmlFor="interment-date-of-death" required>
           <DatePickerButton
+            id="interment-date-of-death"
             value={dod}
             onChange={onDod}
             placeholder="Required"
             captionLayout="dropdown"
             startMonth={new Date(2024, 0)}
             endMonth={toDate(TODAY)}
+            ariaInvalid={showErrors && dod === null}
           />
         </Field>
       </div>
 
       {dod && (
-        <div className="rounded-lg border border-gold/45 bg-gold/8 px-3 py-2.5 text-[12.5px] text-gold-deep dark:text-gold">
+        <div className="text-body rounded-lg border border-gold/45 bg-gold/8 px-3 py-2.5 text-gold-deep dark:text-gold" role="status">
           <span className="font-medium">Interment window:</span> on or before{' '}
           <span className="font-medium">{fmtDate(windowEnd(dod))}</span> (
           {AT_NEED_WINDOW_DAYS} days).
@@ -515,21 +583,22 @@ function DeceasedStep({
           value={type}
           onValueChange={(v) => onType(v as IntermentType)}
           className="gap-2"
+          aria-label="Interment type"
         >
           {(Object.keys(INTERMENT_TYPE_LABEL) as IntermentType[]).map((t) => (
             <label
               key={t}
               className={cn(
-                'flex cursor-pointer items-start gap-3 rounded-lg border p-2.5 transition-colors',
+                'flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border p-2.5 transition-colors',
                 type === t ? 'border-gold bg-gold/8' : 'border-line hover:border-gold/45',
               )}
             >
               <RadioGroupItem value={t} className="mt-0.5" />
               <span className="min-w-0">
-                <span className="block text-[13px] font-medium text-ink">
+                <span className="text-body block font-medium text-ink">
                   {INTERMENT_TYPE_LABEL[t]}
                 </span>
-                <span className="block text-[11.5px] leading-snug text-muted">
+                <span className="text-caption block leading-snug text-muted">
                   {INTERMENT_TYPE_HINT[t]}
                 </span>
               </span>
@@ -561,6 +630,7 @@ function ScheduleStep({
   onOverride,
   onNotes,
   onToggleRequirement,
+  showErrors,
 }: {
   locationId: LocationId
   date: ISODate | null
@@ -579,6 +649,7 @@ function ScheduleStep({
   onOverride: (v: string) => void
   onNotes: (v: string) => void
   onToggleRequirement: (k: keyof IntermentRequirements, v: boolean) => void
+  showErrors: boolean
 }) {
   const limit = dod && dod > TODAY ? dod : TODAY
 
@@ -587,6 +658,7 @@ function ScheduleStep({
       <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
         <div className="rounded-lg border border-line bg-surface p-1">
           <Calendar
+            aria-label="Burial date"
             mode="single"
             selected={date ? toDate(date) : undefined}
             onSelect={(d) => d && onDate(toISODate(d))}
@@ -611,14 +683,14 @@ function ScheduleStep({
 
         <div className="space-y-3">
           {next && (
-            <p className="text-[12.5px] text-muted">
+            <p className="text-body text-muted" role="status">
               <span className="font-medium text-ink">Next available:</span>{' '}
               {fmtDateLong(next.date)}, {SLOT_LABEL[next.slot].toLowerCase()}
             </p>
           )}
 
           {dod && (
-            <p className="text-[12px] text-muted">
+            <p className="text-caption text-muted">
               Interment window: on or before{' '}
               <span className="font-medium text-ink">{fmtDate(windowEnd(dod))}</span> (
               {AT_NEED_WINDOW_DAYS} days from the date of death).
@@ -628,12 +700,13 @@ function ScheduleStep({
           <div>
             <p className="eyebrow mb-1.5 text-muted">Slot</p>
             {!date ? (
-              <p className="text-[12.5px] text-muted">Pick a date first.</p>
+              <p className="text-body text-muted">Pick a date first.</p>
             ) : (
               <RadioGroup
                 value={slot ?? ''}
                 onValueChange={(v) => onSlot(v as BurialSlot)}
                 className="gap-1.5"
+                aria-label="Burial slot"
               >
                 {(['morning', 'afternoon'] as BurialSlot[]).map((s) => {
                   const taken = !free.includes(s)
@@ -641,7 +714,7 @@ function ScheduleStep({
                     <label
                       key={s}
                       className={cn(
-                        'flex items-center gap-2.5 rounded-lg border px-2.5 py-2 text-[13px] transition-colors',
+                        'text-control flex min-h-11 items-center gap-2.5 rounded-lg border px-2.5 py-2 transition-colors',
                         taken
                           ? 'cursor-not-allowed border-line bg-surface-2 text-muted'
                           : slot === s
@@ -652,7 +725,7 @@ function ScheduleStep({
                       <RadioGroupItem value={s} disabled={taken} />
                       <SlotIcon slot={s} />
                       <span className="flex-1">{SLOT_LABEL[s]}</span>
-                      {taken && <span className="text-[11.5px]">Already booked</span>}
+                      {taken && <span className="text-caption">Already booked</span>}
                     </label>
                   )
                 })}
@@ -662,10 +735,10 @@ function ScheduleStep({
 
           <div className="rounded-lg border border-line bg-surface-2 px-3 py-2.5">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[12.5px] text-muted">Opening &amp; closing fee</span>
-              <MoneyText centavos={feeCentavos} className="text-[13.5px] font-medium" />
+              <span className="text-body text-muted">Opening &amp; closing fee</span>
+              <MoneyText centavos={feeCentavos} className="text-body font-medium" />
             </div>
-            <p className="mt-1 flex items-center gap-1.5 text-[11.5px] text-muted">
+            <p className="text-caption mt-1 flex flex-wrap items-center gap-1.5 text-muted">
               Billed as a service line on the contract.
               <AssumedChip why={ASSUMPTIONS.serviceFees.why} />
             </p>
@@ -680,21 +753,26 @@ function ScheduleStep({
           transition={{ duration: 0.24, ease: EASE }}
           className="rounded-lg border border-gold bg-gold/10 p-3"
         >
-          <p className="flex items-start gap-2 text-[13px] font-medium text-gold-deep dark:text-gold">
+          <p className="text-body flex items-start gap-2 font-medium text-gold-deep dark:text-gold" id="window-override-help">
             <Icon icon={IconWarning} size={16} className="mt-px" />
             {date && dod
               ? `${fmtDate(date)} falls outside the ${AT_NEED_WINDOW_DAYS}-day window, which closes ${fmtDate(windowEnd(dod))}.`
               : 'Outside the interment window.'}
           </p>
-          <p className="mt-1 text-[12px] leading-snug text-muted">
+          <p className="text-caption mt-1 leading-snug text-muted">
             The rule is the client's. The override exists because reality has
             exceptions and a system that simply refuses gets worked around on paper.
           </p>
+          <Label htmlFor="window-override-reason">Override reason</Label>
           <Textarea
+            id="window-override-reason"
             value={override}
             onChange={(e) => onOverride(e.target.value)}
             placeholder="Reason for scheduling outside the window (required)"
-            className="mt-2 min-h-[62px] bg-surface text-[13px]"
+            className="mt-2 min-h-20 bg-surface"
+            required
+            aria-invalid={showErrors && override.trim().length === 0}
+            aria-describedby="window-override-help"
           />
         </motion.div>
       )}
@@ -708,18 +786,19 @@ function ScheduleStep({
           idPrefix="new-interment"
           onToggle={onToggleRequirement}
         />
-        <p className="mt-1.5 text-[11.5px] text-muted">
+        <p className="text-caption mt-1.5 text-muted">
           Outstanding items do not block scheduling — the permit usually arrives
           after the date is set — but they do block completion.
         </p>
       </div>
 
-      <Field label="Notes">
+      <Field label="Notes" htmlFor="interment-notes">
         <Textarea
+          id="interment-notes"
           value={notes}
           onChange={(e) => onNotes(e.target.value)}
           placeholder="Anything the office or the grounds crew should know"
-          className="min-h-[56px] text-[13px]"
+          className="min-h-20"
         />
       </Field>
     </div>
@@ -730,18 +809,25 @@ function ScheduleStep({
 
 function Field({
   label,
+  htmlFor,
   required,
   children,
 }: {
   label: string
+  htmlFor: string
   required?: boolean
   children: React.ReactNode
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="eyebrow text-muted">
+      <Label htmlFor={htmlFor} className="text-caption font-semibold text-muted">
         {label}
-        {required && <span className="ml-1 text-danger">*</span>}
+        {required && (
+          <>
+            <span className="ml-1 text-danger" aria-hidden>*</span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
       </Label>
       {children}
     </div>
@@ -750,6 +836,7 @@ function Field({
 
 /** A Calendar in a Popover. Never a native date input. */
 export function DatePickerButton({
+  id,
   value,
   onChange,
   placeholder = 'Pick a date',
@@ -758,7 +845,11 @@ export function DatePickerButton({
   startMonth,
   endMonth,
   className,
+  ariaLabel,
+  ariaInvalid,
+  ariaDescribedBy,
 }: {
+  id?: string
   value: ISODate | null
   onChange: (v: ISODate) => void
   placeholder?: string
@@ -767,18 +858,25 @@ export function DatePickerButton({
   startMonth?: Date
   endMonth?: Date
   className?: string
+  ariaLabel?: string
+  ariaInvalid?: boolean
+  ariaDescribedBy?: string
 }) {
   const [open, setOpen] = useState(false)
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           className={cn(
             'w-full justify-start gap-2 font-normal',
             !value && 'text-muted',
             className,
           )}
+          aria-label={ariaLabel}
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
         >
           <Icon icon={IconCalendar} size={15} />
           {value ? fmtDate(value) : placeholder}

@@ -5,6 +5,7 @@ import { PARK_FACTS, ROLE_LABEL, type Role, type User } from '@/domain'
 import { useDataset } from '@/stores/dataset'
 import { useSession } from '@/stores/session'
 import { LogoLockup, LogoMark } from '@/components/shell/Logo'
+import { DisplaySettings } from '@/components/shell/DisplaySettings'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -76,27 +77,30 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh bg-bg">
+    <div className="relative flex min-h-dvh bg-bg">
+      <div className="absolute right-4 top-4 z-10">
+        <DisplaySettings trigger="button" />
+      </div>
       {/* form */}
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-[46%] lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto w-full max-w-[380px]"
+          className="mx-auto w-full max-w-[460px]"
         >
           <LogoLockup />
 
-          <h1 className="mt-10 font-display text-[34px] font-semibold leading-tight text-ink">
+          <h1 className="mt-10 font-display text-page-title font-semibold text-ink">
             Welcome back
           </h1>
-          <p className="mt-1 text-[14px] text-muted">
+          <p className="mt-1 text-body text-muted">
             Sign in to the operations platform.
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[12.5px] text-muted">
+              <Label htmlFor="email" className="text-caption text-muted">
                 Email
               </Label>
               <Input
@@ -104,10 +108,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="username"
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? 'login-error' : undefined}
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-[12.5px] text-muted">
+              <Label htmlFor="password" className="text-caption text-muted">
                 Password
               </Label>
               <Input
@@ -115,16 +121,20 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Any value works in this prototype"
+                placeholder="Enter any password"
                 autoComplete="current-password"
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? 'login-error' : undefined}
               />
             </div>
 
             {error && (
               <motion.p
+                id="login-error"
+                role="alert"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-[12.5px] text-danger"
+                className="text-body text-danger"
               >
                 {error}
               </motion.p>
@@ -152,7 +162,7 @@ export default function LoginPage() {
                 >
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors',
+                      'flex min-h-14 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors',
                       selected === u.id
                         ? 'border-gold bg-gold/8'
                         : 'border-line hover:bg-surface-2',
@@ -160,10 +170,10 @@ export default function LoginPage() {
                   >
                     <RadioGroupItem value={u.id} />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-[13.5px] font-medium text-ink">
+                      <div className="text-body font-medium text-ink">
                         {u.fullName}
                       </div>
-                      <div className="truncate text-[11.5px] text-muted">
+                      <div className="text-caption text-muted">
                         {ROLE_LABEL[u.role]} · {locationName(u)}
                       </div>
                     </div>
@@ -174,7 +184,7 @@ export default function LoginPage() {
               {archived && (
                 <label
                   className={cn(
-                    'flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-3 py-2.5 transition-colors',
+                    'flex min-h-14 cursor-pointer items-center gap-3 rounded-lg border border-dashed px-3 py-2.5 transition-colors',
                     selected === archived.id
                       ? 'border-danger bg-danger/6'
                       : 'border-line hover:bg-surface-2',
@@ -182,10 +192,10 @@ export default function LoginPage() {
                 >
                   <RadioGroupItem value={archived.id} />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13.5px] font-medium text-muted">
+                    <div className="text-body font-medium text-muted">
                       {archived.fullName}
                     </div>
-                    <div className="truncate text-[11.5px] text-muted">
+                    <div className="text-caption text-muted">
                       Archived agent — shows the lockout path
                     </div>
                   </div>
@@ -194,9 +204,8 @@ export default function LoginPage() {
             </RadioGroup>
           </div>
 
-          <p className="mt-8 text-[11.5px] leading-relaxed text-muted">
-            Prototype — no real authentication. Any password signs you in as the
-            selected demo account.
+          <p className="mt-8 text-caption text-muted">
+            Select an account and enter any password to sign in.
           </p>
         </motion.div>
       </div>
@@ -220,12 +229,12 @@ export default function LoginPage() {
 
         <div className="absolute inset-x-0 bottom-0 p-14">
           <p
-            className="max-w-[22ch] font-display text-[38px] leading-[1.12]"
+            className="max-w-[22ch] font-display text-display"
             style={{ color: '#e8e4dc' }}
           >
             {PARK_FACTS.tagline}
           </p>
-          <p className="mt-5 text-[13px]" style={{ color: '#9aa89e' }}>
+          <p className="mt-5 text-micro" style={{ color: '#9aa89e' }}>
             {PARK_FACTS.corporateName}
             <br />
             Lupon, Davao Oriental

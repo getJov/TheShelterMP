@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useMap } from 'react-leaflet'
-import L from 'leaflet'
 import {
   LOT_STATUSES,
   STATUS_APPEARANCE,
@@ -8,17 +6,16 @@ import {
   type Block,
   type LotStatus,
 } from '@/domain'
-import { boundsOf, toLatLngBounds } from '@/lib/geo'
+import { boundsOf } from '@/lib/geo'
+import { useGoogleMap } from '@/features/map/google/map-view'
+import {
+  containerPointToLatLng,
+  flyMapToBounds,
+  latLngToContainerPoint,
+  latLngToGoogle,
+} from '@/features/map/google/helpers'
 import { useMapStore } from '@/stores/map'
 import type { MapLot } from './use-map-data'
-
-/**
- * Clustering by BLOCK, not by proximity.
- *
- * `leaflet.markercluster` groups by screen distance, which would split
- * Garden of Peace down the middle at some zooms. The client's request was
- * "the small lots collapse into one block" — so blockId is the grouping key.
- */
 
 interface BlockSummary {
   block: Block
@@ -35,9 +32,10 @@ export function BlockClusterLayer({
   blocks: Block[]
   lots: MapLot[]
 }) {
-  const map = useMap()
+  const map = useGoogleMap()
   const zoom = useMapStore((s) => s.zoom)
-  const groupRef = useRef<L.LayerGroup | null>(null)
+  const polygonsRef = useRef<google.maps.Polygon[]>([])
+  const overlaysRef = useRef<google.maps.OverlayView[]>([])
 
   const summaries = useMemo<BlockSummary[]>(() => {
     const byBlock = new Map<string, MapLot[]>()
@@ -76,98 +74,69 @@ export function BlockClusterLayer({
   }, [blocks, lots])
 
   useEffect(() => {
-    const group = L.layerGroup().addTo(map)
-    groupRef.current = group
-    return () => {
-      group.remove()
-      groupRef.current = null
-    }
-  }, [map])
+    for (const p of polygonsRef.current) p.setMap(null)
+    for (const o of overlaysRef.current) o.setMap(null)
+    polygonsRef.current = []
+    overlaysRef.current = []
 
-  useEffect(() => {
-    const group = groupRef.current
-    if (!group) return
-    group.clearLayers()
     if (zoom >= ZOOM.lotsVisible) return
 
     const flyTo = (block: Block) => {
-      map.flyToBounds(toLatLngBounds(boundsOf([block.polygon])), {
-        padding: [60, 60],
-        duration: 0.8,
-      })
+      flyMapToBounds(map, boundsOf([block.polygon]), { padding: [60, 60] })
     }
 
     if (zoom < ZOOM.clusterOnly) {
-      // This park is only ~150 m across, so at zoom 15–16 three block cards
-      // land on top of each other. Nudge them apart in screen space before
-      // placing them; the geometry underneath is unaffected.
       const placed = deCollide(
         map,
         summaries.map((s) => ({
-          latlng: L.latLng(s.block.centroid[0], s.block.centroid[1]),
+          ll: s.block.centroid,
           w: clusterWidth(s.count),
           h: 54,
         })),
       )
       for (const [i, s] of summaries.entries()) {
-        const marker = L.marker(placed[i]!, {
-          icon: L.divIcon({
-            className: 'shelter-cluster-wrap',
-            html: clusterHtml(s),
-            iconSize: [clusterWidth(s.count), 52],
-            iconAnchor: [clusterWidth(s.count) / 2, 26],
-          }),
-          keyboard: true,
-          title: `${s.block.code} — ${s.count} lots`,
-          riseOnHover: true,
-        })
-        marker.on('click', () => flyTo(s.block))
-        group.addLayer(marker)
+        overlaysRef.current.push(
+          htmlOverlay(map, placed[i]!, clusterHtml(s), () => flyTo(s.block)),
+        )
       }
     } else {
-      // 17 – 17.99: block outlines tinted by dominant tier, count label only.
       for (const s of summaries) {
-        const poly = L.polygon(s.block.polygon, {
-          // MapContainer runs with preferCanvas; force SVG for these three so
-          // the class-based fade in map.css actually applies.
-          renderer: L.svg(),
-          color: s.stroke,
-          weight: 1.5,
-          fillColor: s.fill,
-          fillOpacity: 0.5,
-          className: 'shelter-block-outline',
-        })
-        poly.on('click', () => flyTo(s.block))
-        group.addLayer(poly)
-        group.addLayer(
-          L.marker(L.latLng(s.block.centroid[0], s.block.centroid[1]), {
-            interactive: false,
-            icon: L.divIcon({
-              className: 'shelter-cluster-wrap',
-              html: `<div class="shelter-block-label"><b>${esc(s.block.code)}</b><span>${s.count} lots</span></div>`,
-              iconSize: [86, 34],
-              iconAnchor: [43, 17],
-            }),
+        polygonsRef.current.push(
+          new google.maps.Polygon({
+            map,
+            paths: s.block.polygon.map((p) => latLngToGoogle(p)),
+            strokeColor: s.stroke,
+            strokeWeight: 1.5,
+            fillColor: s.fill,
+            fillOpacity: 0.5,
+            clickable: true,
           }),
+        )
+        polygonsRef.current.at(-1)!.addListener('click', () => flyTo(s.block))
+        overlaysRef.current.push(
+          htmlOverlay(
+            map,
+            s.block.centroid,
+            `<div class="shelter-block-label"><b>${esc(s.block.code)}</b><span>${s.count} lots</span></div>`,
+            () => flyTo(s.block),
+          ),
         )
       }
     }
 
-    // Entrance: a CSS scale-and-fade on the divIcon, not Framer Motion —
-    // these nodes live inside Leaflet's marker pane.
     const raf = requestAnimationFrame(() => {
-      for (const el of map
-        .getPanes()
-        .markerPane.querySelectorAll('.shelter-cluster, .shelter-block-label')) {
-        el.classList.add('is-in')
-      }
-      for (const el of map
-        .getPanes()
-        .overlayPane.querySelectorAll('.shelter-block-outline')) {
+      for (const el of map.getDiv().querySelectorAll('.shelter-cluster, .shelter-block-label')) {
         el.classList.add('is-in')
       }
     })
-    return () => cancelAnimationFrame(raf)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      for (const p of polygonsRef.current) p.setMap(null)
+      for (const o of overlaysRef.current) o.setMap(null)
+      polygonsRef.current = []
+      overlaysRef.current = []
+    }
   }, [zoom, summaries, map])
 
   return null
@@ -175,12 +144,45 @@ export function BlockClusterLayer({
 
 const clusterWidth = (count: number) => Math.round(88 + Math.min(46, count / 9))
 
-/** Iterative screen-space separation. Three markers, six passes — trivial. */
+function htmlOverlay(
+  map: google.maps.Map,
+  ll: [number, number],
+  html: string,
+  onClick: () => void,
+): google.maps.OverlayView {
+  const overlay = new google.maps.OverlayView()
+  let el: HTMLDivElement | null = null
+  overlay.onAdd = () => {
+    el = document.createElement('div')
+    el.className = 'shelter-cluster-wrap'
+    el.innerHTML = html
+    el.style.cursor = 'pointer'
+    el.style.position = 'absolute'
+    el.addEventListener('click', onClick)
+    overlay.getPanes()?.overlayMouseTarget.appendChild(el)
+  }
+  overlay.draw = function draw() {
+    if (!el) return
+    const proj = overlay.getProjection()
+    if (!proj) return
+    // Div-pixel space: pane children must be placed in the pane's own
+    // coordinates so drags carry them without waiting for the next draw().
+    const p = proj.fromLatLngToDivPixel(latLngToGoogle(ll))
+    if (!p) return
+    el.style.left = `${p.x}px`
+    el.style.top = `${p.y}px`
+    el.style.transform = 'translate(-50%, -50%)'
+  }
+  overlay.onRemove = () => el?.remove()
+  overlay.setMap(map)
+  return overlay
+}
+
 function deCollide(
-  map: L.Map,
-  items: { latlng: L.LatLng; w: number; h: number }[],
-): L.LatLng[] {
-  const pts = items.map((i) => map.latLngToContainerPoint(i.latlng))
+  map: google.maps.Map,
+  items: { ll: [number, number]; w: number; h: number }[],
+): [number, number][] {
+  const pts = items.map((i) => latLngToContainerPoint(map, i.ll))
   for (let pass = 0; pass < 6; pass++) {
     let moved = false
     for (let a = 0; a < pts.length; a++) {
@@ -190,7 +192,6 @@ function deCollide(
         const dx = pts[b]!.x - pts[a]!.x
         const dy = pts[b]!.y - pts[a]!.y
         if (Math.abs(dx) >= minX || Math.abs(dy) >= minY) continue
-        // Push along the axis needing the smaller correction.
         const pushX = minX - Math.abs(dx)
         const pushY = minY - Math.abs(dy)
         if (pushY <= pushX) {
@@ -207,7 +208,7 @@ function deCollide(
     }
     if (!moved) break
   }
-  return pts.map((p) => map.containerPointToLatLng(p))
+  return pts.map((p) => containerPointToLatLng(map, p.x, p.y))
 }
 
 function esc(s: string) {
@@ -216,11 +217,6 @@ function esc(s: string) {
   )
 }
 
-/**
- * Block code, lot count and a thin proportional status bar. That bar is what
- * makes the cluster informative rather than decorative — the client can read
- * a block's sales from across the room.
- */
 function clusterHtml(s: BlockSummary): string {
   const total = s.mix.reduce((a, b) => a + b.n, 0) || 1
   const bar = s.mix

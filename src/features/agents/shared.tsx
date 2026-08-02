@@ -77,9 +77,10 @@ export function AgentAvatar({
     <span
       className={cn(
         'inline-grid shrink-0 place-items-center rounded-full font-semibold text-white',
+        size >= 48 ? 'text-caption' : 'text-micro',
         className,
       )}
-      style={{ width: size, height: size, background: color, fontSize: size * 0.36 }}
+      style={{ width: size, height: size, background: color }}
       aria-hidden
     >
       {initialsOf(name)}
@@ -106,13 +107,13 @@ export function AgentIdentity({
       <span className="min-w-0">
         <span
           className={cn(
-            'block truncate text-[13.5px] font-medium',
+            'block break-words text-caption font-medium',
             archived ? 'text-muted' : 'text-ink',
           )}
         >
           {agentName(agentId)}
         </span>
-        <span className="block truncate font-mono text-[11px] text-muted">
+        <span className="block break-all font-mono text-micro text-muted">
           {sub ?? agent?.agentCode ?? '—'}
         </span>
       </span>
@@ -131,11 +132,11 @@ export function ArchivedChip({ agent }: { agent: AgentProfile }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="inline-flex cursor-help items-center rounded border border-line bg-surface-2 px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.06em] text-muted">
+        <span className="inline-flex cursor-help items-center rounded border border-line bg-surface-2 px-1.5 py-px text-micro font-semibold uppercase tracking-[0.06em] text-muted">
           Archived
         </span>
       </TooltipTrigger>
-      <TooltipContent className="max-w-[280px] text-[12.5px] leading-relaxed">
+      <TooltipContent className="max-w-[280px] text-caption leading-relaxed">
         <span className="font-semibold">Access revoked {fmtDate(agent.archivedAt)}. </span>
         {agent.archiveReason ?? 'No reason recorded.'} Attribution and past
         commission are preserved.
@@ -164,7 +165,7 @@ export function LevelBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11.5px] font-medium whitespace-nowrap',
+        'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-caption font-medium whitespace-nowrap',
         LEVEL_TONE[level],
         className,
       )}
@@ -191,7 +192,7 @@ export function CommissionStatusChip({ status }: { status: CommissionStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium whitespace-nowrap',
+        'inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-medium whitespace-nowrap',
         COMMISSION_TONE[status],
       )}
     >
@@ -211,7 +212,7 @@ export function RunStatusChip({ status }: { status: PayoutRunStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium whitespace-nowrap',
+        'inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-medium whitespace-nowrap',
         RUN_TONE[status],
       )}
     >
@@ -231,7 +232,7 @@ export function TargetBar({
   className?: string
 }) {
   if (!target) {
-    return <span className={cn('text-[12px] text-muted', className)}>No target set</span>
+    return <span className={cn('text-caption text-muted', className)}>No target set</span>
   }
   const pct = Math.min(100, Math.round((collected / target) * 100))
   return (
@@ -245,7 +246,7 @@ export function TargetBar({
           style={{ width: `${pct}%` }}
         />
       </span>
-      <span className="tabular text-[12px] text-muted">{pct}%</span>
+      <span className="tabular text-caption text-muted">{pct}%</span>
     </span>
   )
 }
@@ -291,13 +292,13 @@ export function TargetRing({
       </svg>
       <div className="absolute grid place-items-center text-center">
         {pct === null ? (
-          <span className="text-[11.5px] leading-tight text-muted">No target<br />set</span>
+          <span className="text-caption leading-tight text-muted">No target<br />set</span>
         ) : (
           <>
-            <span className="font-display text-[22px] font-semibold tabular text-ink leading-none">
+            <span className="font-display text-section-title font-semibold tabular text-ink leading-none">
               {pct}%
             </span>
-            <span className="mt-1 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+            <span className="mt-1 text-micro uppercase tracking-[0.08em] text-muted">
               of target
             </span>
           </>
@@ -313,7 +314,7 @@ export function MovementChip({ delta }: { delta: number | null }) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="cursor-help text-[12px] font-semibold text-muted">★</span>
+          <span className="cursor-help text-caption font-semibold text-muted">★</span>
         </TooltipTrigger>
         <TooltipContent>New this period</TooltipContent>
       </Tooltip>
@@ -321,7 +322,7 @@ export function MovementChip({ delta }: { delta: number | null }) {
   }
   if (delta === 0) {
     return (
-      <span className="tabular text-[12px] font-semibold text-muted" title="No change">
+      <span className="tabular text-caption font-semibold text-muted" title="No change">
         ▬
       </span>
     )
@@ -329,7 +330,7 @@ export function MovementChip({ delta }: { delta: number | null }) {
   const up = delta > 0
   return (
     <span
-      className={cn('tabular text-[12px] font-semibold', up ? 'text-green' : 'text-danger')}
+      className={cn('tabular text-caption font-semibold', up ? 'text-green' : 'text-danger')}
       title={`${up ? 'Up' : 'Down'} ${Math.abs(delta)} place${Math.abs(delta) === 1 ? '' : 's'}`}
     >
       {up ? '▲' : '▼'} {Math.abs(delta)}
@@ -344,7 +345,7 @@ export function PeriodPicker({ period }: { period: ResolvedPeriod }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Select value={kind} onValueChange={(v) => setKind(v as typeof kind)}>
-        <SelectTrigger size="sm" className="w-[170px]">
+        <SelectTrigger size="sm" className="w-full sm:w-[170px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -359,11 +360,11 @@ export function PeriodPicker({ period }: { period: ResolvedPeriod }) {
       {kind === 'custom' ? (
         <>
           <DateField value={customFrom} onChange={(v) => setCustom(v, customTo)} />
-          <span className="text-[12px] text-muted">→</span>
+          <span className="text-caption text-muted">→</span>
           <DateField value={customTo} onChange={(v) => setCustom(customFrom, v)} />
         </>
       ) : (
-        <span className="rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[12px] text-muted">
+        <span className="rounded-full border border-line bg-surface-2 px-2.5 py-1 text-caption text-muted">
           {period.label}
         </span>
       )}
@@ -407,7 +408,7 @@ export function DateField({
 // ── the Sunday rule, stated rather than hidden ───────────────────────
 export function SundayFootnote({ className }: { className?: string }) {
   return (
-    <p className={cn('text-[12px] leading-relaxed text-muted', className)}>
+    <p className={cn('text-caption leading-relaxed text-muted', className)}>
       Payout windows run <strong className="font-medium text-ink">Saturday → Thursday</strong>{' '}
       and are released on Friday. Sunday is excluded from the earning window, so a
       payment posted on a Sunday accrues into the <em>following</em> window.

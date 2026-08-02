@@ -45,29 +45,29 @@ export function LeaderboardCard(props: CardProps) {
                   navigate(`/agents/${r.agentId}`)
                 }}
                 className={cn(
-                  'flex w-full items-center gap-2.5 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-surface-2',
+                  'flex min-h-10 w-full items-center gap-2.5 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-surface-2',
                   r.isSelf && 'bg-gold/10 ring-1 ring-gold/35 hover:bg-gold/14',
                 )}
               >
-                <span className="w-3.5 shrink-0 text-right text-[11px] font-semibold tabular text-muted">
+                <span className="w-3.5 shrink-0 text-right text-micro font-semibold tabular text-muted">
                   {r.rank}
                 </span>
                 <Avatar className="size-6 shrink-0">
-                  <AvatarFallback className="bg-gold/18 text-[9.5px] font-semibold text-gold-deep dark:text-gold">
+                  <AvatarFallback className="bg-gold/18 text-micro font-semibold text-gold-deep dark:text-gold">
                     {r.initials}
                   </AvatarFallback>
                 </Avatar>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline gap-1.5">
-                    <span className="min-w-0 flex-1 truncate text-[12.5px] text-ink">
+                    <span className="min-w-0 flex-1 break-words text-caption text-ink">
                       {r.name}
                       {r.isSelf && (
-                        <span className="ml-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
+                        <span className="ml-1 text-micro font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
                           You
                         </span>
                       )}
                     </span>
-                    <span className="shrink-0 text-[12px] font-semibold tabular text-ink">
+                    <span className="shrink-0 text-caption font-semibold tabular text-ink">
                       {formatPeso(r.collectedCentavos, { compact: true })}
                     </span>
                   </span>
@@ -76,7 +76,7 @@ export function LeaderboardCard(props: CardProps) {
                       value={Math.min(100, Math.round((r.targetRatio ?? 0) * 100))}
                       className="h-1 bg-line-soft"
                     />
-                    <span className="w-8 shrink-0 text-right text-[10px] tabular text-muted">
+                    <span className="w-8 shrink-0 text-right text-micro tabular text-muted">
                       {r.targetRatio === null
                         ? '—'
                         : `${Math.round(r.targetRatio * 100)}%`}

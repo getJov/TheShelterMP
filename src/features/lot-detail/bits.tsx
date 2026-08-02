@@ -22,9 +22,9 @@ export function Field({
   className?: string
 }) {
   return (
-    <div className={cn('flex items-baseline justify-between gap-4 py-[3px]', className)}>
-      <span className="shrink-0 text-[12px] text-muted">{label}</span>
-      <span className="min-w-0 text-right text-[12.5px] text-ink">{children}</span>
+    <div className={cn('grid grid-cols-[minmax(7rem,auto)_minmax(0,1fr)] items-baseline gap-4 py-1', className)}>
+      <span className="shrink-0 text-caption text-muted">{label}</span>
+      <span className="min-w-0 break-words text-right text-body text-ink">{children}</span>
     </div>
   )
 }
@@ -50,7 +50,7 @@ export function Section({
         <span className="flex min-w-0 flex-1 items-center justify-between gap-3 pr-2">
           <span className="eyebrow shrink-0 text-gold-deep dark:text-gold">{title}</span>
           {summary != null && (
-            <span className="min-w-0 truncate text-right text-[12.5px] text-muted">
+            <span className="min-w-0 break-words text-right text-body text-muted">
               {summary}
             </span>
           )}

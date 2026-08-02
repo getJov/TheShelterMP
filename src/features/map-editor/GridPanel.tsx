@@ -21,7 +21,7 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconAutoFit, IconGrid, IconWarning } from '@/components/ui-brand/icons'
+import { IconAutoFit, IconGrid, IconMove, IconWarning } from '@/components/ui-brand/icons'
 import { EmptyState } from '@/components/ui-brand/EmptyState'
 import { isProtected, NUMBERING, type RegenMode } from '@/lib/grid-generator'
 import { cn } from '@/lib/utils'
@@ -40,6 +40,7 @@ export function GridPanel() {
   const lots = useEditor((s) => s.lots)
   const activeBlockId = useEditor((s) => s.activeBlockId)
   const generate = useEditor((s) => s.generate)
+  const rearrangeExistingLots = useEditor((s) => s.rearrangeExistingLots)
   const { tiers, byId } = useTiers()
   const planned = useGridPlan()
 
@@ -98,6 +99,32 @@ export function GridPanel() {
     run('replace_all')
   }
 
+  const onRearrangeExisting = () => {
+    if (!planned) return
+    if (existing.length === 0) {
+      toast.info(`${block.code} has no lots to rearrange yet.`)
+      return
+    }
+    const result = rearrangeExistingLots(planned.plan, byId)
+    if (!result) return
+    if (result.overflow > 0) {
+      toast.error(`Not enough slots in ${block.code}`, {
+        description: `${fmt(existing.length)} existing lots need ${fmt(existing.length)} slots, but the current grid only has ${fmt(result.slots)}. Increase rows, columns, or block size.`,
+      })
+      return
+    }
+    const details = [
+      `${fmt(existing.length)} lot records kept`,
+      `${fmt(result.slots)} planned slots`,
+    ]
+    if (result.missingTier > 0) {
+      details.push(`${result.missingTier} missing tier${result.missingTier === 1 ? '' : 's'} kept at current size`)
+    }
+    toast.success(`${fmt(result.moved)} existing lots rearranged in ${block.code}`, {
+      description: `${details.join(' · ')}. Lot numbers, statuses, clients and contracts stay unchanged until Publish.`,
+    })
+  }
+
   const fitNow = () => {
     if (!tier) {
       toast.error('Pick a tier first — its footprint is what the fit is computed from.')
@@ -112,6 +139,7 @@ export function GridPanel() {
 
   const cells = planned?.plan.cells.length ?? 0
   const clipped = planned?.plan.clipped ?? 0
+  const isShortOnSlots = existing.length > 0 && cells < existing.length
 
   return (
     <>
@@ -122,7 +150,7 @@ export function GridPanel() {
               value={grid.tierId ?? ''}
               onValueChange={(v) => setGrid({ tierId: v as typeof grid.tierId })}
             >
-              <SelectTrigger className="h-8 w-full text-[13px]">
+              <SelectTrigger className="w-full text-caption">
                 <SelectValue placeholder="Choose a tier" />
               </SelectTrigger>
               <SelectContent>
@@ -134,7 +162,7 @@ export function GridPanel() {
                         style={{ background: t.appearance.fillColor }}
                       />
                       {t.name}
-                      <span className="font-mono text-[10.5px] text-muted">
+                      <span className="font-mono text-micro text-muted">
                         {t.widthM} × {t.lengthM} m
                       </span>
                     </span>
@@ -153,7 +181,34 @@ export function GridPanel() {
             </Field>
           </div>
 
-          <Button variant="secondary" className="h-8 w-full gap-1.5 text-[12.5px]" onClick={fitNow}>
+          <div className="flex items-center justify-between gap-2">
+            <Label htmlFor="exact-lot-count" className="text-caption font-medium text-muted">
+              Use exact lot count
+            </Label>
+            <Switch
+              id="exact-lot-count"
+              checked={grid.exactCount !== null}
+              onCheckedChange={(checked) =>
+                setGrid({ exactCount: checked ? Math.max(1, Math.round(grid.rows * grid.cols)) : null })
+              }
+            />
+          </div>
+
+          {grid.exactCount !== null && (
+            <Field
+              label="Exact count"
+              hint="Rows and columns still shape the layout; the count caps how many available placeholders are created."
+            >
+              <NumberField
+                value={grid.exactCount}
+                min={1}
+                max={Math.max(1, Math.round(grid.rows * grid.cols))}
+                onChange={(exactCount) => setGrid({ exactCount })}
+              />
+            </Field>
+          )}
+
+          <Button variant="secondary" className="w-full gap-1.5 text-caption" onClick={fitNow}>
             <Icon icon={IconAutoFit} size={14} />
             Fit to block
           </Button>
@@ -169,7 +224,7 @@ export function GridPanel() {
           </Field>
 
           <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="split-gutters" className="text-[11.5px] font-medium text-muted">
+            <Label htmlFor="split-gutters" className="text-caption font-medium text-muted">
               Different gutter by axis
             </Label>
             <Switch
@@ -223,8 +278,8 @@ export function GridPanel() {
                   <RadioGroupItem value={n.id} className="shrink-0" />
                   <NumberingDiagram scheme={n.id} />
                   <span className="min-w-0">
-                    <span className="block text-[12.5px] font-medium text-ink">{n.label}</span>
-                    <span className="block text-[10.5px] leading-snug text-muted">{n.hint}</span>
+                    <span className="block text-caption font-medium text-ink">{n.label}</span>
+                    <span className="block text-micro leading-snug text-muted">{n.hint}</span>
                   </span>
                 </label>
               ))}
@@ -248,7 +303,7 @@ export function GridPanel() {
               {clipped > 0 && ` · ${clipped} clipped to the boundary`}
             </Readout>
           ) : (
-            <p className="text-[11.5px] text-muted">Choose a tier to see the preview.</p>
+            <p className="text-caption text-muted">Choose a tier to see the preview.</p>
           )}
 
           {cells > LARGE_GENERATION && (
@@ -260,14 +315,32 @@ export function GridPanel() {
 
           <Button className="w-full gap-1.5" disabled={!planned || !tier} onClick={onGenerate}>
             <Icon icon={IconGrid} size={15} />
-            Generate {cells > 0 ? `${fmt(cells)} lots` : 'lots'}
+            Generate {cells > 0 ? `${fmt(cells)} new lots` : 'new lots'}
           </Button>
 
+          <Button
+            variant="secondary"
+            className="w-full gap-1.5"
+            disabled={!planned || !tier || existing.length === 0}
+            onClick={onRearrangeExisting}
+          >
+            <Icon icon={IconMove} size={15} />
+            Rearrange existing lots
+          </Button>
+
+          {isShortOnSlots && (
+            <WarnLine>
+              The current grid has {fmt(cells)} slot{cells === 1 ? '' : 's'} for {fmt(existing.length)} existing lot
+              {existing.length === 1 ? '' : 's'}. Increase rows, columns, or resize the block
+              before rearranging.
+            </WarnLine>
+          )}
+
           {existing.length > 0 && (
-            <p className="text-[11px] leading-snug text-muted">
-              {block.code} already holds {fmt(existing.length)} lots
-              {soldCount > 0 && `, ${soldCount} of them sold or occupied`}. You will be asked how
-              to handle them.
+            <p className="text-micro leading-snug text-muted">
+              Existing lots: {fmt(existing.length)}
+              {soldCount > 0 && ` · ${soldCount} sold or occupied`}. Generate creates or replaces
+              records; rearrange keeps the existing records and only moves them.
             </p>
           )}
         </div>
@@ -278,8 +351,8 @@ export function GridPanel() {
           <DialogHeader>
             <DialogTitle>{block.code} already has lots</DialogTitle>
             <DialogDescription>
-              {fmt(existing.length)} lots stand in this block. Choose what happens to them before{' '}
-              {fmt(cells)} new lots are laid out.
+              Choose how to handle {fmt(existing.length)} existing lots before generating{' '}
+              {fmt(cells)} new lots.
             </DialogDescription>
           </DialogHeader>
 
@@ -290,15 +363,15 @@ export function GridPanel() {
               title="Replace unsold only"
               body={
                 soldCount > 0
-                  ? `The ${soldCount} sold or occupied lot${soldCount === 1 ? '' : 's'} stay exactly where they are, keeping their number, tier and capacity. The grid is laid around them.`
-                  : 'Regenerates everything, but would preserve any sold lot in place. None here are sold.'
+                  ? `${soldCount} sold or occupied lot${soldCount === 1 ? '' : 's'} stay in place; unsold lots are regenerated.`
+                  : 'Regenerates all existing lots.'
               }
             />
             <ModeOption
               value="append"
               current={mode}
               title="Add alongside"
-              body="Keeps every existing lot, continues the numbering, and skips any cell that would land on one."
+              body="Keeps existing lots and adds new numbered lots around them."
             />
             <ModeOption
               value="replace_all"
@@ -307,17 +380,16 @@ export function GridPanel() {
               disabled={soldCount > 0}
               body={
                 soldCount > 0
-                  ? `Blocked — ${soldCount} lot${soldCount === 1 ? ' is' : 's are'} sold or occupied and cannot be deleted.`
-                  : 'Deletes all existing lots in this block and lays out a fresh grid.'
+                  ? 'Unavailable while sold or occupied lots exist.'
+                  : 'Deletes existing lots and generates a fresh grid.'
               }
             />
           </RadioGroup>
 
           {soldCount > 0 && mode === 'replace_unsold' && (
-            <p className="flex items-start gap-1.5 text-[12px] leading-snug text-muted">
+            <p className="flex items-start gap-1.5 text-caption leading-snug text-muted">
               <Icon icon={IconWarning} size={13} className="mt-px text-gold-deep dark:text-gold" />
-              Sold history is never destroyed. Those lots keep their contract, their code and their
-              exact position.
+              Sold or occupied lots keep their contract, code, and position.
             </p>
           )}
           {soldCount > 0 && mode === 'replace_all' && (
@@ -364,8 +436,8 @@ function ModeOption({
     >
       <RadioGroupItem value={value} disabled={disabled} className="mt-0.5 shrink-0" />
       <span>
-        <span className="block text-[13.5px] font-medium text-ink">{title}</span>
-        <span className="mt-0.5 block text-[12px] leading-snug text-muted">{body}</span>
+        <span className="block text-caption font-medium text-ink">{title}</span>
+        <span className="mt-0.5 block text-caption leading-snug text-muted">{body}</span>
       </span>
     </label>
   )

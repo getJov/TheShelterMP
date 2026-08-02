@@ -27,6 +27,21 @@ export function offsetMetres(origin: LatLng, eastM: number, northM: number): Lat
 }
 
 /**
+ * Offset in the ROTATED frame — the same composition `generateGrid` applies
+ * to cells. Anything positioned relative to a rotated grid must use this,
+ * not the axis-aligned `offsetMetres`, or it drifts by the rotation error.
+ */
+export function offsetMetresRotated(
+  origin: LatLng,
+  eastM: number,
+  northM: number,
+  rotationDeg: number,
+): LatLng {
+  const r = rotate(eastM, northM, rotationDeg)
+  return offsetMetres(origin, r.e, r.n)
+}
+
+/**
  * A rectangle of w × l metres centred on `origin`, rotated clockwise from
  * north. Returns four LatLng in clockwise order starting at the NW corner.
  */

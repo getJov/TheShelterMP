@@ -102,11 +102,11 @@ export function OverlayPanel({ canvas }: { canvas: CanvasHandle | null }) {
           )}
         >
           <Icon icon={IconImageUpload} size={22} className="mx-auto mb-2 text-muted" />
-          <p className="text-[12.5px] text-ink">Drop a site plan here</p>
-          <p className="mt-0.5 text-[11px] text-muted">PNG, JPG or SVG · up to {MAX_MB} MB</p>
+          <p className="text-caption text-ink">Drop a site plan here</p>
+          <p className="mt-0.5 text-micro text-muted">PNG, JPG or SVG · up to {MAX_MB} MB</p>
           <Button
             variant="secondary"
-            className="mt-3 h-8 text-[12.5px]"
+            className="mt-3 text-control"
             onClick={() => fileRef.current?.click()}
           >
             Choose a file
@@ -125,9 +125,9 @@ export function OverlayPanel({ canvas }: { canvas: CanvasHandle | null }) {
         </div>
 
         <div className="mt-3 flex items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 py-2">
-          <Label htmlFor="compare" className="text-[12.5px] font-medium text-ink">
+          <Label htmlFor="compare" className="text-caption font-medium text-ink">
             Compare
-            <span className="mt-0.5 block text-[10.5px] font-normal leading-snug text-muted">
+            <span className="mt-0.5 block text-micro font-normal leading-snug text-muted">
               Hide the lots to check them against the plan underneath.
             </span>
           </Label>
@@ -143,7 +143,7 @@ export function OverlayPanel({ canvas }: { canvas: CanvasHandle | null }) {
                 <button
                   onClick={() => setActive(o.id)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left transition-colors',
+                    'flex min-h-10 w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left transition-colors',
                     o.id === activeId
                       ? 'border-gold bg-gold/8'
                       : 'border-transparent hover:bg-surface-2',
@@ -155,8 +155,8 @@ export function OverlayPanel({ canvas }: { canvas: CanvasHandle | null }) {
                     className="size-7 shrink-0 rounded border border-line object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[12.5px] text-ink">{o.name}</span>
-                    <span className="block text-[10.5px] text-muted">
+                    <span className="block break-words text-caption text-ink">{o.name}</span>
+                    <span className="block text-micro text-muted">
                       {Math.round(o.opacity * 100)}% ·{' '}
                       {o.visible ? 'on the main map' : 'hidden from the main map'}
                     </span>
@@ -220,7 +220,7 @@ function OverlayProperties({
           <Input
             value={overlay.name}
             onChange={(e) => onPatch({ name: e.target.value })}
-            className="h-8 text-[13px]"
+            className="text-caption"
           />
         </Field>
 
@@ -245,7 +245,7 @@ function OverlayProperties({
         </Field>
 
         <div className="flex items-center justify-between gap-2">
-          <Label htmlFor="ovl-visible" className="text-[11.5px] font-medium text-muted">
+          <Label htmlFor="ovl-visible" className="text-caption font-medium text-muted">
             Show on the main map
           </Label>
           <Switch
@@ -256,7 +256,7 @@ function OverlayProperties({
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <Label htmlFor="ovl-lock" className="text-[11.5px] font-medium text-muted">
+          <Label htmlFor="ovl-lock" className="text-caption font-medium text-muted">
             Lock position
           </Label>
           <Switch id="ovl-lock" checked={locked} onCheckedChange={onLock} />
@@ -265,7 +265,7 @@ function OverlayProperties({
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="secondary"
-            className="h-8 gap-1.5 text-[12px]"
+            className="gap-1.5 text-caption"
             onClick={() => onPatch({ zIndex: front ? 1 : 100 })}
           >
             <Icon icon={front ? IconSendBehind : IconBringFront} size={14} />
@@ -278,7 +278,7 @@ function OverlayProperties({
 
         <Button
           variant="ghost"
-          className="h-8 w-full gap-1.5 text-[12px] text-danger hover:bg-danger/10 hover:text-danger"
+          className="w-full gap-1.5 text-caption text-danger hover:bg-danger/10 hover:text-danger"
           onClick={() => {
             onRemove()
             toast.success('Overlay removed from the draft')
@@ -288,7 +288,7 @@ function OverlayProperties({
           Remove overlay
         </Button>
 
-        <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
+        <p className="flex items-start gap-1.5 text-micro leading-snug text-muted">
           <Icon icon={IconInfo} size={12} className="mt-px" />
           Nothing here reaches the main map until you publish.
         </p>
@@ -306,7 +306,7 @@ function FitToBlock({
 }) {
   if (blocks.length === 0) {
     return (
-      <Button variant="secondary" className="h-8 text-[12px]" disabled>
+      <Button variant="secondary" className="text-caption" disabled>
         Fit to block
       </Button>
     )
@@ -319,7 +319,7 @@ function FitToBlock({
         if (b) onFit(boundsOf([b.polygon]))
       }}
     >
-      <SelectTrigger className="h-8 w-full text-[12px]">
+      <SelectTrigger className="w-full text-caption">
         <SelectValue placeholder="Fit to block" />
       </SelectTrigger>
       <SelectContent>

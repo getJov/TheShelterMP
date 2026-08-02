@@ -86,8 +86,8 @@ export function ContractDetailSheet({
         {contract ? (
           <>
             <SheetHeader className="shrink-0 gap-1 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 sm:px-5 sm:py-4 sm:pr-12">
-              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[20px] leading-tight sm:text-[22px]">
-                <span className="font-mono text-[17px]">{contract.contractNo}</span>
+              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-section-title">
+                <span className="font-mono text-small-title">{contract.contractNo}</span>
                 <ContractStatusChip status={contract.status} />
                 <HealthChip health={paymentHealth(contract, TODAY)} />
               </SheetTitle>
@@ -103,7 +103,7 @@ export function ContractDetailSheet({
             </ScrollArea>
           </>
         ) : (
-          <div className="p-6 text-[13px] text-muted">No contract selected.</div>
+          <div className="p-6 text-body text-muted">No contract selected.</div>
         )}
       </SheetContent>
     </Sheet>
@@ -159,7 +159,7 @@ export function ContractDetailBody({
   return (
     <div className="space-y-5 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">
       {cancelled && (
-        <div className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] text-ink">
+        <div role="alert" className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-body text-ink">
           <Icon icon={IconWarning} size={16} className="mt-0.5 text-danger" />
           <span>
             <span className="font-medium">
@@ -291,7 +291,7 @@ export function ContractDetailBody({
       {/* price breakdown */}
       <Section title="Price breakdown">
         <div className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5">
-          <FieldRow label="List price (snapshotted at signing)">
+          <FieldRow label="List price at signing">
             <MoneyText centavos={contract.listPriceCentavos} />
           </FieldRow>
           {contract.discountCentavos > 0 && (
@@ -312,10 +312,10 @@ export function ContractDetailBody({
               />
             </FieldRow>
           </div>
-          <p className="mt-2 text-[11.5px] leading-snug text-muted">
+          <p className="mt-2 text-caption text-muted">
             Priced from entry{' '}
             <span className="font-mono">{contract.priceBookEntryId}</span> as of{' '}
-            {fmtDate(contract.signedAt)}. A later price change never restates this contract.
+            {fmtDate(contract.signedAt)}. Future price changes do not alter this contract.
           </p>
         </div>
         <TrustFundNote amountCentavos={model.trustFundCentavos} className="mt-2.5" compact />
@@ -328,7 +328,7 @@ export function ContractDetailBody({
         </Section>
       ) : (
         <Section title="Amortization schedule">
-          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-[12.5px] text-muted">
+          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-body text-muted">
             Spot-cash contract — one settled line, no schedule.
           </p>
         </Section>
@@ -337,7 +337,7 @@ export function ContractDetailBody({
       {/* payment ledger */}
       <Section title={`Payment ledger · ${model.payments.length}`}>
         {model.payments.length === 0 ? (
-          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-[12.5px] text-muted">
+          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-body text-muted">
             No payment has been posted yet.
           </p>
         ) : (
@@ -353,35 +353,35 @@ export function ContractDetailBody({
                 <Icon icon={METHOD_ICON[p.method]} size={15} className="text-muted" />
                 <span
                   className={cn(
-                    'font-mono text-[12.5px] text-ink',
+                    'font-mono text-body text-ink',
                     p.status === 'void' && 'line-through',
                   )}
                 >
                   {p.orNo}
                 </span>
-                <span className="text-[12px] text-muted">{fmtDate(p.paidAt)}</span>
-                <span className="hidden text-[12px] text-muted sm:inline">
+                <span className="text-caption text-muted">{fmtDate(p.paidAt)}</span>
+                <span className="hidden text-caption text-muted sm:inline">
                   {PAYMENT_METHOD_LABEL[p.method]}
                   {p.referenceNo ? ` · ${p.referenceNo}` : ''}
                 </span>
                 <span className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 pl-6 sm:ml-auto sm:w-auto sm:pl-0">
-                  <span className="text-[12px] text-muted sm:hidden">
+                  <span className="text-caption text-muted sm:hidden">
                     {PAYMENT_METHOD_LABEL[p.method]}
                     {p.referenceNo ? ` · ${p.referenceNo}` : ''}
                   </span>
-                  <span className="text-[11.5px] text-muted">
+                  <span className="text-caption text-muted">
                     trust <MoneyText centavos={p.trustFundCentavos} className="text-green" />
                   </span>
                   <MoneyText
                     centavos={p.amountCentavos}
                     className={cn(
-                      'ml-auto text-[13.5px] text-ink sm:ml-0',
+                      'ml-auto text-body text-ink sm:ml-0',
                       p.status === 'void' && 'line-through',
                     )}
                   />
                   {canVoid && p.status === 'posted' && (
                     <Button
-                      size="xs"
+                      size="sm"
                       variant="ghost"
                       className="min-h-11 text-danger hover:text-danger sm:min-h-0"
                       onClick={() => setVoidTarget(p)}
@@ -391,7 +391,7 @@ export function ContractDetailBody({
                   )}
                 </span>
                 {p.status === 'void' && (
-                  <span className="w-full text-[11.5px] text-danger">
+                  <span className="w-full text-caption text-danger">
                     Voided — {p.voidReason}
                   </span>
                 )}
@@ -404,8 +404,8 @@ export function ContractDetailBody({
       {/* commission */}
       <Section title="Commission breakdown">
         {model.commissions.length === 0 ? (
-          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-[12.5px] text-muted">
-            No commission has accrued. Commission is earned on collection, never at signing.
+          <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-body text-muted">
+            No commission has accrued.
           </p>
         ) : (
           <CommissionByLevel entries={model.commissions} />
@@ -423,14 +423,12 @@ export function ContractDetailBody({
                 className={d.present ? 'text-green' : 'text-muted'}
               />
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] text-ink">{d.label}</span>
-                <span className="block break-words text-[11.5px] text-muted sm:truncate">
-                  {d.detail}
-                </span>
+                <span className="block text-body text-ink">{d.label}</span>
+                <span className="block whitespace-normal break-words text-caption text-muted">{d.detail}</span>
               </span>
               <span
                 className={cn(
-                  'text-[11px] font-semibold uppercase tracking-wide',
+                  'text-micro font-semibold uppercase tracking-wide',
                   d.present ? 'text-green' : 'text-muted',
                 )}
               >
@@ -439,9 +437,9 @@ export function ContractDetailBody({
             </li>
           ))}
         </ul>
-        <p className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-muted">
+        <p className="mt-1.5 flex items-center gap-1.5 text-caption text-muted">
           <Icon icon={IconDocument} size={13} />
-          Checklist only — file storage and uploads are a later phase.
+          Files are tracked in the office checklist.
         </p>
       </Section>
 
@@ -449,7 +447,7 @@ export function ContractDetailBody({
       <Section title="History">
         <ul className="space-y-1.5">
           {model.history.map((h) => (
-            <li key={h.id} className="flex gap-2.5 text-[12.5px]">
+            <li key={h.id} className="flex gap-2.5 text-body">
               <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
               <span className="min-w-0">
                 <span className="text-ink">{h.label}</span>
@@ -458,13 +456,13 @@ export function ContractDetailBody({
             </li>
           ))}
           {model.history.length === 0 && (
-            <li className="text-[12.5px] text-muted">No recorded events.</li>
+            <li className="text-body text-muted">No recorded events.</li>
           )}
         </ul>
       </Section>
 
       <Separator />
-      <p className="text-[11.5px] text-muted">
+      <p className="text-caption text-muted">
         Reference <span className="font-mono text-ink">{contract.contractNo}</span> · created{' '}
         {fmtDateTime(contract.createdAt)}
       </p>
@@ -514,21 +512,21 @@ function CommissionByLevel({ entries }: { entries: CommissionEntry[] }) {
               className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2"
             >
               <span className="min-w-0">
-                <span className="block text-[13px] text-ink">
+                <span className="block text-body text-ink">
                   {agentNameOf(rows[0]!.agentId)}
                 </span>
-                <span className="block text-[11.5px] text-muted">
+                <span className="block text-caption text-muted">
                   {LEVEL_NAMES[rows[0]!.level]} ·{' '}
                   {formatPercent(rows[0]!.ratePercent, 0)} · {live.length} of {rows.length}{' '}
                   entries live
                 </span>
               </span>
-              <MoneyText centavos={total} className="ml-auto text-[13.5px] text-ink" />
+              <MoneyText centavos={total} className="ml-auto text-body text-ink" />
             </li>
           )
         })}
       </ul>
-      <div className="flex flex-wrap items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[11.5px] text-muted">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2 px-3.5 py-2 text-caption text-muted">
         <span className="flex flex-wrap items-center gap-1.5">
           Basis <MoneyText centavos={basis} className="text-ink" /> — the full collected
           amount
@@ -542,7 +540,7 @@ function CommissionByLevel({ entries }: { entries: CommissionEntry[] }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="eyebrow mb-2 text-gold-deep dark:text-gold">{title}</h3>
+      <h3 className="mb-2 text-caption font-semibold uppercase text-gold-deep dark:text-gold">{title}</h3>
       {children}
     </section>
   )
@@ -563,7 +561,7 @@ function Metric({
       <MoneyText
         centavos={centavos}
         className={cn(
-          'mt-0.5 block font-display text-[20px] font-semibold leading-none',
+          'mt-0.5 block font-display text-small-title font-semibold',
           tone === 'green' ? 'text-green' : 'text-ink',
         )}
       />

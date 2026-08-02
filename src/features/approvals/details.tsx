@@ -58,7 +58,7 @@ import {
 // ── shared bits ──────────────────────────────────────────────────────
 
 function Line({ children }: { children: ReactNode }) {
-  return <p className="text-[12.5px] leading-relaxed text-muted">{children}</p>
+  return <p className="text-caption leading-relaxed text-muted">{children}</p>
 }
 
 function Strong({ children }: { children: ReactNode }) {
@@ -98,8 +98,8 @@ function Row({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-4 py-[3px]">
-      <span className="text-[12px] text-muted">{label}</span>
-      <span className={cn('text-[12.5px] tabular', strong ? 'font-medium text-ink' : 'text-ink')}>
+      <span className="text-caption text-muted">{label}</span>
+      <span className={cn('text-caption tabular', strong ? 'font-medium text-ink' : 'text-ink')}>
         {value}
       </span>
     </div>
@@ -108,7 +108,7 @@ function Row({
 
 function Missing({ what }: { what: string }) {
   return (
-    <p className="flex items-center gap-2 text-[12.5px] text-muted">
+    <p className="flex items-center gap-2 text-caption text-muted">
       <Icon icon={IconWarning} size={14} className="text-danger" />
       {what}
     </p>
@@ -315,11 +315,11 @@ function HoldDetail({ task }: { task: ApprovalTask }) {
           />
         </div>
         {hold.decisionNote && (
-          <p className="mt-2 border-t border-line pt-2 text-[12.5px] leading-relaxed text-muted">
+          <p className="mt-2 border-t border-line pt-2 text-caption leading-relaxed text-muted">
             “{hold.decisionNote}”
           </p>
         )}
-        <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-muted">
+        <p className="mt-2 flex items-center gap-1.5 text-caption text-muted">
           A hold runs {HOLD_DURATION_DAYS} days from approval —{' '}
           {fmtDate(addDays(TODAY, HOLD_DURATION_DAYS))}
           <AssumedChip why={ASSUMPTIONS.holdDurationDays.why} />
@@ -393,12 +393,12 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
 
       <Panel title="Schedule">
         {c.paymentMode === 'spot_cash' ? (
-          <p className="text-[12.5px] leading-relaxed text-muted">
+          <p className="text-caption leading-relaxed text-muted">
             Spot cash — the full {formatPeso(c.contractPriceCentavos)} is due on signing.
             No amortisation schedule is built.
           </p>
         ) : schedule.length === 0 ? (
-          <p className="text-[12.5px] text-muted">No schedule has been built yet.</p>
+          <p className="text-caption text-muted">No schedule has been built yet.</p>
         ) : (
           <>
             <Row label="Term" value={`${c.termMonths} months`} />
@@ -411,7 +411,7 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
               {schedule.slice(0, 3).map((i) => (
                 <div
                   key={i.installmentNo}
-                  className="flex items-baseline justify-between gap-3 text-[12px]"
+                  className="flex items-baseline justify-between gap-3 text-caption"
                 >
                   <span className="text-muted">
                     #{i.installmentNo} · {fmtDate(i.dueDate)}
@@ -420,7 +420,7 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
                 </div>
               ))}
               {schedule.length > 3 && (
-                <p className="pt-0.5 text-[11.5px] text-muted">
+                <p className="pt-0.5 text-caption text-muted">
                   + {schedule.length - 3} more instalments
                 </p>
               )}
@@ -431,7 +431,7 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
 
       <Panel title="Commission if fully collected">
         {split.length === 0 ? (
-          <p className="text-[12.5px] text-muted">No upline is attached to this contract.</p>
+          <p className="text-caption text-muted">No upline is attached to this contract.</p>
         ) : (
           <>
             {split.map((s) => (
@@ -444,8 +444,8 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
             <div className="mt-2 border-t border-line pt-2">
               <Row label="Total" value={formatPeso(commissionTotal)} strong />
             </div>
-            <p className="mt-2 flex items-center gap-1.5 text-[11.5px] leading-relaxed text-muted">
-              Earned on collection, never at signing.
+            <p className="mt-2 flex items-center gap-1.5 text-caption leading-relaxed text-muted">
+              Commission rates
               <AssumedChip why={ASSUMPTIONS.commissionRates.why} />
             </p>
           </>
@@ -529,7 +529,7 @@ function IntermentDetail({ task }: { task: ApprovalTask }) {
             const ok = i.requirements[k]
             const blocks = blocking.has(REQUIREMENT_LABEL[k])
             return (
-              <li key={k} className="flex items-center gap-2 text-[12.5px]">
+              <li key={k} className="flex items-center gap-2 text-caption">
                 <Icon
                   icon={ok ? IconCheck : IconMissing}
                   size={14}
@@ -539,7 +539,7 @@ function IntermentDetail({ task }: { task: ApprovalTask }) {
                   {REQUIREMENT_LABEL[k]}
                 </span>
                 {!ok && blocks && (
-                  <span className="text-[11px] uppercase tracking-[0.06em] text-danger">
+                  <span className="text-micro uppercase tracking-[0.06em] text-danger">
                     blocks completion
                   </span>
                 )}
@@ -548,7 +548,7 @@ function IntermentDetail({ task }: { task: ApprovalTask }) {
           })}
         </ul>
         {i.notes && (
-          <p className="mt-2.5 border-t border-line pt-2 text-[12.5px] leading-relaxed text-muted">
+          <p className="mt-2.5 border-t border-line pt-2 text-caption leading-relaxed text-muted">
             {i.notes}
           </p>
         )}
@@ -613,7 +613,7 @@ function PayoutDetail({ task }: { task: ApprovalTask }) {
         <div className="mt-2 border-t border-line pt-2">
           <Row label="Total" value={formatPeso(run.totalCentavos)} strong />
         </div>
-        <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
+        <p className="mt-2 text-caption leading-relaxed text-muted">
           Windows run Saturday → Thursday and release on Friday. Sunday is excluded
           from the earning window.
         </p>
@@ -625,13 +625,13 @@ function PayoutDetail({ task }: { task: ApprovalTask }) {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.agentId} className="border-b border-line-soft last:border-0">
-                  <td className="py-1.5 text-[12.5px] text-ink">
+                  <td className="py-1.5 text-caption text-ink">
                     {agentDisplayName(r.agentId)}
                   </td>
-                  <td className="py-1.5 text-right text-[12px] tabular text-muted">
+                  <td className="py-1.5 text-right text-caption tabular text-muted">
                     {r.count} {r.count === 1 ? 'entry' : 'entries'}
                   </td>
-                  <td className="py-1.5 text-right text-[12.5px] tabular font-medium text-ink">
+                  <td className="py-1.5 text-right text-caption tabular font-medium text-ink">
                     {formatPeso(r.centavos)}
                   </td>
                 </tr>
@@ -688,11 +688,11 @@ function TransferDetail({ task }: { task: ApprovalTask }) {
         <Row label="Requested by" value={userName(t.requestedByUserId)} />
         <Row label="Requested" value={fmtDateTime(t.requestedAt)} />
         <Row label="Transfer fee" value={formatPeso(t.feeCentavos)} strong />
-        <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-muted">
-          Heard once, never confirmed.
+        <p className="mt-2 flex items-center gap-1.5 text-caption text-muted">
+          Assumed fee
           <AssumedChip why={ASSUMPTIONS.ownershipTransferFee.why} />
         </p>
-        <p className="mt-2 border-t border-line pt-2 text-[12.5px] leading-relaxed text-muted">
+        <p className="mt-2 border-t border-line pt-2 text-caption leading-relaxed text-muted">
           {t.reason}
         </p>
       </Panel>

@@ -14,18 +14,26 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconDrawBlock, IconOverlay, IconPublish, IconRedo, IconUndo } from '@/components/ui-brand/icons'
+import { IconDrawBlock, IconPublish, IconRedo, IconUndo } from '@/components/ui-brand/icons'
 import { useActiveLocation } from '@/lib/permissions'
+import { useDataset } from '@/stores/dataset'
 import { useSession } from '@/stores/session'
 import { EditorCanvas, type CanvasHandle } from './EditorCanvas'
 import { Sidebar } from './Sidebar'
-import { BulkActionsBar } from './BulkActionsBar'
 import { PublishDialog } from './PublishDialog'
-import { useChangeReport } from './helpers'
+import { useChangeReport, useLayoutValidation } from './helpers'
 import { TOOL_KEYS, useEditor, lotsOfBlock } from './store'
+
+declare global {
+  interface Window {
+    /** Devtools export: dumps the draft layout JSON (also copied to clipboard). */
+    getpropsie?: () => string
+  }
+}
 
 export default function MapEditorPage() {
   const activeLocationId = useSession((s) => s.activeLocationId)
+  const datasetVersion = useDataset((s) => s.version)
   const location = useActiveLocation()
 
   const hydrate = useEditor((s) => s.hydrate)
@@ -37,15 +45,49 @@ export default function MapEditorPage() {
   const redo = useEditor((s) => s.redo)
   const discard = useEditor((s) => s.discard)
   const setTool = useEditor((s) => s.setTool)
+  const tool = useEditor((s) => s.tool)
+  const pendingBlock = useEditor((s) => s.pendingBlock)
 
   const [canvas, setCanvas] = useState<CanvasHandle | null>(null)
   const [publishOpen, setPublishOpen] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
   const report = useChangeReport()
+  const validation = useLayoutValidation()
 
   useEffect(() => {
+    // datasetVersion keeps a clean draft in step with the live dataset; the
+    // store ignores this call while the draft is dirty.
     hydrate(activeLocationId)
-  }, [hydrate, activeLocationId])
+  }, [hydrate, activeLocationId, datasetVersion])
+
+  // Devtools export for hand-tuned layouts: paste the JSON back to seed the
+  // demo default (see src/mock/park-layout.ts).
+  useEffect(() => {
+    window.getpropsie = () => {
+      const s = useEditor.getState()
+      const layout = {
+        blocks: s.blocks,
+        lots: s.lots.map((l) => ({
+          ...l,
+          // Geometry only — business state is reseeded deterministically.
+          status: 'available' as const,
+          activeHoldId: null,
+          currentContractId: null,
+          currentOwnerClientId: null,
+          intermentCount: 0,
+          notForSaleReason: null,
+        })),
+        overlays: s.overlays,
+      }
+      const json = JSON.stringify(layout, null, 2)
+      console.log(json)
+      navigator.clipboard?.writeText(json).catch(() => {})
+      return `getpropsie: ${s.blocks.length} blocks · ${s.lots.length} lots — JSON logged above and copied to the clipboard`
+    }
+    return () => {
+      delete window.getpropsie
+    }
+  }, [])
 
   // ── leaving with unsaved work ─────────────────────────────────────
   useEffect(() => {
@@ -92,7 +134,7 @@ export default function MapEditorPage() {
       }
       if (mod && e.key.toLowerCase() === 's') {
         e.preventDefault()
-        setPublishOpen(true)
+        if (report.total > 0) setPublishOpen(true)
         return
       }
       if (mod) return
@@ -101,6 +143,36 @@ export default function MapEditorPage() {
         s.clearSelection()
         s.setPendingBlock(null)
         s.cancelBlockEdit()
+        s.cancelAlignment()
+        return
+      }
+      // Direct per-lot positioning: arrows nudge, [ ] rotate the selection.
+      if (
+        s.editorMode === 'inventory' &&
+        s.selection.size > 0 &&
+        (e.key.startsWith('Arrow') || e.key === '[' || e.key === ']')
+      ) {
+        e.preventDefault()
+        const ids = [...s.selection]
+        if (e.key === '[' || e.key === ']') {
+          const deg = (e.shiftKey ? 5 : 0.5) * (e.key === '[' ? -1 : 1)
+          s.transformLots(ids, { rotateDeg: deg })
+          return
+        }
+        const step = e.altKey ? 0.05 : e.shiftKey ? 1 : 0.25
+        if (e.key === 'ArrowUp') s.transformLots(ids, { northM: step })
+        if (e.key === 'ArrowDown') s.transformLots(ids, { northM: -step })
+        if (e.key === 'ArrowLeft') s.transformLots(ids, { eastM: -step })
+        if (e.key === 'ArrowRight') s.transformLots(ids, { eastM: step })
+        return
+      }
+      if (s.editorMode === 'align' && e.key.startsWith('Arrow')) {
+        e.preventDefault()
+        const step = e.shiftKey ? 1 : 0.25
+        if (e.key === 'ArrowUp') s.nudgeAlignmentMeters(0, step)
+        if (e.key === 'ArrowDown') s.nudgeAlignmentMeters(0, -step)
+        if (e.key === 'ArrowLeft') s.nudgeAlignmentMeters(-step, 0)
+        if (e.key === 'ArrowRight') s.nudgeAlignmentMeters(step, 0)
         return
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && s.selection.size > 0) {
@@ -121,7 +193,7 @@ export default function MapEditorPage() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [undo, redo, setTool])
+  }, [undo, redo, setTool, report.total])
 
   const onReady = useCallback((h: CanvasHandle) => setCanvas(h), [])
   const empty = blocks.length === 0
@@ -133,21 +205,21 @@ export default function MapEditorPage() {
       <Sidebar canvas={canvas} />
 
       <div className="relative min-w-0 flex-1">
-        <header className="absolute inset-x-0 top-0 z-[640] flex items-center justify-between gap-3 border-b border-line bg-surface/92 px-4 py-2.5 backdrop-blur">
+        <header className="absolute inset-x-0 top-0 z-[640] flex flex-wrap items-start justify-between gap-3 border-b border-line bg-surface/92 px-4 py-2.5 backdrop-blur">
           <div className="min-w-0">
             <p className="eyebrow text-gold-deep dark:text-gold">Map editor</p>
-            <h1 className="truncate font-display text-[19px] font-semibold leading-tight text-ink">
-              {location?.name ?? 'All locations'}
+            <h1 className="break-words font-display text-small-title font-semibold leading-tight text-ink">
+              {location?.name ?? 'All locations'} · Blocks &amp; lots
             </h1>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5">
+          <div className="flex w-full flex-wrap items-center justify-end gap-1.5 xl:w-auto">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-8"
+                  className="size-10"
                   disabled={undoDepth === 0}
                   onClick={undo}
                   aria-label="Undo"
@@ -162,7 +234,7 @@ export default function MapEditorPage() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-8"
+                  className="size-10"
                   disabled={redoDepth === 0}
                   onClick={redo}
                   aria-label="Redo"
@@ -176,7 +248,7 @@ export default function MapEditorPage() {
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 text-[12.5px]"
+              className="text-caption"
               disabled={!dirty}
               onClick={() => setDiscardOpen(true)}
             >
@@ -184,48 +256,51 @@ export default function MapEditorPage() {
             </Button>
             <Button
               size="sm"
-              className="h-8 gap-1.5 text-[12.5px]"
+              className="gap-1.5 text-caption"
               disabled={report.total === 0}
               onClick={() => setPublishOpen(true)}
             >
               <Icon icon={IconPublish} size={14} />
               {report.total === 0
                 ? 'Nothing to publish'
-                : `Publish ${report.total} change${report.total === 1 ? '' : 's'}`}
+                : `Publish ${report.total} change${report.total === 1 ? '' : 's'}${
+                    validation.blockingCount > 0
+                      ? ` · ${validation.blockingCount} warning${validation.blockingCount === 1 ? '' : 's'}`
+                      : ''
+                  }`}
             </Button>
           </div>
         </header>
 
-        <div className="absolute inset-0 top-[57px]">
+        <div className="absolute inset-0 top-[120px] xl:top-[65px]">
           <EditorCanvas onReady={onReady} />
-          <BulkActionsBar />
 
-          {empty && (
-            <div className="pointer-events-none absolute inset-0 z-[630] grid place-items-center">
-              <div className="pointer-events-auto max-w-[420px] rounded-xl border border-line bg-surface/95 px-7 py-7 text-center shadow-xl backdrop-blur">
-                <div className="mx-auto mb-4 grid size-11 place-items-center rounded-full border border-line bg-surface-2 text-muted">
-                  <Icon icon={IconDrawBlock} size={19} />
-                </div>
-                <p className="font-display text-[21px] text-ink">No park layout yet</p>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
-                  Start by drawing your first block. Its lots are generated inside it in the next
-                  step.
-                </p>
-                <Button className="mt-5 gap-1.5" onClick={() => setTool('block')}>
-                  <Icon icon={IconDrawBlock} size={15} />
+          {/* Slim, out-of-the-way hint — gone the moment a tool is armed or a
+              shape is in progress, so it never blocks drawing on the map. */}
+          {empty && tool === 'select' && !pendingBlock && (
+            <div className="pointer-events-none absolute inset-x-0 top-3 z-[630] flex justify-center">
+              <div className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-line bg-surface/95 py-1.5 pl-4 pr-1.5 shadow-lg backdrop-blur">
+                <p className="text-caption text-muted">No layout yet</p>
+                <Button
+                  size="sm"
+                  className="gap-1.5 rounded-full text-caption"
+                  onClick={() => setTool('block')}
+                >
+                  <Icon icon={IconDrawBlock} size={13} />
                   Draw a block
                 </Button>
-                <p className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-muted">
-                  <Icon icon={IconOverlay} size={13} />
-                  A site plan can be placed underneath first — Overlay tool, or press O.
-                </p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} report={report} />
+      <PublishDialog
+        open={publishOpen}
+        onOpenChange={setPublishOpen}
+        report={report}
+        validation={validation}
+      />
 
       <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
         <AlertDialogContent>

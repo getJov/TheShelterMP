@@ -311,6 +311,9 @@ export function PaymentsTab({
           columns={columns}
           rowKey={(payment) => payment.id}
           onRowClick={(payment) => onOpen(payment.contractId)}
+          rowActionLabel={(payment) =>
+            `Open contract ${payment.contractNo} for receipt ${payment.orNo}`
+          }
           emptyIcon={IconPayment}
           empty={{
             title: 'No payments in range',

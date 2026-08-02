@@ -9,7 +9,7 @@
     {
       "title": "hold dialog fits 320px viewport",
       "status": "pass",
-      "detail": "{\"left\":8,\"top\":159,\"right\":312,\"bottom\":541,\"viewportWidth\":320,\"viewportHeight\":700}"
+      "detail": "{\"left\":8,\"top\":127,\"right\":312,\"bottom\":573,\"viewportWidth\":320,\"viewportHeight\":700}"
     },
     {
       "title": "available lot can be selected",
@@ -79,7 +79,7 @@
     {
       "title": "nested client dialog fits 320px viewport",
       "status": "pass",
-      "detail": "{\"left\":8,\"top\":26,\"right\":312,\"bottom\":674,\"viewportWidth\":320,\"viewportHeight\":700}"
+      "detail": "{\"left\":8,\"top\":8,\"right\":312,\"bottom\":692,\"viewportWidth\":320,\"viewportHeight\":700}"
     },
     {
       "title": "nested client submits",
@@ -174,7 +174,7 @@
     {
       "title": "ownership transfer dialog fits mobile viewport",
       "status": "pass",
-      "detail": "{\"left\":0,\"top\":104,\"right\":390,\"bottom\":741,\"viewportWidth\":390,\"viewportHeight\":844}"
+      "detail": "{\"left\":0,\"top\":42,\"right\":390,\"bottom\":802,\"viewportWidth\":390,\"viewportHeight\":844}"
     },
     {
       "title": "cancellation dialog opens",

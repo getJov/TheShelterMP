@@ -55,7 +55,7 @@ export function ScheduleTable({
         <span className="eyebrow break-words leading-relaxed text-gold-deep dark:text-gold">
           Amortization · {schedule.length} months
         </span>
-        <span className="flex min-w-0 flex-wrap items-center gap-1.5 text-[11.5px] text-muted">
+        <span className="flex min-w-0 flex-wrap items-center gap-1.5 text-caption text-muted">
           <span>No downpayment, no interest</span>
           <AssumedChip why={ASSUMPTIONS.downpayment.why} />
           <AssumedChip why={ASSUMPTIONS.interest.why} />
@@ -73,19 +73,19 @@ export function ScheduleTable({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[12.5px] font-medium text-ink">
+                    <p className="text-body font-medium text-ink">
                       Installment{' '}
-                      <span className="font-mono text-[11.5px] text-muted">
+                      <span className="font-mono text-caption text-muted">
                         {String(i.installmentNo).padStart(2, '0')}
                       </span>
                     </p>
-                    <p className="mt-0.5 tabular text-[12px] text-muted">
+                    <p className="mt-0.5 tabular text-caption text-muted">
                       Due {fmtDate(i.dueDate)}
                     </p>
                   </div>
                   <span
                     className={cn(
-                      'shrink-0 text-right text-[12px] font-medium',
+                      'shrink-0 text-right text-caption font-medium',
                       STATUS_TONE[i.status],
                     )}
                   >
@@ -95,10 +95,10 @@ export function ScheduleTable({
 
                 <dl className="mt-2 grid grid-cols-2 gap-3 border-t border-line-soft pt-2">
                   <div className="min-w-0">
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.06em] text-muted">
+                    <dt className="text-micro font-semibold uppercase tracking-[0.06em] text-muted">
                       Amount due
                     </dt>
-                    <dd className="m-0 mt-0.5 text-[12.5px] text-ink">
+                    <dd className="m-0 mt-0.5 text-body text-ink">
                       <MoneyText
                         centavos={i.amountDueCentavos}
                         className="whitespace-nowrap"
@@ -106,10 +106,10 @@ export function ScheduleTable({
                     </dd>
                   </div>
                   <div className="min-w-0 text-right">
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.06em] text-muted">
+                    <dt className="text-micro font-semibold uppercase tracking-[0.06em] text-muted">
                       Paid
                     </dt>
-                    <dd className="m-0 mt-0.5 text-[12.5px] text-ink">
+                    <dd className="m-0 mt-0.5 text-body text-ink">
                       <MoneyText
                         centavos={i.amountPaidCentavos}
                         muted={i.amountPaidCentavos === 0}
@@ -123,7 +123,7 @@ export function ScheduleTable({
           })}
         </ul>
 
-        <table className="hidden w-full text-[12.5px] md:table">
+        <table className="hidden w-full text-body md:table">
           <caption className="sr-only">Amortization schedule</caption>
           <thead className="sticky top-0 z-10 bg-surface-2">
             <tr className="eyebrow text-gold-deep dark:text-gold">
@@ -145,7 +145,7 @@ export function ScheduleTable({
                     lit && 'bg-gold/10',
                   )}
                 >
-                  <td className="px-3.5 py-1.5 font-mono text-[11.5px] text-muted">
+                  <td className="px-3.5 py-2 font-mono text-caption text-muted">
                     {String(i.installmentNo).padStart(2, '0')}
                   </td>
                   <td className="px-3.5 py-1.5 tabular text-ink">{fmtDate(i.dueDate)}</td>
@@ -173,7 +173,7 @@ export function ScheduleTable({
         </table>
       </ScrollArea>
 
-      <dl className="grid gap-1 border-t border-line bg-surface-2 px-3.5 py-2 text-[12px] sm:hidden">
+      <dl className="grid gap-1 border-t border-line bg-surface-2 px-3.5 py-2 text-caption sm:hidden">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
           <dt className="text-muted">Schedule total</dt>
           <dd className="m-0 text-right">
@@ -191,7 +191,7 @@ export function ScheduleTable({
         </div>
       </dl>
 
-      <div className="hidden items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[12px] sm:flex">
+      <div className="hidden items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-caption sm:flex">
         <span className="text-muted">Schedule total</span>
         <span className="flex gap-4">
           <span className="text-muted">

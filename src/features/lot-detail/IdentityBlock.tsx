@@ -67,7 +67,7 @@ function PriceColumn({
       <div className="min-w-0">
         <Caption>{label}</Caption>
         <div className="mt-0.5 h-[18px]" aria-hidden />
-        <p className="text-[13px] text-muted">Contact for pricing</p>
+        <p className="text-body text-muted">Contact for pricing</p>
       </div>
     )
   }
@@ -82,9 +82,9 @@ function PriceColumn({
           <>
             <MoneyText
               centavos={resolved.listEntry!.amountCentavos}
-              className="text-[12px] text-muted line-through"
+              className="text-caption text-muted line-through"
             />
-            <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-[9.5px] font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
+            <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-micro font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
               Promo
             </span>
           </>
@@ -94,7 +94,7 @@ function PriceColumn({
         centavos={resolved.amountCentavos}
         className={cn(
           'mt-0.5 block font-display font-semibold leading-none text-ink',
-          resolved.isPromo ? 'text-[25px] text-green' : 'text-[25px]',
+          resolved.isPromo ? 'text-page-title text-green' : 'text-page-title',
         )}
       />
     </div>
@@ -109,7 +109,7 @@ function AvailableIdentity({ model }: { model: LotModel }) {
 
   return (
     <Panel tone={promo ? 'gold' : 'plain'} className="px-4 py-3.5">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <PriceColumn label={NEED_TYPE_LABEL.pre_need} resolved={model.preNeed} />
         <PriceColumn label={NEED_TYPE_LABEL.at_need} resolved={model.atNeed} />
       </div>
@@ -136,7 +136,7 @@ function HeldIdentity({ model }: { model: LotModel }) {
   if (!hold) {
     return (
       <Panel>
-        <p className="text-[13px] text-muted">
+        <p className="text-body text-muted">
           This lot is marked held but the hold record is no longer on file.
         </p>
       </Panel>
@@ -160,10 +160,10 @@ function HeldIdentity({ model }: { model: LotModel }) {
     <div className="space-y-2.5">
       <Panel>
         <Caption>Held for</Caption>
-        <p className="mt-0.5 font-display text-[20px] font-semibold leading-tight text-ink">
+        <p className="mt-0.5 font-display text-section-title font-semibold leading-tight text-ink">
           {model.holdFor}
         </p>
-        <div className="mt-2 space-y-0.5 text-[12.5px] text-muted">
+        <div className="mt-2 space-y-0.5 text-body text-muted">
           <p>
             Requested by{' '}
             <span className="text-ink">{model.holdRequester?.fullName ?? 'staff'}</span> on{' '}
@@ -191,16 +191,16 @@ function HeldIdentity({ model }: { model: LotModel }) {
         <Panel tone="gold" className="py-2.5">
           <div className="flex items-center gap-2.5">
             <Icon icon={IconClock} size={16} className="text-gold-deep dark:text-gold" />
-            <span className="min-w-0 flex-1 text-[12.5px] text-ink">
+            <span className="min-w-0 flex-1 text-body text-ink">
               Awaiting approval
             </span>
             {canApprove && (
               <span className="flex shrink-0 gap-1.5">
-                <Button size="xs" onClick={() => decide('approved')}>
+                <Button size="sm" onClick={() => decide('approved')}>
                   Approve
                 </Button>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="ghost"
                   className="text-danger hover:text-danger"
                   onClick={() => decide('rejected')}
@@ -225,7 +225,7 @@ function OwnerCard({ model }: { model: LotModel }) {
   if (!client) {
     return (
       <Panel>
-        <p className="text-[13px] text-muted">
+        <p className="text-body text-muted">
           No client record is attached to this lot's contract.
         </p>
       </Panel>
@@ -240,19 +240,19 @@ function OwnerCard({ model }: { model: LotModel }) {
         </span>
         <div className="min-w-0 flex-1">
           <Caption>Owner</Caption>
-          <p className="mt-0.5 truncate font-display text-[20px] font-semibold leading-tight text-ink">
+          <p className="mt-0.5 break-words font-display text-section-title font-semibold leading-tight text-ink">
             {clientFullName(client)}
           </p>
-          <p className="mt-1 truncate text-[12px] text-muted">
+          <p className="mt-1 break-words text-caption text-muted">
             <span className="font-mono">{client.clientRef}</span> · {client.city},{' '}
             {client.province}
           </p>
-          <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted">
+          <p className="mt-0.5 flex items-center gap-1.5 text-caption text-muted">
             <Icon icon={IconPhone} size={13} />
             <span className="tabular">{maskPhone(client.phone)}</span>
           </p>
           {model.coOwner && (
-            <p className="mt-1.5 border-t border-line-soft pt-1.5 text-[12px] text-muted">
+            <p className="mt-1.5 border-t border-line-soft pt-1.5 text-caption text-muted">
               Co-owner <span className="text-ink">{clientFullName(model.coOwner)}</span>
             </p>
           )}
@@ -262,14 +262,16 @@ function OwnerCard({ model }: { model: LotModel }) {
       {canTransfer && model.contract && (
         <>
           <Separator className="my-2.5" />
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => setTransferOpen(true)}
-            className="flex items-center gap-1.5 text-[12px] font-medium text-gold-deep hover:underline dark:text-gold"
+            className="gap-1.5 px-0 text-control font-medium text-gold-deep hover:underline dark:text-gold"
           >
             <Icon icon={IconTransfer} size={14} />
             Transfer ownership
-          </button>
+          </Button>
           <TransferOwnershipDialog
             contract={model.contract}
             open={transferOpen}
@@ -296,10 +298,10 @@ function OccupiedIdentity({ model }: { model: LotModel }) {
             <li key={i.id} className="flex items-start gap-2.5">
               <Icon icon={IconInterment} size={15} className="mt-1 shrink-0 text-muted" />
               <span className="min-w-0">
-                <span className="block truncate font-display text-[16px] font-semibold text-ink">
+                <span className="block break-words font-display text-small-title font-semibold text-ink">
                   {deceasedFullName(i)}
                 </span>
-                <span className="block text-[11.5px] text-muted">
+                <span className="block text-caption text-muted">
                   {i.dateOfBirth ? fmtDate(i.dateOfBirth) : '—'} – {fmtDate(i.dateOfDeath)}
                   {' · '}
                   {INTERMENT_TYPE_LABEL[i.type]} · interred {fmtDate(i.scheduledDate)}
@@ -308,7 +310,7 @@ function OccupiedIdentity({ model }: { model: LotModel }) {
             </li>
           ))}
           {model.interments.length === 0 && (
-            <li className="text-[12.5px] text-muted">
+            <li className="text-body text-muted">
               No interment record is on file for this lot.
             </li>
           )}
@@ -323,7 +325,7 @@ function NotForSaleIdentity({ model }: { model: LotModel }) {
   return (
     <Panel className="flex items-start gap-2.5">
       <Icon icon={IconUnavailable} size={17} className="mt-0.5 shrink-0 text-muted" />
-      <p className="text-[13px] leading-relaxed text-muted">
+      <p className="text-body leading-relaxed text-muted">
         {model.lot.notForSaleReason ??
           'This lot is not for sale. No reason was recorded.'}
       </p>

@@ -69,11 +69,11 @@ export function DayView({
               />
             ) : (
               <div className="flex h-full min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius-card)] border border-dashed border-line bg-surface p-6 text-center">
-                <span className="flex items-center gap-1.5 text-[12.5px] text-muted">
+                <span className="text-body flex items-center gap-1.5 text-muted">
                   <SlotIcon slot={slot} />
                   {SLOT_LABEL[slot]} slot open
                 </span>
-                <p className="max-w-[30ch] text-[12.5px] text-muted">
+                <p className="text-body max-w-[30ch] text-muted">
                   Nothing booked for this half of the day.
                 </p>
                 {canSchedule && (
@@ -113,18 +113,18 @@ function SlotCard({
     <div className="h-full rounded-[var(--radius-card)] border border-line bg-surface">
       <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-[12px] text-muted">
+          <p className="text-caption flex items-center gap-1.5 text-muted">
             <SlotIcon slot={i.slot} size={13} />
             {SLOT_LABEL[i.slot]}
           </p>
           <button
             type="button"
             onClick={onOpen}
-            className="mt-0.5 truncate text-left font-display text-[21px] font-semibold leading-tight text-ink hover:text-gold-deep dark:hover:text-gold"
+            className="text-section-title mt-0.5 min-h-10 text-left font-display font-semibold leading-tight text-ink hover:text-gold-deep dark:hover:text-gold"
           >
             {deceasedFullName(i)}
           </button>
-          <p className="mt-0.5 text-[12px] text-muted">
+          <p className="text-caption mt-0.5 text-muted">
             {i.dateOfBirth ? `${fmtDate(i.dateOfBirth)} — ` : 'Died '}
             {fmtDate(i.dateOfDeath)}
           </p>
@@ -139,14 +139,14 @@ function SlotCard({
         <div className="flex gap-3">
           {lot && <LotThumb lot={lot} size={78} />}
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-mono text-[13.5px] font-medium text-ink">
+            <p className="text-body font-mono font-medium text-ink">
               {lot ? lotCodeFor(lot) : '—'}
             </p>
-            <p className="text-[12px] text-muted">{lot ? tierName(lot) : '—'}</p>
+            <p className="text-caption text-muted">{lot ? tierName(lot) : '—'}</p>
             {owner && (
               <>
-                <p className="truncate text-[12.5px] text-ink">{clientFullName(owner)}</p>
-                <p className="flex items-center gap-1.5 text-[12px] text-muted">
+                <p className="text-body break-words text-ink">{clientFullName(owner)}</p>
+                <p className="text-caption flex items-center gap-1.5 text-muted">
                   <Icon icon={IconPhone} size={12} />
                   {owner.phone}
                 </p>
@@ -177,7 +177,7 @@ function SlotCard({
               <JobChecklist job={job} editable={canManageJobs} columns={2} />
             </div>
           ) : (
-            <p className="rounded-lg border border-dashed border-line px-3 py-2.5 text-[12px] text-muted">
+            <p className="text-caption rounded-lg border border-dashed border-line px-3 py-2.5 text-muted">
               Raised once the request is approved.
             </p>
           )}

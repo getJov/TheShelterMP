@@ -43,7 +43,6 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconDelete,
-  IconInfo,
   IconStar,
 } from '@/components/ui-brand/icons'
 import { useDataset, indexes } from '@/stores/dataset'
@@ -206,6 +205,8 @@ export function ContractBuilder({
     (paymentMode === 'spot_cash' || termMonths > 0) &&
     (discountCentavos === 0 || discountReason.trim().length > 2)
   const canAdvance = step === 0 ? step1Ok : step === 1 ? step2Ok : true
+  const discountReasonInvalid =
+    discountCentavos > 0 && discountReason.trim().length <= 2
 
   function submit() {
     if (!user || !lotId || !buyer || !resolved?.entry) return
@@ -250,10 +251,9 @@ export function ContractBuilder({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[calc(100dvh-1rem)] max-w-[calc(100%-1rem)] flex-col gap-3 overflow-hidden p-4 sm:max-h-[92vh] sm:max-w-[880px] sm:gap-4 sm:p-6">
         <DialogHeader className="shrink-0 pr-8 text-left">
-          <DialogTitle className="font-display text-[22px]">New contract</DialogTitle>
+          <DialogTitle className="font-display text-section-title">New contract</DialogTitle>
           <DialogDescription>
-            Price is snapshotted at signing — a later price change never restates this
-            contract.
+            Price is fixed at signing. Future price changes do not alter this contract.
           </DialogDescription>
         </DialogHeader>
 
@@ -272,30 +272,42 @@ export function ContractBuilder({
               {step === 0 && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label htmlFor="cb-lot" className="text-[12.5px] text-muted">
+                    <Label htmlFor="cb-lot" className="text-caption text-muted">
                       Lot
                     </Label>
-                    <LotCombobox id="cb-lot" value={lotId} onChange={setLotId} />
-                    {lot && (
-                      <p className="text-[11.5px] text-muted">
-                        {tierName} · {lot.areaSqm.toFixed(1)} sqm · capacity {lot.capacity}
-                      </p>
-                    )}
+                    <LotCombobox
+                      id="cb-lot"
+                      value={lotId}
+                      onChange={setLotId}
+                      required
+                      describedBy="cb-lot-help"
+                    />
+                    <p id="cb-lot-help" className="text-caption text-muted">
+                      {lot
+                        ? `${tierName} · ${lot.areaSqm.toFixed(1)} sqm · capacity ${lot.capacity}`
+                        : 'Select an available or held lot.'}
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="cb-agent" className="text-[12.5px] text-muted">
+                    <Label htmlFor="cb-agent" className="text-caption text-muted">
                       Selling agent
                     </Label>
-                    <AgentCombobox id="cb-agent" value={agentId} onChange={setAgentId} />
-                    <p className="text-[11.5px] text-muted">
+                    <AgentCombobox
+                      id="cb-agent"
+                      value={agentId}
+                      onChange={setAgentId}
+                      required
+                      describedBy="cb-agent-help"
+                    />
+                    <p id="cb-agent-help" className="text-caption text-muted">
                       Archived agents are excluded — attribution is preserved on their
                       existing contracts.
                     </p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="cb-buyer" className="text-[12.5px] text-muted">
+                    <Label htmlFor="cb-buyer" className="text-caption text-muted">
                       Buyer
                     </Label>
                     <ClientCombobox
@@ -303,12 +315,17 @@ export function ContractBuilder({
                       value={buyer}
                       onChange={setBuyer}
                       placeholder="Search the client book"
+                      required
+                      describedBy="cb-buyer-help"
                     />
+                    <p id="cb-buyer-help" className="text-caption text-muted">
+                      Select the person signing this contract.
+                    </p>
                     {buyerClient?.seniorCitizen && <SeniorHint />}
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="cb-coowner" className="text-[12.5px] text-muted">
+                    <Label htmlFor="cb-coowner" className="text-caption text-muted">
                       Co-owner <span className="text-muted/70">(optional)</span>
                     </Label>
                     <ClientCombobox
@@ -325,8 +342,11 @@ export function ContractBuilder({
                 <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[12.5px] text-muted">Need type</Label>
+                      <Label id="cb-need-label" className="text-caption text-muted">
+                        Need type
+                      </Label>
                       <RadioGroup
+                        aria-labelledby="cb-need-label"
                         value={needType}
                         onValueChange={(v) => setNeedType(v as NeedType)}
                         className="grid gap-2 sm:grid-cols-2"
@@ -348,8 +368,11 @@ export function ContractBuilder({
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label className="text-[12.5px] text-muted">Payment mode</Label>
+                      <Label id="cb-payment-mode-label" className="text-caption text-muted">
+                        Payment mode
+                      </Label>
                       <RadioGroup
+                        aria-labelledby="cb-payment-mode-label"
                         value={paymentMode}
                         onValueChange={(v) => setPaymentMode(v as PaymentMode)}
                         className="grid gap-2 sm:grid-cols-2"
@@ -368,18 +391,12 @@ export function ContractBuilder({
                           />
                         ))}
                       </RadioGroup>
-                      {needType === 'at_need' && (
-                        <p className="flex items-start gap-1.5 text-[11.5px] text-muted">
-                          <Icon icon={IconInfo} size={13} className="mt-0.5 shrink-0" />
-                          At-need is spot cash only, so installment is not offered.
-                        </p>
-                      )}
                     </div>
 
                     <div className="grid gap-3 sm:grid-cols-2">
                       {paymentMode === 'installment' && (
                         <div className="space-y-1.5">
-                          <Label htmlFor="cb-term" className="text-[12.5px] text-muted">
+                          <Label htmlFor="cb-term" className="text-caption text-muted">
                             Term
                           </Label>
                           <Select
@@ -401,7 +418,7 @@ export function ContractBuilder({
                       )}
 
                       <div className="space-y-1.5">
-                        <Label htmlFor="cb-signed" className="text-[12.5px] text-muted">
+                        <Label htmlFor="cb-signed" className="text-caption text-muted">
                           Signed on
                         </Label>
                         <DateField
@@ -414,9 +431,13 @@ export function ContractBuilder({
                       </div>
                     </div>
 
-                    <div className="rounded-[var(--radius-card)] border border-line p-3">
+                    <div
+                      role="group"
+                      aria-labelledby="cb-discount-label"
+                      className="rounded-[var(--radius-card)] border border-line p-3"
+                    >
                       <div className="flex items-center justify-between gap-3">
-                        <Label className="text-[12.5px] text-muted">
+                        <Label id="cb-discount-label" className="text-caption text-muted">
                           Discount <span className="text-muted/70">(optional)</span>
                         </Label>
                         <div className="flex gap-1">
@@ -424,10 +445,15 @@ export function ContractBuilder({
                             <Button
                               key={m}
                               type="button"
-                              size="xs"
-                              className="min-h-9 min-w-9"
+                              size="sm"
                               variant={discountMode === m ? 'secondary' : 'ghost'}
                               onClick={() => setDiscountMode(m)}
+                              aria-pressed={discountMode === m}
+                              aria-label={
+                                m === 'amount'
+                                  ? 'Use a peso discount amount'
+                                  : 'Use a percentage discount'
+                              }
                             >
                               {m === 'amount' ? '₱' : '%'}
                             </Button>
@@ -435,25 +461,50 @@ export function ContractBuilder({
                         </div>
                       </div>
                       <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                        <Input
-                          value={discountInput}
-                          onChange={(e) => setDiscountInput(e.target.value)}
-                          placeholder={discountMode === 'amount' ? '5,000' : '5'}
-                          inputMode="decimal"
-                        />
-                        <Input
-                          value={discountReason}
-                          onChange={(e) => setDiscountReason(e.target.value)}
-                          placeholder="Reason (required)"
-                          aria-invalid={discountCentavos > 0 && discountReason.trim().length <= 2}
-                        />
+                        <div className="space-y-1.5">
+                          <Label htmlFor="cb-discount-value" className="text-caption text-muted">
+                            {discountMode === 'amount'
+                              ? 'Discount amount'
+                              : 'Discount percentage'}
+                          </Label>
+                          <Input
+                            id="cb-discount-value"
+                            value={discountInput}
+                            onChange={(e) => setDiscountInput(e.target.value)}
+                            placeholder={discountMode === 'amount' ? '5,000' : '5'}
+                            inputMode="decimal"
+                            aria-describedby="cb-discount-help"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="cb-discount-reason" className="text-caption text-muted">
+                            Discount reason
+                          </Label>
+                          <Input
+                            id="cb-discount-reason"
+                            value={discountReason}
+                            onChange={(e) => setDiscountReason(e.target.value)}
+                            placeholder="Reason required for a discount"
+                            required={discountCentavos > 0}
+                            aria-invalid={discountReasonInvalid}
+                            aria-describedby="cb-discount-help"
+                          />
+                        </div>
                       </div>
-                      {discountCentavos > 0 && (
-                        <p className="mt-2 text-[11.5px] text-muted">
-                          −{formatPeso(discountCentavos)} · any discount routes the
-                          contract to a manager for approval.
-                        </p>
-                      )}
+                      <p
+                        id="cb-discount-help"
+                        className={cn(
+                          'mt-2 text-caption',
+                          discountReasonInvalid ? 'text-danger' : 'text-muted',
+                        )}
+                        role={discountReasonInvalid ? 'alert' : undefined}
+                      >
+                        {discountReasonInvalid
+                          ? 'Enter at least three characters for the discount reason.'
+                          : discountCentavos > 0
+                            ? `−${formatPeso(discountCentavos)} · any discount routes the contract to a manager for approval.`
+                            : 'Any discount requires a reason and manager approval.'}
+                      </p>
                     </div>
                   </div>
 
@@ -467,7 +518,7 @@ export function ContractBuilder({
                         asOf={signedAt}
                       />
                     ) : (
-                      <p className="text-[13px] text-muted">Select a lot to see pricing.</p>
+                      <p className="text-body text-muted">Select a lot to see pricing.</p>
                     )}
 
                     <div className="rounded-[var(--radius-card)] border border-line bg-surface p-3.5">
@@ -486,7 +537,7 @@ export function ContractBuilder({
                         </FieldRow>
                       </div>
                       {paymentMode === 'installment' && contractPrice > 0 && (
-                        <p className="mt-1.5 text-[11.5px] text-muted">
+                        <p className="mt-1.5 text-caption text-muted">
                           ≈ {formatPeso(Math.floor(contractPrice / termMonths))} × {termMonths}{' '}
                           months
                         </p>
@@ -540,7 +591,7 @@ export function ContractBuilder({
                         <FieldRow label="Contract price">
                           <MoneyText
                             centavos={contractPrice}
-                            className="font-display text-[19px] font-semibold"
+                            className="font-display text-small-title font-semibold"
                           />
                         </FieldRow>
                       </div>
@@ -553,7 +604,7 @@ export function ContractBuilder({
                     {paymentMode === 'installment' ? (
                       <ScheduleTable schedule={schedulePreview} maxHeight={230} />
                     ) : (
-                      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-3.5 text-[12.5px] text-muted">
+                      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-3.5 text-body text-muted">
                         <p className="eyebrow mb-1.5 text-gold-deep dark:text-gold">
                           Spot cash
                         </p>
@@ -624,6 +675,7 @@ function Stepper({ step, onStep }: { step: number; onStep: (n: number) => void }
               type="button"
               onClick={() => onStep(i)}
               disabled={i >= step}
+              aria-current={active ? 'step' : undefined}
               className={cn(
                 'flex min-h-11 w-full min-w-0 items-center gap-2 rounded-md border px-2.5 py-1.5 text-left transition-colors sm:min-h-0 sm:flex-1',
                 active
@@ -635,7 +687,7 @@ function Stepper({ step, onStep }: { step: number; onStep: (n: number) => void }
             >
               <span
                 className={cn(
-                  'grid size-5 shrink-0 place-items-center rounded-full font-mono text-[10px]',
+                  'grid size-6 shrink-0 place-items-center rounded-full font-mono text-micro',
                   active || done
                     ? 'bg-ink text-surface'
                     : 'border border-line text-muted',
@@ -645,7 +697,7 @@ function Stepper({ step, onStep }: { step: number; onStep: (n: number) => void }
               </span>
               <span
                 className={cn(
-                  'min-w-0 text-[12px] leading-tight sm:truncate sm:text-[12.5px]',
+                  'min-w-0 whitespace-normal break-words text-caption leading-tight sm:truncate',
                   active ? 'font-medium text-ink' : 'text-muted',
                 )}
               >
@@ -670,25 +722,29 @@ function OptionCard({
   label: string
   hint: string
 }) {
+  const optionId = `contract-option-${value}`
+
   return (
-    <label
+    <div
       className={cn(
         'flex min-h-11 cursor-pointer items-start gap-2.5 rounded-md border px-3 py-2.5 transition-colors',
         checked ? 'border-gold bg-gold/8' : 'border-line hover:bg-surface-2',
       )}
     >
-      <RadioGroupItem value={value} className="mt-0.5" />
-      <span className="min-w-0">
-        <span className="block text-[13px] font-medium text-ink">{label}</span>
-        <span className="block text-[11.5px] leading-snug text-muted">{hint}</span>
-      </span>
-    </label>
+      <RadioGroupItem id={optionId} value={value} className="mt-0.5" />
+      <Label htmlFor={optionId} className="min-w-0 flex-1 cursor-pointer items-start font-normal">
+        <span>
+        <span className="block text-body font-medium text-ink">{label}</span>
+        <span className="block text-caption text-muted">{hint}</span>
+        </span>
+      </Label>
+    </div>
   )
 }
 
 function SeniorHint() {
   return (
-    <p className="flex items-start gap-1.5 text-[11.5px] leading-snug text-muted">
+    <p className="flex items-start gap-1.5 text-caption text-muted">
       <Icon icon={IconStar} size={13} className="mt-0.5 shrink-0 text-gold-deep dark:text-gold" />
       <span>
         Buyer is a registered senior citizen.
@@ -732,7 +788,7 @@ function ServiceStep({
     <div className="space-y-3">
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-0 basis-full flex-1 space-y-1.5 sm:basis-auto">
-          <Label htmlFor="cb-service" className="text-[12.5px] text-muted">
+          <Label htmlFor="cb-service" className="text-caption text-muted">
             Add a service
           </Label>
           <Select value={pick} onValueChange={add}>
@@ -745,7 +801,7 @@ function ServiceStep({
                 .map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     {s.name}
-                    <span className="ml-2 tabular text-[11px] text-muted">
+                    <span className="ml-2 tabular text-caption text-muted">
                       {formatPeso(s.defaultAmountCentavos)}
                     </span>
                   </SelectItem>
@@ -753,28 +809,31 @@ function ServiceStep({
             </SelectContent>
           </Select>
         </div>
-        <p className="flex items-center gap-1.5 pb-2 text-[11.5px] text-muted">
-          Catalog amounts are placeholders
+        <p className="flex flex-wrap items-center gap-1.5 pb-2 text-caption text-muted">
+          Service amounts are assumed
           <AssumedChip why={ASSUMPTIONS.serviceFees.why} />
         </p>
       </div>
 
       {lines.length === 0 ? (
-        <div className="rounded-[var(--radius-card)] border border-dashed border-line px-4 py-8 text-center text-[13px] text-muted">
+        <div className="rounded-[var(--radius-card)] border border-dashed border-line px-4 py-8 text-center text-body text-muted">
           <Icon icon={IconAdd} size={18} className="mx-auto mb-2 opacity-60" />
-          No services on this contract yet. The lot price alone is fine.
+          No services added. The lot price is enough to continue.
         </div>
       ) : (
         <div className="rounded-[var(--radius-card)] border border-line bg-surface">
           <ul className="divide-y divide-line-soft">
             {lines.map((l, i) => (
               <li key={l.key} className="flex min-w-0 flex-wrap items-center gap-3 px-3.5 py-2.5">
-                <span className="min-w-0 basis-full break-words text-[13px] text-ink sm:min-w-[180px] sm:flex-1 sm:basis-auto">
+                <span className="min-w-0 basis-full break-words text-body text-ink sm:min-w-[180px] sm:flex-1 sm:basis-auto">
                   {l.description}
                 </span>
                 <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:flex-none">
-                  <Label className="text-[11.5px] text-muted">Qty</Label>
+                  <Label htmlFor={`service-quantity-${l.key}`} className="text-caption text-muted">
+                    Qty
+                  </Label>
                   <Input
+                    id={`service-quantity-${l.key}`}
                     type="number"
                     min={1}
                     value={l.quantity}
@@ -786,8 +845,11 @@ function ServiceStep({
                   />
                 </div>
                 <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:flex-none">
-                  <Label className="text-[11.5px] text-muted">Amount</Label>
+                  <Label htmlFor={`service-amount-${l.key}`} className="text-caption text-muted">
+                    Amount
+                  </Label>
                   <Input
+                    id={`service-amount-${l.key}`}
                     value={formatPeso(l.unitAmountCentavos).replace('₱', '')}
                     onChange={(e) => {
                       const parsed = parsePeso(e.target.value)
@@ -805,7 +867,7 @@ function ServiceStep({
                 </div>
                 <MoneyText
                   centavos={l.unitAmountCentavos * l.quantity}
-                  className="ml-auto whitespace-nowrap text-right text-[13px] sm:w-24"
+                  className="ml-auto whitespace-nowrap text-right text-body sm:w-24"
                 />
                 <Button
                   variant="ghost"
@@ -819,7 +881,7 @@ function ServiceStep({
               </li>
             ))}
           </ul>
-          <div className="flex items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[12.5px]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2 px-3.5 py-2 text-caption">
             <span className="text-muted">Services subtotal</span>
             <MoneyText centavos={servicesTotal} className="font-medium text-ink" />
           </div>

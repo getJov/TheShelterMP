@@ -119,7 +119,7 @@ export function CommandPalette() {
                 >
                   <Icon icon={IconLot} size={16} />
                   <span className="font-mono">{code}</span>
-                  <span className="ml-auto text-[11.5px] text-muted">
+                  <span className="ml-auto text-caption text-muted">
                     {data.tiers.find((t) => t.id === lot.tierId)?.name}
                   </span>
                 </CommandItem>
@@ -140,7 +140,7 @@ export function CommandPalette() {
                 >
                   <Icon icon={IconUser} size={16} />
                   {clientFullName(c)}
-                  <span className="ml-auto font-mono text-[11px] text-muted">{c.clientRef}</span>
+                  <span className="ml-auto font-mono text-caption text-muted">{c.clientRef}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -164,7 +164,7 @@ export function CommandPalette() {
               >
                 <Icon icon={IconUser} size={16} />
                 {u.fullName}
-                <span className="ml-auto text-[11.5px] text-muted">{ROLE_LABEL[u.role]}</span>
+                <span className="ml-auto text-caption text-muted">{ROLE_LABEL[u.role]}</span>
               </CommandItem>
             ))}
         </CommandGroup>

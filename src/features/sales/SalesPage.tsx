@@ -87,7 +87,7 @@ export default function SalesPage() {
             <p className="eyebrow text-gold-deep dark:text-gold">
               {isAgent ? 'My book' : 'Transactions'}
             </p>
-            <h1 className="font-display text-[28px] font-semibold leading-tight text-ink md:text-[30px]">
+            <h1 className="font-display text-page-title font-semibold leading-tight text-ink">
               {isAgent ? 'My Sales' : 'Sales & Payments'}
             </h1>
           </div>

@@ -42,11 +42,10 @@ export function PriceBookTab({ asOf }: { asOf: ISODate }) {
         />
 
         {asOf !== TODAY && (
-          <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-[12.5px] leading-relaxed text-muted">
+          <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-caption leading-relaxed text-muted">
             <Icon icon={IconInfo} size={15} className="mt-0.5 shrink-0" />
             <span>
-              Every figure below is resolved for <b>{fmtDate(asOf)}</b>, not today.
-              No data changed — only the date the resolver was asked about.
+              Showing prices for <b>{fmtDate(asOf)}</b>.
             </span>
           </p>
         )}
@@ -62,12 +61,6 @@ export function PriceBookTab({ asOf }: { asOf: ISODate }) {
             setSetPriceOpen(true)
           }}
         />
-
-        <p className="text-[12px] leading-relaxed text-muted">
-          At-need installment is deliberately absent: at-need is spot cash only.
-          Pre-need spot cash and installment carry the same amount — the
-          discount sits on the promo, not on the payment mode.
-        </p>
       </div>
 
       <PriceCalculator asOf={asOf} />

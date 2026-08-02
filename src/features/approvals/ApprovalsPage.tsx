@@ -152,14 +152,14 @@ export default function ApprovalsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1180px] space-y-4 p-6">
+      <div className="mx-auto max-w-[1180px] space-y-4 p-4 sm:p-6">
         <SectionHeading
           eyebrow={fmtDateLong(TODAY)}
           title="Approvals"
           size="lg"
           action={
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1 text-[12.5px] text-muted">
-              <span className="font-display text-[17px] font-semibold tabular text-ink">
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1 text-caption text-muted">
+              <span className="font-display text-small-title font-semibold tabular text-ink">
                 {total}
               </span>
               pending
@@ -167,15 +167,9 @@ export default function ApprovalsPage() {
           }
         />
 
-        <p className="max-w-[76ch] text-[13px] leading-relaxed text-muted">
-          Only what you can decide, at your location, oldest first. Everything here is
-          decidable without leaving the page — approving calls the same action the
-          feature screen would.
-        </p>
-
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
-            <TabsList>
+          <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="min-w-0">
+            <TabsList className="h-auto flex-wrap justify-start">
               <TabsTrigger value="all">
                 All
                 <Count n={counts.all} />
@@ -192,7 +186,7 @@ export default function ApprovalsPage() {
 
           {tab !== 'decided' && total > 0 && (
             <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
-              <SelectTrigger size="sm" className="w-[168px]">
+              <SelectTrigger size="sm" className="w-full sm:w-[168px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -230,11 +224,11 @@ export default function ApprovalsPage() {
                   transition={{ duration: 0.24, ease: EASE }}
                   className="flex flex-wrap items-center gap-3 rounded-[var(--radius-card)] border border-gold/50 bg-gold/8 px-3.5 py-2.5"
                 >
-                  <span className="text-[13px] text-ink">
+                  <span className="text-caption text-ink">
                     {selectedHolds.length} hold
                     {selectedHolds.length === 1 ? '' : 's'} selected
                   </span>
-                  <span className="text-[12px] text-muted">
+                  <span className="text-caption text-muted">
                     Bulk approval is for holds only — contracts, payouts and interments
                     carry money or a grave.
                   </span>
@@ -303,7 +297,7 @@ export default function ApprovalsPage() {
 function Count({ n }: { n: number }) {
   if (!n) return null
   return (
-    <span className="ml-1.5 grid min-w-[17px] place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-[17px] text-black">
+    <span className="ml-1.5 grid min-w-[17px] place-items-center rounded-full bg-gold px-1 text-micro font-bold leading-[17px] text-black">
       {n}
     </span>
   )
@@ -319,11 +313,11 @@ function AllClear() {
       className="flex flex-col items-center justify-center rounded-[var(--radius-card)] border border-line bg-surface px-6 py-20 text-center"
     >
       <LogoMark size={44} className="text-gold-deep dark:text-gold" />
-      <p className="mt-5 font-display text-[26px] font-semibold text-ink">
+      <p className="mt-5 font-display text-page-title font-semibold text-ink">
         Nothing waiting on you
       </p>
-      <p className="mt-1.5 text-[13.5px] text-muted">{fmtDateLong(TODAY)}</p>
-      <p className="mt-4 max-w-[44ch] text-[13px] leading-relaxed text-muted">
+      <p className="mt-1.5 text-caption text-muted">{fmtDateLong(TODAY)}</p>
+      <p className="mt-4 max-w-[44ch] text-caption leading-relaxed text-muted">
         Every hold, contract, interment and payout at your location has been decided.
         New requests land here the moment they are raised.
       </p>
@@ -342,7 +336,7 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
         return (
           <span
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.06em]',
+              'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-micro font-medium uppercase tracking-[0.06em]',
               meta.tone,
             )}
           >
@@ -357,8 +351,8 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
       header: 'What',
       cell: (r) => (
         <div className="min-w-0">
-          <p className="truncate font-mono text-[12.5px] text-ink">{taskHeadline(r)}</p>
-          <p className="truncate text-[11.5px] text-muted">{r.summary}</p>
+          <p className="break-words font-mono text-caption text-ink">{taskHeadline(r)}</p>
+          <p className="break-words text-caption text-muted">{r.summary}</p>
         </div>
       ),
       sortBy: (r) => r.title,
@@ -370,7 +364,7 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
       cell: (r) => (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 text-[12.5px] font-medium',
+            'inline-flex items-center gap-1.5 text-caption font-medium',
             r.status === 'approved' ? 'text-green' : 'text-danger',
           )}
         >
@@ -385,7 +379,7 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
       header: 'Decided by',
       width: '180px',
       cell: (r) => (
-        <span className="text-[12.5px] text-ink">{userName(r.decidedByUserId)}</span>
+        <span className="text-caption text-ink">{userName(r.decidedByUserId)}</span>
       ),
       sortBy: (r) => userName(r.decidedByUserId),
     },
@@ -394,7 +388,7 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
       header: 'When',
       width: '170px',
       cell: (r) => (
-        <span className="text-[12px] text-muted" title={fmtDateTime(r.decidedAt ?? r.updatedAt)}>
+        <span className="text-caption text-muted" title={fmtDateTime(r.decidedAt ?? r.updatedAt)}>
           {fmtRelative(r.decidedAt ?? r.updatedAt, NOW)}
         </span>
       ),
@@ -426,7 +420,7 @@ function DecidedTable({ rows }: { rows: ApprovalTask[] }) {
             .filter((r) => r.decisionNote)
             .slice(0, 6)
             .map((r) => (
-              <li key={`${r.id}-note`} className="text-[12px] leading-relaxed text-muted">
+              <li key={`${r.id}-note`} className="text-caption leading-relaxed text-muted">
                 <span className="font-mono text-ink">{taskHeadline(r)}</span> —{' '}
                 {r.decisionNote}
               </li>

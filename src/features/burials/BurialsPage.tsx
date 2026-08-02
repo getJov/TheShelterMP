@@ -7,7 +7,6 @@ import {
   useParams,
 } from 'react-router-dom'
 import {
-  MAX_BURIALS_PER_DAY,
   type BurialSlot,
   type Interment,
   type IntermentId,
@@ -20,11 +19,9 @@ import { EmptyState } from '@/components/ui-brand/EmptyState'
 import { SectionHeading } from '@/components/ui-brand/SectionHeading'
 import { Icon } from '@/components/ui-brand/Icon'
 import { IconBurials, IconLocation, IconWarning } from '@/components/ui-brand/icons'
-import { fmtDate } from '@/lib/dates'
 import { useActiveLocation, useCan } from '@/lib/permissions'
 import { dataset, useDataset } from '@/stores/dataset'
 import { lateUnassignedJobs, upcomingInterments } from '@/stores/burials'
-import { FIRST_INTERMENT } from '@/mock'
 import { CalendarTab } from './CalendarTab'
 import { IntermentsTab } from './IntermentsTab'
 import { GroundsJobsTab } from './GroundsJobsTab'
@@ -115,7 +112,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1360px] space-y-4 p-5">
+      <div className="mx-auto max-w-[1360px] space-y-4 p-3 sm:p-5">
         <SectionHeading
           eyebrow={park.name}
           title="Burials & Grounds"
@@ -135,12 +132,6 @@ function BurialsShell({ tab }: { tab: Tab }) {
           }
         />
 
-        <p className="max-w-[78ch] text-[13px] leading-relaxed text-muted">
-          A day holds {MAX_BURIALS_PER_DAY} services — one morning, one afternoon —
-          and that ceiling is enforced, not advised. The park's first interment was{' '}
-          {fmtDate(FIRST_INTERMENT)}.
-        </p>
-
         <Tabs value={tab} onValueChange={(v) => navigate(TAB_PATH[v as Tab])}>
           <TabsList>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
@@ -148,7 +139,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
             <TabsTrigger value="jobs">
               Grounds Jobs
               {stats && stats.flagged > 0 && (
-                <span className="ml-1.5 grid min-w-[16px] place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-4 text-black">
+                <span className="text-micro ml-1.5 grid min-w-6 place-items-center rounded-full bg-gold px-1 font-bold leading-5 text-black">
                   {stats.flagged}
                 </span>
               )}
@@ -184,7 +175,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
         )}
 
         {!stats?.upcoming && tab === 'calendar' && (
-          <p className="flex items-center gap-2 text-[12.5px] text-muted">
+          <p className="text-caption flex items-center gap-2 text-muted">
             <Icon icon={IconBurials} size={14} />
             Nothing is booked in the next 30 days.
           </p>

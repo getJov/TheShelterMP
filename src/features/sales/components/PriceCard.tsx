@@ -47,7 +47,7 @@ export function PriceCard({
       </p>
 
       {missing ? (
-        <div className="mt-3 flex items-start gap-2 text-[13px] text-muted">
+        <div className="mt-3 flex items-start gap-2 text-body text-muted">
           <Icon icon={IconWarning} size={16} className="mt-0.5 shrink-0 text-danger" />
           <span className="min-w-0 break-words">
             <span className="font-medium text-ink">Contact for pricing.</span> No
@@ -61,27 +61,27 @@ export function PriceCard({
             {resolved.isPromo && resolved.listEntry?.amountCentavos != null && (
               <>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
-                  <dt className="min-w-0 break-words text-[12.5px] text-muted">
+                  <dt className="min-w-0 break-words text-caption text-muted">
                     List price
                   </dt>
                   <dd className="m-0 text-right">
                     <MoneyText
                       centavos={resolved.listEntry.amountCentavos}
-                      className="whitespace-nowrap text-[13px] text-muted line-through"
+                      className="whitespace-nowrap text-body text-muted line-through"
                     />
                   </dd>
                 </div>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-                  <dt className="flex min-w-0 flex-wrap items-center gap-1.5 text-[12.5px] text-muted">
+                  <dt className="flex min-w-0 flex-wrap items-center gap-1.5 text-caption text-muted">
                     {resolved.label}
-                    <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
+                    <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-micro font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
                       Promo
                     </span>
                   </dt>
                   <dd className="m-0 text-right">
                     <MoneyText
                       centavos={-resolved.savingCentavos}
-                      className="whitespace-nowrap text-[13px] text-green"
+                      className="whitespace-nowrap text-body text-green"
                     />
                   </dd>
                 </div>
@@ -89,19 +89,19 @@ export function PriceCard({
             )}
 
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 border-t border-line pt-2.5">
-              <dt className="min-w-0 break-words text-[12.5px] font-medium text-ink">
+              <dt className="min-w-0 break-words text-caption font-medium text-ink">
                 Lot price
               </dt>
               <dd className="m-0 min-w-0 text-right">
                 <MoneyText
                   centavos={resolved.amountCentavos}
-                  className="whitespace-nowrap font-display text-[clamp(19px,7vw,24px)] font-semibold leading-none text-ink"
+                  className="whitespace-nowrap font-display text-section-title font-semibold leading-none text-ink"
                 />
               </dd>
             </div>
           </dl>
 
-          <p className="mt-2.5 break-words text-[11.5px] leading-snug text-muted">
+          <p className="mt-2.5 break-words text-caption leading-snug text-muted">
             Priced from{' '}
             <span className="text-ink">“{resolved.entry?.label ?? 'unlabelled entry'}”</span>
             , effective {fmtDate(resolved.entry?.effectiveFrom)}
@@ -109,12 +109,12 @@ export function PriceCard({
               ? ` until ${fmtDate(resolved.entry.effectiveTo)}`
               : ''}
             .{' '}
-            <span className="break-all font-mono text-[10.5px]">
+            <span className="break-all font-mono text-micro">
               {resolved.entry?.id}
             </span>
           </p>
           {resolved.entry?.note && (
-            <p className="mt-1 break-words text-[11.5px] leading-snug text-muted">
+            <p className="mt-1 break-words text-caption leading-snug text-muted">
               {resolved.entry.note}
             </p>
           )}

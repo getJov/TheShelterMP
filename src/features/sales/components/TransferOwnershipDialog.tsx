@@ -43,11 +43,13 @@ export function TransferOwnershipDialog({
   const requestTransfer = useSales((s) => s.requestTransfer)
   const [to, setTo] = useState<ClientId | null>(null)
   const [reason, setReason] = useState('')
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
     setTo(null)
     setReason('')
+    setSubmitError(null)
   }, [open])
 
   function submit() {
@@ -57,6 +59,7 @@ export function TransferOwnershipDialog({
       user,
     )
     if ('error' in result) {
+      setSubmitError(result.error)
       toast.error(result.error)
       return
     }
@@ -70,7 +73,7 @@ export function TransferOwnershipDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-dvh w-full max-w-none flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[520px] sm:rounded-lg">
         <DialogHeader className="shrink-0 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 text-left sm:px-6 sm:pt-6 sm:pr-12">
-          <DialogTitle className="font-display text-[22px]">
+          <DialogTitle className="font-display text-section-title">
             Change of ownership
           </DialogTitle>
           <DialogDescription>
@@ -85,7 +88,7 @@ export function TransferOwnershipDialog({
             <div className="flex flex-col items-stretch gap-3 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3 sm:flex-row sm:items-center">
               <div className="min-w-0 flex-1">
                 <p className="eyebrow text-muted">Current owner</p>
-                <p className="break-words text-[13.5px] text-ink sm:truncate">
+                <p className="whitespace-normal break-words text-body text-ink">
                   {clientNameOf(contract.clientId)}
                 </p>
               </div>
@@ -96,48 +99,71 @@ export function TransferOwnershipDialog({
               />
               <div className="min-w-0 flex-1">
                 <p className="eyebrow text-muted">New owner</p>
-                <p className="break-words text-[13.5px] text-ink sm:truncate">
+                <p className="whitespace-normal break-words text-body text-ink">
                   {to ? clientNameOf(to) : '—'}
                 </p>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="tr-to" className="text-[12.5px] text-muted">
+              <Label htmlFor="tr-to" className="text-caption text-muted">
                 Transfer to
               </Label>
               <ClientCombobox
                 id="tr-to"
                 value={to}
-                onChange={setTo}
+                onChange={(id) => {
+                  setTo(id)
+                  setSubmitError(null)
+                }}
                 exclude={contract.clientId}
+                required
+                describedBy="tr-to-help"
               />
+              <p id="tr-to-help" className="text-caption text-muted">
+                Select the person who will become the recorded owner after approval.
+              </p>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="tr-reason" className="text-[12.5px] text-muted">
+              <Label htmlFor="tr-reason" className="text-caption text-muted">
                 Reason (required)
               </Label>
               <Textarea
                 id="tr-reason"
                 rows={2}
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(e) => {
+                  setReason(e.target.value)
+                  setSubmitError(null)
+                }}
                 placeholder="Owner deceased — transferring to the eldest child."
+                required
+                aria-invalid={reason.length > 0 && reason.trim().length < 4}
+                aria-describedby="tr-reason-help"
               />
+              <p id="tr-reason-help" className="text-caption text-muted">
+                Enter at least four characters for the approval record.
+              </p>
             </div>
 
             <div className="flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-line px-3.5 py-2.5">
-              <span className="flex items-center gap-1.5 text-[12.5px] text-muted">
+              <span className="flex flex-wrap items-center gap-1.5 text-caption text-muted">
                 Transfer fee
                 <AssumedChip why={ASSUMPTIONS.ownershipTransferFee.why} />
               </span>
               <MoneyText
                 centavos={OWNERSHIP_TRANSFER_FEE}
-                className="text-[14px] font-medium text-ink"
+                className="text-body font-medium text-ink"
               />
             </div>
           </div>
+        )}
+
+        {submitError && (
+          <p role="alert" className="mx-4 rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger sm:mx-6">
+            {submitError}
+          </p>
         )}
 
         <DialogFooter className="shrink-0 border-t border-line px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-6">

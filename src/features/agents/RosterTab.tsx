@@ -141,7 +141,7 @@ export function RosterTab() {
       header: 'Location',
       sortBy: (r) => r.agent.locationId,
       cell: (r) => (
-        <span className="text-[12.5px] text-muted">
+        <span className="text-caption text-muted">
           {indexes().locationsById.get(r.agent.locationId)?.name ?? '—'}
         </span>
       ),
@@ -152,7 +152,7 @@ export function RosterTab() {
       align: 'right',
       sortBy: (r) => r.agent.hiredAt,
       cell: (r) => (
-        <span className="text-[12.5px] text-muted">{fmtDate(r.agent.hiredAt)}</span>
+        <span className="text-caption text-muted">{fmtDate(r.agent.hiredAt)}</span>
       ),
     },
     {
@@ -210,7 +210,7 @@ export function RosterTab() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
+        <div className="relative min-w-0 flex-[1_1_210px]">
           <Icon
             icon={IconSearch}
             size={15}
@@ -220,12 +220,12 @@ export function RosterTab() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search name or code"
-            className="h-8 w-[210px] pl-8 text-[13px]"
+            className="w-full pl-8 text-caption"
           />
         </div>
 
         <Select value={level} onValueChange={setLevel}>
-          <SelectTrigger size="sm" className="w-[160px]">
+          <SelectTrigger size="sm" className="w-full sm:w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -240,7 +240,7 @@ export function RosterTab() {
 
         {canPickLocation && (
           <Select value={locationId} onValueChange={setLocationId}>
-            <SelectTrigger size="sm" className="w-[170px]">
+            <SelectTrigger size="sm" className="w-full sm:w-[170px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -255,7 +255,7 @@ export function RosterTab() {
         )}
 
         <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
-          <SelectTrigger size="sm" className="w-[140px]">
+          <SelectTrigger size="sm" className="w-full sm:w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -265,7 +265,7 @@ export function RosterTab() {
           </SelectContent>
         </Select>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           <ToggleGroup
             type="single"
             size="sm"
@@ -352,9 +352,9 @@ function UplineCell({ agent }: { agent: AgentProfile }) {
     .filter((a): a is AgentProfile => Boolean(a))
     .map((a) => idx.usersById.get(a.userId)?.fullName ?? a.agentCode)
   if (names.length === 0)
-    return <span className="text-[12.5px] text-muted">Top of tree</span>
+    return <span className="text-caption text-muted">Top of tree</span>
   return (
-    <span className="text-[12.5px] text-muted">
+    <span className="text-caption text-muted">
       {names.map((n, i) => (
         <span key={n}>
           {i > 0 && <span className="px-1 opacity-50">›</span>}

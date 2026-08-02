@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table'
 import { EmptyState } from './EmptyState'
 import { Icon } from './Icon'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export interface Column<T> {
@@ -36,6 +37,7 @@ export function DataTable<T>({
   className,
   dense,
   footer,
+  rowActionLabel,
 }: {
   rows: T[]
   columns: Column<T>[]
@@ -47,6 +49,7 @@ export function DataTable<T>({
   className?: string
   dense?: boolean
   footer?: ReactNode
+  rowActionLabel?: (row: T) => string
 }) {
   const [sort, setSort] = useState(initialSort ?? null)
 
@@ -102,7 +105,7 @@ export function DataTable<T>({
                     : undefined
                 }
                 className={cn(
-                  'eyebrow h-auto bg-surface-2 text-gold-deep dark:text-gold',
+                  'h-auto bg-surface-2 text-caption font-semibold text-gold-deep dark:text-gold',
                   c.sortBy ? 'p-0' : pad,
                   !c.sortBy && c.align === 'right' && 'text-right',
                   !c.sortBy && c.align === 'center' && 'text-center',
@@ -124,14 +127,14 @@ export function DataTable<T>({
                     }
                     className={cn(
                       pad,
-                      'inline-flex w-full cursor-pointer select-none items-center gap-1 rounded-sm text-inherit outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                      'inline-flex min-h-10 w-full cursor-pointer select-none items-center gap-1 rounded-sm text-inherit outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
                       c.align === 'right' && 'justify-end text-right',
                       c.align === 'center' && 'justify-center text-center',
                     )}
                   >
                     {c.header}
                     {sort?.key === c.key && (
-                      <span aria-hidden className="text-[9px]">
+                      <span aria-hidden className="text-micro">
                         {sort.dir === 'asc' ? '▲' : '▼'}
                       </span>
                     )}
@@ -141,24 +144,25 @@ export function DataTable<T>({
                 )}
               </TableHead>
             ))}
+            {onRowClick && (
+              <TableHead className={cn(pad, 'h-auto bg-surface-2 text-caption')}>
+                <span className="sr-only">Actions</span>
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {sorted.map((row) => (
             <TableRow
               key={rowKey(row)}
-              onClick={onRowClick ? () => onRowClick(row) : undefined}
-              className={cn(
-                'border-line-soft',
-                onRowClick && 'cursor-pointer hover:bg-surface-2',
-              )}
+              className="border-line-soft"
             >
               {columns.map((c) => (
                 <TableCell
                   key={c.key}
                   className={cn(
                     pad,
-                    'text-[13.5px]',
+                    'text-body',
                     c.align === 'right' && 'text-right tabular',
                     c.align === 'center' && 'text-center',
                     c.className,
@@ -167,17 +171,30 @@ export function DataTable<T>({
                   {c.cell(row)}
                 </TableCell>
               ))}
+              {onRowClick && (
+                <TableCell className={cn(pad, 'text-right')}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    aria-label={rowActionLabel?.(row) ?? 'View details'}
+                    onClick={() => onRowClick(row)}
+                  >
+                    View
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
       </Table>
       {footer && (
-        <div className="border-t border-line bg-surface-2 px-3.5 py-2 text-[12.5px] text-muted">
+        <div className="border-t border-line bg-surface-2 px-3.5 py-2 text-caption text-muted">
           {footer}
         </div>
       )}
       {rows.length === 0 && !empty && (
-        <div className="flex items-center justify-center gap-2 py-8 text-[13px] text-muted">
+        <div className="flex items-center justify-center gap-2 py-8 text-body text-muted">
           {emptyIcon && <Icon icon={emptyIcon} size={15} />} No records
         </div>
       )}

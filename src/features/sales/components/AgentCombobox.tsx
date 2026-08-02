@@ -21,10 +21,16 @@ export function AgentCombobox({
   value,
   onChange,
   id,
+  required = false,
+  describedBy,
+  invalid,
 }: {
   value: string
   onChange: (v: string) => void
   id?: string
+  required?: boolean
+  describedBy?: string
+  invalid?: boolean
 }) {
   const version = useDataset((s) => s.version)
   const agents = useDataset((s) => s.data.agents)
@@ -65,13 +71,16 @@ export function AgentCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-required={required || undefined}
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
           className="w-full justify-between font-normal"
         >
           <span className={cn('flex min-w-0 items-center gap-2', !selected && 'text-muted')}>
             {selected ? (
               <>
-                <span className="truncate text-[13px]">{selected.name}</span>
-                <span className="shrink-0 font-mono text-[11px] text-muted">
+                <span className="whitespace-normal break-words text-body">{selected.name}</span>
+                <span className="shrink-0 font-mono text-caption text-muted">
                   {selected.agent.agentCode}
                 </span>
               </>
@@ -145,8 +154,8 @@ function AgentOption({
         className={cn(selected ? 'text-gold-deep dark:text-gold' : 'text-muted')}
       />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13px] text-ink">{name}</span>
-        <span className="block truncate font-mono text-[11px] text-muted">
+        <span className="block whitespace-normal break-words text-body text-ink">{name}</span>
+        <span className="block whitespace-normal break-words font-mono text-caption text-muted">
           {agent.agentCode} · {levelLabel(agent.level)}
         </span>
       </span>

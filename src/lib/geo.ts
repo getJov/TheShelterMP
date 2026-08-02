@@ -1,5 +1,4 @@
-import L from 'leaflet'
-import type { Bounds, LatLng, Polygon } from '@/domain'
+import type { Bounds, LatLng } from '@/domain'
 
 /**
  * The map's geometry layer.
@@ -23,11 +22,6 @@ export {
 export type { GridCell, GridOptions } from '@/mock/geo'
 
 // ── bounds ───────────────────────────────────────────────────────────
-
-/** Leaflet wants its own bounds object; the domain stores a plain tuple. */
-export function toLatLngBounds(b: Bounds): L.LatLngBounds {
-  return L.latLngBounds(L.latLng(b[0][0], b[0][1]), L.latLng(b[1][0], b[1][1]))
-}
 
 /** Union of several bounds tuples. Returns null when the list is empty. */
 export function boundsUnion(list: Bounds[]): Bounds | null {
@@ -67,34 +61,6 @@ export function boundsCentre(b: Bounds): LatLng {
 }
 
 // ── projection ───────────────────────────────────────────────────────
-
-/**
- * Layer point for a coordinate. Thin wrapper so features never reach into
- * Leaflet's projection API directly.
- */
-export function latLngToLayerPoint(map: L.Map, ll: LatLng): L.Point {
-  return map.latLngToLayerPoint(L.latLng(ll[0], ll[1]))
-}
-
-export function layerPointToLatLng(map: L.Map, p: L.Point): LatLng {
-  const ll = map.layerPointToLatLng(p)
-  return [ll.lat, ll.lng]
-}
-
-/**
- * Absolute CRS pixel coordinates at a given zoom — independent of the map's
- * current pixel origin, which is what makes them safe to cache across pans.
- * Subtract `map.getPixelOrigin()` to get a layer point.
- */
-export function projectPolygon(map: L.Map, poly: Polygon, zoom: number): Float64Array {
-  const out = new Float64Array(poly.length * 2)
-  for (let i = 0; i < poly.length; i++) {
-    const p = map.project(L.latLng(poly[i]![0], poly[i]![1]), zoom)
-    out[i * 2] = p.x
-    out[i * 2 + 1] = p.y
-  }
-  return out
-}
 
 /** Ray-cast hit test against a flat [x0,y0,x1,y1,…] point buffer. */
 export function pointInFlatPolygon(
@@ -139,3 +105,6 @@ export function topLeftVertex(
   }
   return { x: bx, y: by }
 }
+
+/** Project a polygon at a fixed zoom for canvas caching. */
+export { projectPolygon } from '@/features/map/google/projection'

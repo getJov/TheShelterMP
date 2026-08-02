@@ -51,7 +51,7 @@ export function ArchiveAgentDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <ul className="space-y-2 rounded-md border border-line bg-surface-2 p-3.5 text-[13px]">
+        <ul className="space-y-2 rounded-md border border-line bg-surface-2 p-3.5 text-caption">
           <Consequence tone="warn">
             Their login is disabled immediately — they cannot sign in again until
             restored.
@@ -84,10 +84,12 @@ export function ArchiveAgentDialog({
         </ul>
 
         <div>
-          <Label className="mb-1.5 block text-[12px] text-muted">
+          <Label htmlFor="archive-agent-reason" className="mb-1.5 block text-caption text-muted">
             Reason (required)
           </Label>
           <Textarea
+            id="archive-agent-reason"
+            required
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={2}

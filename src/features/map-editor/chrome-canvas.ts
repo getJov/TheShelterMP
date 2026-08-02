@@ -1,16 +1,10 @@
-import L from 'leaflet'
 import type { BlockId, LatLng, Polygon } from '@/domain'
+import {
+  containerPointToLatLng,
+  latLngToContainerPoint,
+} from '@/features/map/google/helpers'
+import { PaneCanvas, type PaneCanvasView } from '@/features/map/google/pane-canvas'
 import { themeColor, withAlpha } from '@/features/map/colors'
-
-/**
- * Editor chrome — block outlines, the grid preview, overlap flags, the
- * rubber band and the shape being drawn.
- *
- * Deliberately NOT a second lot renderer. Real lots are always painted by
- * `LotCanvasLayer` from the map feature; this canvas sits above it and draws
- * only the affordances, in container pixels, so the render path underneath
- * stays exactly as spec 05 built it.
- */
 
 export interface ChromeBlock {
   id: BlockId
@@ -24,19 +18,12 @@ export interface ChromeState {
   dark: boolean
   showBlocks: boolean
   blocks: ChromeBlock[]
-  /** Cells the grid tool would create, drawn at 45%. */
   preview: Polygon[]
-  /** Lots flagged as overlapping. */
   overlaps: Polygon[]
-  /** Rectangle the block tool is dragging out, or the confirmed pending one. */
   pending: Polygon | null
-  /** Free-hand lot in progress. */
   drawing: { points: LatLng[]; cursor: LatLng | null } | null
-  /** Rubber band, in container pixels. */
   band: { x0: number; y0: number; x1: number; y1: number; subtract: boolean } | null
-  /** Lasso path, in container pixels. */
   lasso: [number, number][] | null
-  /** Floating measurement following the cursor. */
   readout: { x: number; y: number; lines: string[] } | null
 }
 
@@ -55,30 +42,54 @@ export const emptyChrome = (dark = false): ChromeState => ({
   readout: null,
 })
 
+/**
+ * Two coordinate spaces, two surfaces:
+ *
+ * - World-anchored chrome (block outlines/labels, grid preview, overlap
+ *   warnings, pending block, draw-in-progress) renders on a PaneCanvas so it
+ *   rides Google's pane transforms — in sync during pans and the zoom
+ *   animation, exactly like the lot canvas.
+ * - Screen-anchored chrome (rubber band, lasso, cursor readout) stays on the
+ *   fixed viewport canvas the surface owns; it only moves with the pointer.
+ */
 export class ChromeCanvas {
-  private map: L.Map
-  private canvas: HTMLCanvasElement
-  private ctx: CanvasRenderingContext2D | null
+  private map: google.maps.Map
+  private screen: HTMLCanvasElement
+  private screenCtx: CanvasRenderingContext2D | null
+  private world: PaneCanvas
   private state: ChromeState
   private frame: number | null = null
+  private listeners: google.maps.MapsEventListener[] = []
 
-  constructor(map: L.Map, canvas: HTMLCanvasElement) {
+  constructor(map: google.maps.Map, canvas: HTMLCanvasElement) {
     this.map = map
-    this.canvas = canvas
-    this.ctx = canvas.getContext('2d')
+    this.screen = canvas
+    this.screenCtx = canvas.getContext('2d')
     this.state = emptyChrome()
+    this.world = new PaneCanvas({
+      pane: 'floatPane',
+      className: 'shelter-editor-chrome-canvas',
+      maxDpr: MAX_DPR,
+      render: (ctx, view) => this.drawWorld(ctx, view),
+    })
+    this.world.setMap(map)
     this.onView = this.onView.bind(this)
-    map.on('move zoom viewreset resize moveend zoomend', this.onView)
+    this.listeners = [
+      map.addListener('bounds_changed', this.onView),
+      map.addListener('zoom_changed', this.onView),
+    ]
     this.schedule()
   }
 
   destroy() {
-    this.map.off('move zoom viewreset resize moveend zoomend', this.onView)
+    for (const l of this.listeners) l.remove()
     if (this.frame !== null) cancelAnimationFrame(this.frame)
+    this.world.setMap(null)
   }
 
   set(state: ChromeState) {
     this.state = state
+    this.world.redraw()
     this.schedule()
   }
 
@@ -86,45 +97,32 @@ export class ChromeCanvas {
     this.schedule()
   }
 
+  /** Screen-layer repaint, rAF-coalesced. The world layer coalesces itself. */
   private schedule() {
     if (this.frame !== null) return
     this.frame = requestAnimationFrame(() => {
       this.frame = null
-      this.draw()
+      this.drawScreen()
     })
   }
 
-  private pt(ll: LatLng): L.Point {
-    return this.map.latLngToContainerPoint(L.latLng(ll[0], ll[1]))
-  }
-
-  private path(ctx: CanvasRenderingContext2D, poly: Polygon) {
+  private worldPath(
+    ctx: CanvasRenderingContext2D,
+    view: PaneCanvasView,
+    poly: Polygon,
+  ) {
     if (poly.length === 0) return
-    const first = this.pt(poly[0]!)
+    const first = view.project(poly[0]!)
     ctx.moveTo(first.x, first.y)
     for (let i = 1; i < poly.length; i++) {
-      const p = this.pt(poly[i]!)
+      const p = view.project(poly[i]!)
       ctx.lineTo(p.x, p.y)
     }
     ctx.closePath()
   }
 
-  private draw() {
-    const ctx = this.ctx
-    if (!ctx) return
-    const size = this.map.getSize()
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
-    if (
-      this.canvas.width !== Math.round(size.x * dpr) ||
-      this.canvas.height !== Math.round(size.y * dpr)
-    ) {
-      this.canvas.width = Math.round(size.x * dpr)
-      this.canvas.height = Math.round(size.y * dpr)
-      this.canvas.style.width = `${size.x}px`
-      this.canvas.style.height = `${size.y}px`
-    }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    ctx.clearRect(0, 0, size.x, size.y)
+  private drawWorld(ctx: CanvasRenderingContext2D, view: PaneCanvasView) {
+    ctx.clearRect(0, 0, view.width, view.height)
 
     const s = this.state
     const gold = themeColor('--color-gold')
@@ -132,11 +130,10 @@ export class ChromeCanvas {
     const danger = themeColor('--color-danger')
     const paper = themeColor('--color-surface')
 
-    // ── grid preview ─────────────────────────────────────────────
     if (s.preview.length > 0) {
       ctx.globalAlpha = 0.45
       ctx.beginPath()
-      for (const poly of s.preview) this.path(ctx, poly)
+      for (const poly of s.preview) this.worldPath(ctx, view, poly)
       ctx.fillStyle = gold
       ctx.fill()
       ctx.strokeStyle = withAlpha(ink, 0.55)
@@ -145,10 +142,9 @@ export class ChromeCanvas {
       ctx.globalAlpha = 1
     }
 
-    // ── overlaps ─────────────────────────────────────────────────
     if (s.overlaps.length > 0) {
       ctx.beginPath()
-      for (const poly of s.overlaps) this.path(ctx, poly)
+      for (const poly of s.overlaps) this.worldPath(ctx, view, poly)
       ctx.fillStyle = withAlpha(danger, 0.35)
       ctx.fill()
       ctx.strokeStyle = danger
@@ -156,12 +152,11 @@ export class ChromeCanvas {
       ctx.stroke()
     }
 
-    // ── block outlines ───────────────────────────────────────────
     if (s.showBlocks) {
       for (const b of s.blocks) {
         ctx.save()
         ctx.beginPath()
-        this.path(ctx, b.polygon)
+        this.worldPath(ctx, view, b.polygon)
         ctx.setLineDash(b.target ? [1, 3] : b.active ? [2, 3] : [6, 5])
         ctx.lineWidth = b.target ? 3 : b.active ? 2.5 : 2
         ctx.strokeStyle = b.active || b.target ? gold : withAlpha(ink, s.dark ? 0.55 : 0.45)
@@ -171,15 +166,21 @@ export class ChromeCanvas {
           ctx.fill()
         }
         ctx.restore()
-        this.label(ctx, b.polygon, b.code, b.active || b.target ? gold : withAlpha(ink, 0.7), paper)
+        this.label(
+          ctx,
+          view,
+          b.polygon,
+          b.code,
+          b.active || b.target ? gold : withAlpha(ink, 0.7),
+          paper,
+        )
       }
     }
 
-    // ── pending block being drawn or reshaped ────────────────────
     if (s.pending) {
       ctx.save()
       ctx.beginPath()
-      this.path(ctx, s.pending)
+      this.worldPath(ctx, view, s.pending)
       ctx.fillStyle = withAlpha(gold, 0.16)
       ctx.fill()
       ctx.setLineDash([5, 4])
@@ -189,10 +190,9 @@ export class ChromeCanvas {
       ctx.restore()
     }
 
-    // ── free-hand lot ────────────────────────────────────────────
     if (s.drawing) {
-      const pts = s.drawing.points.map((p) => this.pt(p))
-      if (s.drawing.cursor) pts.push(this.pt(s.drawing.cursor))
+      const pts = s.drawing.points.map((p) => view.project(p))
+      if (s.drawing.cursor) pts.push(view.project(s.drawing.cursor))
       if (pts.length > 0) {
         ctx.save()
         ctx.beginPath()
@@ -208,7 +208,7 @@ export class ChromeCanvas {
         ctx.strokeStyle = gold
         ctx.stroke()
         ctx.restore()
-        for (const p of s.drawing.points.map((x) => this.pt(x))) {
+        for (const p of s.drawing.points.map((x) => view.project(x))) {
           ctx.beginPath()
           ctx.arc(p.x, p.y, 3.2, 0, Math.PI * 2)
           ctx.fillStyle = paper
@@ -219,8 +219,32 @@ export class ChromeCanvas {
         }
       }
     }
+  }
 
-    // ── rubber band ──────────────────────────────────────────────
+  private drawScreen() {
+    const ctx = this.screenCtx
+    if (!ctx) return
+    const div = this.map.getDiv()
+    const size = { x: div.offsetWidth, y: div.offsetHeight }
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
+    if (
+      this.screen.width !== Math.round(size.x * dpr) ||
+      this.screen.height !== Math.round(size.y * dpr)
+    ) {
+      this.screen.width = Math.round(size.x * dpr)
+      this.screen.height = Math.round(size.y * dpr)
+      this.screen.style.width = `${size.x}px`
+      this.screen.style.height = `${size.y}px`
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.clearRect(0, 0, size.x, size.y)
+
+    const s = this.state
+    const gold = themeColor('--color-gold')
+    const ink = themeColor('--color-ink')
+    const danger = themeColor('--color-danger')
+    const paper = themeColor('--color-surface')
+
     if (s.band) {
       const x = Math.min(s.band.x0, s.band.x1)
       const y = Math.min(s.band.y0, s.band.y1)
@@ -236,7 +260,6 @@ export class ChromeCanvas {
       ctx.restore()
     }
 
-    // ── lasso ────────────────────────────────────────────────────
     if (s.lasso && s.lasso.length > 1) {
       ctx.save()
       ctx.beginPath()
@@ -252,7 +275,6 @@ export class ChromeCanvas {
       ctx.restore()
     }
 
-    // ── readout following the cursor ─────────────────────────────
     if (s.readout && s.readout.lines.length > 0) {
       const pad = 7
       ctx.font = '600 11.5px var(--font-mono, monospace)'
@@ -275,9 +297,9 @@ export class ChromeCanvas {
     }
   }
 
-  /** Block code stamped at the polygon's centre, on a soft plate. */
   private label(
     ctx: CanvasRenderingContext2D,
+    view: PaneCanvasView,
     poly: Polygon,
     text: string,
     color: string,
@@ -286,7 +308,7 @@ export class ChromeCanvas {
     let sx = 0
     let sy = 0
     for (const p of poly) {
-      const q = this.pt(p)
+      const q = view.project(p)
       sx += q.x
       sy += q.y
     }
@@ -322,3 +344,5 @@ function roundRect(
   ctx.arcTo(x, y, x + w, y, r)
   ctx.closePath()
 }
+
+export { containerPointToLatLng, latLngToContainerPoint }

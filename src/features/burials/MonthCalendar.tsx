@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { DayProps } from 'react-day-picker'
 import {
   blockingRequirements,
+  INTERMENT_STATUS_LABEL,
   MAX_BURIALS_PER_DAY,
   type BurialSlot,
   type Interment,
@@ -79,7 +80,12 @@ export function MonthCalendar({
 
   return (
     <MonthContext.Provider value={ctx}>
-      <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+      <div
+        className="overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface"
+        role="region"
+        aria-label="Month burial calendar"
+        tabIndex={0}
+      >
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
             key={month}
@@ -98,7 +104,7 @@ export function MonthCalendar({
               }
               weekStartsOn={1}
               showOutsideDays
-              className="w-full bg-transparent p-0"
+              className="min-w-[700px] bg-transparent p-0"
               classNames={{
                 root: 'w-full',
                 months: 'w-full',
@@ -138,7 +144,11 @@ function MonthDay({ day, modifiers, className, ...tdProps }: DayProps) {
   const idx = Math.max(0, Math.min(41, diffDays(date, ctx.gridStart)))
 
   return (
-    <td {...tdProps} className={cn('p-0 align-top', className)}>
+    <td
+      {...tdProps}
+      aria-current={isToday ? 'date' : undefined}
+      className={cn('p-0 align-top', className)}
+    >
       <motion.div
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
@@ -154,18 +164,19 @@ function MonthDay({ day, modifiers, className, ...tdProps }: DayProps) {
         <div className="flex items-center justify-between gap-1">
           <span
             className={cn(
-              'tabular font-display text-[15px] leading-none',
+              'text-small-title tabular font-display leading-none',
               outside || isPast ? 'text-muted' : 'text-ink',
               isToday && 'font-semibold text-gold-deep dark:text-gold',
             )}
           >
             {day.date.getDate()}
+            {isToday && <span className="sr-only">, today</span>}
           </span>
           <SlotDots morning={!!morning} afternoon={!!afternoon} />
         </div>
 
         {full && (
-          <span className="eyebrow text-[9.5px] leading-none text-gold-deep dark:text-gold">
+          <span className="text-micro font-semibold leading-none text-gold-deep dark:text-gold">
             Full
           </span>
         )}
@@ -180,12 +191,13 @@ function MonthDay({ day, modifiers, className, ...tdProps }: DayProps) {
                   type="button"
                   onClick={() => ctx.onOpenInterment(i)}
                   title={`${slotLabelShort[slot]} · ${surname(i)}`}
+                  aria-label={`${slot === 'morning' ? 'Morning' : 'Afternoon'}: ${surname(i)}, ${i.status}`}
                   className={cn(
-                    'truncate rounded px-1.5 py-[3px] text-left text-[11.5px] leading-tight transition-opacity hover:opacity-80',
+                    'text-micro min-h-6 rounded px-1.5 py-1 text-left leading-tight transition-opacity hover:opacity-80',
                     INTERMENT_STATUS_STYLE[i.status].entry,
                   )}
                 >
-                  <span className="font-mono text-[10px] font-medium">
+                  <span className="text-micro font-mono font-medium">
                     {slotLabelShort[slot]}
                   </span>{' '}
                   {surname(i)}
@@ -195,6 +207,7 @@ function MonthDay({ day, modifiers, className, ...tdProps }: DayProps) {
                       className="ml-1 inline-block size-1.5 rounded-full bg-danger align-middle"
                     />
                   )}
+                  <span className="text-micro"> · {INTERMENT_STATUS_LABEL[i.status]}</span>
                 </button>
               )
             }
@@ -204,7 +217,8 @@ function MonthDay({ day, modifiers, className, ...tdProps }: DayProps) {
                 key={slot}
                 type="button"
                 onClick={() => ctx.onOpenSlot(date, slot)}
-                className="truncate rounded border border-dashed border-line px-1.5 py-[3px] text-left text-[11px] leading-tight text-muted opacity-0 transition-opacity hover:border-gold hover:text-gold-deep focus-visible:opacity-100 group-hover/cell:opacity-100 dark:hover:text-gold"
+                aria-label={`Schedule ${slot} burial on ${date}`}
+                className="text-micro min-h-6 rounded border border-dashed border-line px-1.5 py-1 text-left leading-tight text-muted transition-colors hover:border-gold hover:text-gold-deep dark:hover:text-gold"
               >
                 + {slotLabelShort[slot]}
               </button>

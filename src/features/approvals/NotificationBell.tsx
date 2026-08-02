@@ -169,7 +169,7 @@ export function NotificationBell() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-8 w-8 text-muted hover:text-ink"
+            className="relative text-muted hover:text-ink"
             aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}
           >
             <Icon icon={IconBell} size={17} />
@@ -179,7 +179,7 @@ export function NotificationBell() {
                 initial={grew ? { scale: 0.5 } : false}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 520, damping: 18 }}
-                className="absolute -right-0.5 -top-0.5 grid min-w-[15px] place-items-center rounded-full bg-danger px-1 text-[9.5px] font-bold leading-[15px] text-white"
+                className="absolute -right-0.5 -top-0.5 grid min-w-5 place-items-center rounded-full bg-danger px-1 text-micro font-bold leading-5 text-white"
               >
                 {unread}
               </motion.span>
@@ -187,19 +187,22 @@ export function NotificationBell() {
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent align="end" className="w-[380px] p-0">
+        <PopoverContent align="end" className="w-[min(380px,calc(100vw-16px))] p-0">
           <div className="flex items-center justify-between border-b border-line px-3.5 py-2.5">
-            <span className="text-[13px] font-medium text-ink">
+            <span className="text-small-title font-medium text-ink">
               Notifications
               {unread > 0 && <span className="ml-1.5 text-muted">{unread} unread</span>}
             </span>
             {unread > 0 && (
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => markAllRead(user.id)}
-                className="text-[11.5px] text-gold-deep hover:underline dark:text-gold"
+                className="text-control text-gold-deep hover:underline dark:text-gold"
               >
                 Mark all read
-              </button>
+              </Button>
             )}
           </div>
 
@@ -231,24 +234,24 @@ export function NotificationBell() {
                             <button
                               type="button"
                               onClick={() => openRow(n)}
-                              className="flex w-full gap-2.5 px-3.5 pt-2.5 pb-2 text-left transition-colors hover:bg-surface-2"
+                              className="flex min-h-11 w-full gap-2.5 px-3.5 pt-2.5 pb-2 text-left transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
                             >
                               <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border border-line bg-surface text-muted">
                                 <Icon icon={KIND_ICON[n.kind]} size={13} />
                               </span>
                               <span className="min-w-0 flex-1">
                                 <span className="flex items-start gap-2">
-                                  <span className="block flex-1 text-[12.5px] font-medium text-ink">
+                                  <span className="block flex-1 text-body font-medium text-ink">
                                     {n.title}
                                   </span>
                                   {!n.readAt && (
                                     <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
                                   )}
                                 </span>
-                                <span className="mt-0.5 block text-[11.5px] leading-snug text-muted">
+                                <span className="mt-0.5 block text-caption leading-snug text-muted">
                                   {n.body}
                                 </span>
-                                <span className="mt-1 block text-[10.5px] text-muted">
+                                <span className="mt-1 block text-micro text-muted">
                                   {fmtRelative(n.createdAt, NOW)}
                                 </span>
                               </span>
@@ -259,7 +262,7 @@ export function NotificationBell() {
                               <div className="flex items-center gap-1.5 pb-2.5 pl-[46px] pr-3.5">
                                 <Button
                                   size="sm"
-                                  className="h-7 gap-1 px-2.5 text-[11.5px]"
+                                  className="gap-1 px-2.5 text-control"
                                   onClick={() => {
                                     markRead(n.id)
                                     announce(decide(task, 'approved', user))
@@ -271,7 +274,7 @@ export function NotificationBell() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-7 gap-1 border-line px-2.5 text-[11.5px] text-muted hover:border-danger/50 hover:text-danger"
+                                  className="gap-1 border-line px-2.5 text-control text-muted hover:border-danger/50 hover:text-danger"
                                   onClick={() => {
                                     markRead(n.id)
                                     setOpen(false)
@@ -294,15 +297,18 @@ export function NotificationBell() {
           )}
 
           <div className="border-t border-line px-3.5 py-2">
-            <button
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setOpen(false)
                 navigate('/approvals')
               }}
-              className="text-[11.5px] text-gold-deep hover:underline dark:text-gold"
+              className="text-control text-gold-deep hover:underline dark:text-gold"
             >
               Open the approvals queue
-            </button>
+            </Button>
           </div>
         </PopoverContent>
       </Popover>
@@ -326,8 +332,8 @@ function CaughtUp() {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
       <LogoMark size={30} className="text-gold-deep dark:text-gold" />
-      <p className="mt-3.5 font-display text-[18px] text-ink">You&rsquo;re all caught up</p>
-      <p className="mt-1 text-[12.5px] leading-relaxed text-muted">
+      <p className="mt-3.5 font-display text-section-title text-ink">You&rsquo;re all caught up</p>
+      <p className="mt-1 text-body leading-relaxed text-muted">
         Nothing needs your attention. New requests arrive here the moment
         somebody raises one.
       </p>

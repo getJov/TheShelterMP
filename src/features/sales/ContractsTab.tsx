@@ -263,6 +263,7 @@ export function ContractsTab({
           columns={columns}
           rowKey={(row) => row.contract.id}
           onRowClick={(row) => onOpen(row.contract.id)}
+          rowActionLabel={(row) => `Open contract ${row.contract.contractNo} details`}
           emptyIcon={IconContract}
           empty={{
             title: 'No contracts match',

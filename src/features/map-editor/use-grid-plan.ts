@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Block, Tier } from '@/domain'
-import { fitToBlock, planGrid, type GridPlan } from '@/lib/grid-generator'
+import { fitToBlock, limitGridPlan, planGrid, type GridPlan } from '@/lib/grid-generator'
 import { useEditor, type GridParams } from './store'
 import { useTiers } from './helpers'
 
@@ -38,7 +38,7 @@ export function useGridPlan(): PlanResult | null {
     const rows = Math.max(0, Math.round(debounced.rows))
     const cols = Math.max(0, Math.round(debounced.cols))
     if (rows === 0 || cols === 0) return null
-    const plan = planGrid({
+    const rawPlan = planGrid({
       rows,
       cols,
       cellWidthM: tier.widthM,
@@ -50,6 +50,7 @@ export function useGridPlan(): PlanResult | null {
       startNumber: Math.max(1, Math.round(debounced.startNumber)),
       boundary: block.polygon,
     })
+    const plan = limitGridPlan(rawPlan, debounced.exactCount, tier.widthM * tier.lengthM)
     return { block, tier, plan, params: debounced }
   }, [blocks, activeBlockId, debounced, byId])
 }

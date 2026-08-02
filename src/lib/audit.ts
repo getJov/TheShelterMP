@@ -265,9 +265,14 @@ function describeAction(e: AuditEvent, ctx: Dataset): string {
       const tier = tierNameOf(ctx, pick(a, 'tierId', 'tier')) ?? words(pick(a, 'tier'))
       return tier ? `Moved ${lot} to the ${tier} tier` : `Changed the tier on ${lot}`
     }
-    case 'block.created':
+    case 'block.created': {
+      const summary = str(a.summary)
+      if (summary) return summary
       return `Created block ${str(pick(a, 'code', 'name')) ?? e.entityId}`
+    }
     case 'overlay.published': {
+      const summary = str(a.summary)
+      if (summary) return summary
       const name = str(pick(a, 'name', 'label'))
       return name ? `Published the map overlay “${name}”` : 'Published a map overlay'
     }

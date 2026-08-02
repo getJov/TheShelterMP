@@ -64,6 +64,7 @@ export function PostPaymentDialog({
   const [paidAt, setPaidAt] = useState(TODAY)
   const [orNo, setOrNo] = useState('')
   const [busy, setBusy] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -73,6 +74,7 @@ export function PostPaymentDialog({
     setPaidAt(TODAY)
     setOrNo(nextOrNo())
     setBusy(false)
+    setSubmitError(null)
   }, [open])
 
   const balance = useMemo(() => {
@@ -123,6 +125,7 @@ export function PostPaymentDialog({
     setBusy(false)
 
     if ('error' in result) {
+      setSubmitError(result.error)
       toast.error(result.error)
       return
     }
@@ -143,7 +146,7 @@ export function PostPaymentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-1rem)] !w-[calc(100%-1rem)] !max-w-[680px] grid-rows-[auto_minmax(0,1fr)_auto] !gap-0 !overflow-hidden !p-0 sm:max-h-[calc(100dvh-2rem)] [&>[data-slot=dialog-close]]:right-2 [&>[data-slot=dialog-close]]:top-2 [&>[data-slot=dialog-close]]:grid [&>[data-slot=dialog-close]]:size-11 [&>[data-slot=dialog-close]]:place-items-center">
         <DialogHeader className="shrink-0 px-4 pb-3 pt-4 pr-14 text-left sm:px-6 sm:pt-6 sm:pr-16">
-          <DialogTitle className="font-display text-[22px]">Post a payment</DialogTitle>
+          <DialogTitle className="font-display text-section-title">Post a payment</DialogTitle>
           <DialogDescription>
             {contract ? (
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
@@ -170,22 +173,25 @@ export function PostPaymentDialog({
           {contract && balance ? (
             <div className="space-y-4">
               <div className="flex flex-wrap items-baseline justify-between gap-3 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-2.5">
-                <span className="text-[12.5px] text-muted">Current balance</span>
+                <span className="text-caption text-muted">Current balance</span>
                 <MoneyText
                   centavos={balance.outstandingCentavos}
-                  className="whitespace-nowrap font-display text-[24px] font-semibold leading-none text-ink"
+                  className="whitespace-nowrap font-display text-section-title font-semibold leading-none text-ink"
                 />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <div className="min-w-0 space-y-1.5">
-                  <Label htmlFor="pp-amount" className="text-[12.5px] text-muted">
+                  <Label htmlFor="pp-amount" className="text-caption text-muted">
                     Amount
                   </Label>
                   <Input
                     id="pp-amount"
                     value={amountInput}
-                    onChange={(e) => setAmountInput(e.target.value)}
+                    onChange={(e) => {
+                      setAmountInput(e.target.value)
+                      setSubmitError(null)
+                    }}
                     placeholder="0.00"
                     inputMode="decimal"
                     required
@@ -197,10 +203,10 @@ export function PostPaymentDialog({
                   <p
                     id="pp-amount-help"
                     className={cn(
-                      'text-[11.5px]',
+                      'text-caption',
                       amountIsInvalid ? 'text-danger' : 'text-muted',
                     )}
-                    aria-live="polite"
+                    role={amountIsInvalid ? 'alert' : undefined}
                   >
                     {amountIsInvalid
                       ? 'Enter a payment amount greater than zero.'
@@ -213,7 +219,10 @@ export function PostPaymentDialog({
                         size="sm"
                         variant="outline"
                         className="!h-auto min-h-11 w-full !whitespace-normal py-2 text-left leading-tight sm:min-h-8 sm:w-auto sm:!whitespace-nowrap"
-                        onClick={() => setAmountInput(String(nextDueCentavos / 100))}
+                        onClick={() => {
+                          setAmountInput(String(nextDueCentavos / 100))
+                          setSubmitError(null)
+                        }}
                       >
                         Pay next installment ({formatPeso(nextDueCentavos)})
                       </Button>
@@ -224,9 +233,10 @@ export function PostPaymentDialog({
                         size="sm"
                         variant="outline"
                         className="!h-auto min-h-11 w-full !whitespace-normal py-2 text-left leading-tight sm:min-h-8 sm:w-auto sm:!whitespace-nowrap"
-                        onClick={() =>
+                        onClick={() => {
                           setAmountInput(String(balance.outstandingCentavos / 100))
-                        }
+                          setSubmitError(null)
+                        }}
                       >
                         Settle balance ({formatPeso(balance.outstandingCentavos)})
                       </Button>
@@ -235,19 +245,22 @@ export function PostPaymentDialog({
                 </div>
 
                 <div className="space-y-1.5 sm:min-w-40">
-                  <Label htmlFor="pp-date" className="text-[12.5px] text-muted">
+                  <Label htmlFor="pp-date" className="text-caption text-muted">
                     Payment date
                   </Label>
                   <DateField
                     id="pp-date"
                     value={paidAt}
-                    onChange={setPaidAt}
+                    onChange={(value) => {
+                      setPaidAt(value)
+                      setSubmitError(null)
+                    }}
                     max={TODAY}
                     label="Payment date"
                     className="min-h-11 sm:min-h-9"
                   />
                   {paymentDateIsInvalid && (
-                    <p className="text-[11.5px] text-danger" role="alert">
+                    <p className="text-caption text-danger" role="alert">
                       Payment date cannot be in the future.
                     </p>
                   )}
@@ -255,12 +268,15 @@ export function PostPaymentDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label id="pp-method-label" className="text-[12.5px] text-muted">
+                <Label id="pp-method-label" className="text-caption text-muted">
                   Method
                 </Label>
                 <RadioGroup
                   value={method}
-                  onValueChange={(v) => setMethod(v as PaymentMethod)}
+                  onValueChange={(v) => {
+                    setMethod(v as PaymentMethod)
+                    setSubmitError(null)
+                  }}
                   aria-labelledby="pp-method-label"
                   className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-4"
                 >
@@ -274,9 +290,9 @@ export function PostPaymentDialog({
                           : 'border-line hover:bg-surface-2',
                       )}
                     >
-                      <RadioGroupItem value={m} />
+                      <RadioGroupItem id={`payment-method-${m}`} value={m} />
                       <Icon icon={METHOD_ICON[m]} size={15} className="text-muted" />
-                      <span className="min-w-0 break-words text-[12.5px] text-ink">
+                      <span className="min-w-0 break-words text-body text-ink">
                         {PAYMENT_METHOD_LABEL[m]}
                       </span>
                     </label>
@@ -287,13 +303,16 @@ export function PostPaymentDialog({
               <div className="grid gap-3 sm:grid-cols-2">
                 {needsRef && (
                   <div className="min-w-0 space-y-1.5">
-                    <Label htmlFor="pp-ref" className="text-[12.5px] text-muted">
+                    <Label htmlFor="pp-ref" className="text-caption text-muted">
                       Reference number
                     </Label>
                     <Input
                       id="pp-ref"
                       value={reference}
-                      onChange={(e) => setReference(e.target.value)}
+                      onChange={(e) => {
+                        setReference(e.target.value)
+                        setSubmitError(null)
+                      }}
                       placeholder={method === 'check' ? 'Check no.' : 'Transaction ref.'}
                       required
                       aria-invalid={referenceIsInvalid}
@@ -303,10 +322,10 @@ export function PostPaymentDialog({
                     <p
                       id="pp-ref-help"
                       className={cn(
-                        'text-[11.5px]',
+                        'text-caption',
                         referenceIsInvalid ? 'text-danger' : 'text-muted',
                       )}
-                      aria-live="polite"
+                      role={referenceIsInvalid ? 'alert' : undefined}
                     >
                       {referenceIsInvalid
                         ? 'Enter at least three characters.'
@@ -315,7 +334,7 @@ export function PostPaymentDialog({
                   </div>
                 )}
                 <div className="min-w-0 space-y-1.5">
-                  <Label htmlFor="pp-or" className="text-[12.5px] text-muted">
+                  <Label htmlFor="pp-or" className="text-caption text-muted">
                     OR number{' '}
                     {!canEditOr && <span className="text-muted/70">(auto-generated)</span>}
                   </Label>
@@ -333,9 +352,18 @@ export function PostPaymentDialog({
               </div>
 
               <PreviewStrip preview={preview} contract={contract} />
+
+              {submitError && (
+                <p
+                  role="alert"
+                  className="rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger"
+                >
+                  {submitError}
+                </p>
+              )}
             </div>
           ) : (
-            <p className="text-[13px] text-muted" role="status">
+            <p className="text-body text-muted" role="status">
               Select a contract before posting a payment.
             </p>
           )}

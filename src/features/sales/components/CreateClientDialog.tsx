@@ -50,6 +50,7 @@ export function CreateClientDialog({
   const createClient = useClients((s) => s.createClient)
   const [form, setForm] = useState<FormState>(blank)
   const [busy, setBusy] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -65,10 +66,13 @@ export function CreateClientDialog({
 
     setForm(next)
     setBusy(false)
+    setSubmitError(null)
   }, [open, initialName])
 
-  const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+  const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setSubmitError(null)
     setForm((state) => ({ ...state, [key]: value }))
+  }
 
   const canSave =
     form.firstName.trim().length > 0 &&
@@ -84,6 +88,7 @@ export function CreateClientDialog({
     }
 
     setBusy(true)
+    setSubmitError(null)
     try {
       const created = createClient(
         {
@@ -102,7 +107,9 @@ export function CreateClientDialog({
       onCreated(created.id)
       onOpenChange(false)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not create client.')
+      const message = error instanceof Error ? error.message : 'Could not create client.'
+      setSubmitError(message)
+      toast.error(message)
     } finally {
       setBusy(false)
     }
@@ -112,7 +119,7 @@ export function CreateClientDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[calc(100dvh-1rem)] max-w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[440px]">
         <DialogHeader className="shrink-0 border-b border-line px-4 py-4 pr-12 text-left sm:px-6">
-          <DialogTitle className="font-display text-[22px]">New client</DialogTitle>
+          <DialogTitle className="font-display text-section-title">New client</DialogTitle>
           <DialogDescription>
             Name and phone are enough to hold a lot or open a contract. Address can be
             filled in later.
@@ -121,7 +128,7 @@ export function CreateClientDialog({
 
         <div className="grid min-h-0 flex-1 gap-3 overflow-y-auto overscroll-contain px-4 py-4 sm:grid-cols-2 sm:px-6">
           <div className="space-y-1.5">
-            <Label htmlFor="nc-first" className="text-[12.5px] text-muted">
+            <Label htmlFor="nc-first" className="text-caption text-muted">
               First name
             </Label>
             <Input
@@ -129,22 +136,24 @@ export function CreateClientDialog({
               value={form.firstName}
               onChange={(event) => set('firstName', event.target.value)}
               autoFocus
+              required
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="nc-last" className="text-[12.5px] text-muted">
+            <Label htmlFor="nc-last" className="text-caption text-muted">
               Last name
             </Label>
             <Input
               id="nc-last"
               value={form.lastName}
               onChange={(event) => set('lastName', event.target.value)}
+              required
             />
           </div>
 
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="nc-phone" className="text-[12.5px] text-muted">
+            <Label htmlFor="nc-phone" className="text-caption text-muted">
               Mobile phone
             </Label>
             <Input
@@ -153,11 +162,17 @@ export function CreateClientDialog({
               onChange={(event) => set('phone', event.target.value)}
               inputMode="tel"
               placeholder="09XX XXX XXXX"
+              required
+              aria-invalid={form.phone.length > 0 && normalizePhone(form.phone).length < 7}
+              aria-describedby="nc-phone-help"
             />
+            <p id="nc-phone-help" className="text-caption text-muted">
+              Enter at least seven digits.
+            </p>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="nc-city" className="text-[12.5px] text-muted">
+            <Label htmlFor="nc-city" className="text-caption text-muted">
               City <span className="text-muted/70">(optional)</span>
             </Label>
             <Input
@@ -168,7 +183,7 @@ export function CreateClientDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="nc-address" className="text-[12.5px] text-muted">
+            <Label htmlFor="nc-address" className="text-caption text-muted">
               Address <span className="text-muted/70">(optional)</span>
             </Label>
             <Input
@@ -178,6 +193,12 @@ export function CreateClientDialog({
             />
           </div>
         </div>
+
+        {submitError && (
+          <p role="alert" className="mx-4 rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger sm:mx-6">
+            {submitError}
+          </p>
+        )}
 
         <DialogFooter className="shrink-0 flex-col border-t border-line px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:flex-row sm:px-6">
           <Button

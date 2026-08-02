@@ -79,7 +79,7 @@ export function ReassignUplineDialog({
 
         <div className="space-y-3">
           <div>
-            <Label className="mb-1.5 block text-[12px] text-muted">Team leader</Label>
+            <Label className="mb-1.5 block text-caption text-muted">Team leader</Label>
             <Select value={teamLeaderId} onValueChange={pickTeamLeader}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -96,7 +96,7 @@ export function ReassignUplineDialog({
           </div>
 
           <div>
-            <Label className="mb-1.5 block text-[12px] text-muted">Distributor</Label>
+            <Label className="mb-1.5 block text-caption text-muted">Distributor</Label>
             <Select value={distributorId} onValueChange={setDistributorId}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -112,13 +112,13 @@ export function ReassignUplineDialog({
             </Select>
           </div>
 
-          <p className="flex gap-2 rounded-md border border-line bg-surface-2 p-3 text-[12.5px] leading-relaxed text-muted">
+          <p className="flex gap-2 rounded-md border border-line bg-surface-2 p-3 text-caption leading-relaxed text-muted">
             <Icon icon={IconInfo} size={15} className="mt-0.5 shrink-0" />
             <span>
               This changes future attribution only. The{' '}
               <strong className="font-medium text-ink">{contracts}</strong> contract
-              {contracts === 1 ? '' : 's'} already signed keep the upline snapshotted
-              onto them, so no past commission entry moves.
+              {contracts === 1 ? '' : 's'} already signed keep their recorded
+              upline, so past commission entries do not move.
             </span>
           </p>
         </div>

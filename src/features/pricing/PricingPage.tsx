@@ -26,24 +26,19 @@ export default function PricingPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1360px] p-6">
+      <div className="mx-auto max-w-[1360px] p-4 sm:p-6">
         <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow mb-1 text-gold-deep dark:text-gold">Manage</p>
-            <h1 className="font-display text-[30px] font-semibold leading-tight text-ink">
+            <h1 className="font-display text-page-title font-semibold leading-tight text-ink">
               Pricing &amp; lot types
             </h1>
-            <p className="mt-1 max-w-[72ch] text-[13.5px] leading-relaxed text-muted">
-              An append-only, effective-dated price book. Changing a price never
-              rewrites a row — it closes the old window and appends a new one,
-              so every contract keeps resolving to what it was actually sold at.
-            </p>
           </div>
           <AsOfControl value={asOf} onChange={setAsOf} />
         </header>
 
         {!canWrite && (
-          <p className="mb-4 flex items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-[12.5px] text-muted">
+          <p className="mb-4 flex items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-caption text-muted">
             <Icon icon={IconVisible} size={15} />
             Read-only view. Pricing and lot types are maintained by an
             administrator.
@@ -51,7 +46,7 @@ export default function PricingPage() {
         )}
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-          <TabsList className="mb-5">
+          <TabsList className="mb-5 h-auto flex-wrap justify-start">
             <TabsTrigger value="book">Price book</TabsTrigger>
             <TabsTrigger value="tiers">Lot types</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>

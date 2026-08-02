@@ -1,0 +1,110 @@
+{
+  "plan": "plans/07302026-simplify-map-editor-align-layout-inventory",
+  "generatedAt": "2026-07-30",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Map editor opens in Align Layout mode",
+      "surface": "ui",
+      "precondition": "Admin session seeded as usr_002 and the dev server running at http://127.0.0.1:1616.",
+      "steps": [
+        "1. Navigate to /map-editor.",
+        "2. Confirm the sidebar shows Align Layout selected before Inventory.",
+        "3. Confirm the panel includes the Records locked alignment copy."
+      ],
+      "expected": "Align Layout is the default first screen and the old technical tool strip is not the primary default.",
+      "status": "pass",
+      "evidence": "Headless Chromium smoke: map-editor-browser-smoke-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Advanced Inventory keeps existing technical tools reachable",
+      "surface": "ui",
+      "precondition": "Admin is on /map-editor.",
+      "steps": [
+        "1. Click Inventory.",
+        "2. Confirm Advanced Inventory appears.",
+        "3. Confirm Select and Grid tool buttons are available by accessible label."
+      ],
+      "expected": "The prior Select, Edit block, Block, Grid, Draw lot, and Overlay workflows remain reachable from Advanced Inventory.",
+      "status": "pass",
+      "evidence": "Headless Chromium smoke verified Advanced Inventory, Select, and Grid labels.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Alignment handles resize, align, and save draft changes",
+      "surface": "ui",
+      "precondition": "Admin is on /map-editor in Align Layout mode with seeded blocks and the seeded site-plan overlay.",
+      "steps": [
+        "1. Count direct map handles.",
+        "2. Click Nudge right.",
+        "3. Click Save draft.",
+        "4. Choose Site plan.",
+        "5. Confirm the site plan exposes a center move handle, side resize handles, and a rotate handle.",
+        "6. Drag the site-plan right-edge handle to adjust width, then save draft.",
+        "7. Choose Block.",
+        "8. Drag the block bottom-edge handle to adjust height, then save draft."
+      ],
+      "expected": "At least five direct handles render; the site plan has a center move handle, side resize handles, rotate handle, and rotate-step controls; block side handles resize height/width while lots remain transformed with the block; Save draft commits staged alignment while Publish remains separate.",
+      "status": "pass",
+      "evidence": "Headless Chromium smoke verified map-editor-resize-handles-smoke-ok with sideWidth=true and sideHeight=true; focused QA verified non-uniform block resize keeps lots inside the block and preserves sold-lot business fields.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Geometry-only alignment preserves protected lot business fields",
+      "surface": "cli",
+      "precondition": "Synthetic block, available lot, sold lot, and overlay data.",
+      "steps": [
+        "1. Run npx vite-node qa/map-editor-alignment.ts.",
+        "2. Apply a block alignment transform.",
+        "3. Assert sold lot geometry moves while status, contract, owner, tier, and number stay unchanged.",
+        "4. Assert selected-lot alignment only moves selected lots."
+      ],
+      "expected": "Geometry changes are isolated to polygons, centroids, areas, and rotation metadata; business fields are preserved.",
+      "status": "pass",
+      "evidence": "map-editor-alignment-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Publish and audit wording use geometry-alignment language",
+      "surface": "cli",
+      "precondition": "Synthetic audit event with a saved map-editor summary.",
+      "steps": [
+        "1. Run npx vite-node qa/map-editor-alignment.ts.",
+        "2. Render a block.created audit event containing after.summary.",
+        "3. Confirm describe() returns the saved geometry-alignment summary."
+      ],
+      "expected": "Audit rendering says geometry aligned instead of claiming a block was created.",
+      "status": "pass",
+      "evidence": "map-editor-alignment-ok",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Project verification gates pass",
+      "surface": "cli",
+      "precondition": "Repository at the implemented source state.",
+      "steps": [
+        "1. Run npx tsc --noEmit -p tsconfig.app.json.",
+        "2. Run npm run build.",
+        "3. Run npm run lint.",
+        "4. Run npm run validate:mock."
+      ],
+      "expected": "Typecheck and build pass; lint exits 0 with pre-existing warnings only; mock invariants pass.",
+      "status": "pass",
+      "evidence": "All four commands exited 0 on 2026-07-30.",
+      "notes": "npm run lint still reports existing warnings outside the map-editor changes.",
+      "waiver": ""
+    }
+  ]
+}

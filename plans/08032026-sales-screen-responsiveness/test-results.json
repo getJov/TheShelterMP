@@ -15,8 +15,8 @@
       ],
       "expected": "Every matrix case renders without page-level horizontal overflow or console errors; mobile uses prioritized records and desktop retains tables.",
       "status": "pass",
-      "evidence": "npm run qa:sales-responsive — ALL PASSED; evidence/{owner,admin,manager,agent}-{320,390,768,1440}.png",
-      "notes": "The mobile shell and record presentation remain active through 1023px; the 232px rail and desktop tables return at 1024px.",
+      "evidence": "npm run qa:sales-responsive — ALL PASSED against main's empty baseline and a temporary populated fixture; evidence/{owner,admin,manager,agent}-{320,390,768,1440}.png",
+      "notes": "The mobile shell and record presentation remain active through 1023px; the 232px rail and desktop tables return at 1024px when records exist. Main's intentional empty park state is also covered.",
       "waiver": ""
     },
     {
@@ -65,7 +65,7 @@
       "expected": "The dialog stays inside the visual viewport and the hold request completes with observable success.",
       "status": "pass",
       "evidence": "evidence/primary-flow-results.json; evidence/hold-ready-agent-320.png; evidence/hold-success-agent-320.png",
-      "notes": "Measured dialog bounds: 8,159 to 312,541 inside 320x700.",
+      "notes": "Measured post-merge dialog bounds: 8,127 to 312,573 inside 320x700.",
       "waiver": ""
     },
     {
@@ -128,8 +128,8 @@
       ],
       "expected": "All commands exit successfully; only pre-existing lint warnings remain; implementation matches the approved responsive-only scope.",
       "status": "pass",
-      "evidence": "Typecheck PASS; lint PASS with pre-existing warnings only; validate:mock PASS; build PASS; git diff --check PASS; evidence/shell-cross-route-results.json (29 route-role cases); evidence/owner-1440.png and evidence/admin-1440.png",
-      "notes": "No package-lock, dependency, route, permission, store, finance, domain, schema, or migration changes are present. Local origin/main remains 16 commits ahead and was not synchronized without authorization.",
+      "evidence": "Post-main-merge typecheck PASS; lint PASS with pre-existing warnings only; validate:mock PASS; build PASS; focused sales QA PASS in empty and populated states; evidence/shell-cross-route-results.json (29 route-role cases); evidence/owner-1440.png and evidence/admin-1440.png",
+      "notes": "origin/main at 0fc8a80 was merged before delivery. The PR introduces no dependency, route, permission, store, finance, domain, schema, or migration changes relative to main. Main's accessibility smoke reached its map/list section after passing typography, auth, sales-form, preference, and reset coverage, then hit its pre-existing populated-lot assumption against main's intentional empty park.",
       "waiver": ""
     }
   ]

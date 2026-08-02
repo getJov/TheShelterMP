@@ -58,7 +58,7 @@ export function SlotDots({
 
 export function SlotLabel({ slot }: { slot: BurialSlot }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12.5px] text-muted">
+    <span className="text-caption inline-flex items-center gap-1.5 text-muted">
       <SlotIcon slot={slot} />
       {SLOT_LABEL[slot]}
     </span>
@@ -77,12 +77,13 @@ export function IntermentStatusChip({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11.5px] font-medium',
+        'text-micro inline-flex items-center gap-1.5 rounded-full border px-2 py-1 font-medium',
         INTERMENT_STATUS_STYLE[status].chip,
         className,
       )}
     >
       <span
+        aria-hidden
         className={cn('size-1.5 rounded-full', INTERMENT_STATUS_STYLE[status].dot)}
       />
       {INTERMENT_STATUS_LABEL[status]}
@@ -100,7 +101,7 @@ export function IntermentTypeBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded border border-line bg-surface-2 px-1.5 py-px text-[11px] font-medium text-muted',
+        'text-micro inline-flex items-center rounded border border-line bg-surface-2 px-1.5 py-1 font-medium text-muted',
         type === 'bone_transfer' && 'border-gold/50 text-gold-deep dark:text-gold',
         className,
       )}
@@ -128,7 +129,7 @@ export function JobStatusChip({ status }: { status: JobStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium',
+        'text-micro inline-flex items-center rounded-full border px-2 py-1 font-medium',
         JOB_STATUS_STYLE[status],
       )}
     >
@@ -194,13 +195,16 @@ export function RequirementsMeter({
         <span className="inline-flex cursor-help items-center gap-2">
           <SegmentMeter done={done} total={total} tone={complete ? 'green' : 'gold'} />
           {showCount && (
-            <span className="tabular text-[12px] text-muted">
+            <span className="text-caption tabular text-muted">
               {done}/{total}
             </span>
           )}
+          <span className="sr-only">
+            {done} of {total} requirements complete
+          </span>
         </span>
       </TooltipTrigger>
-      <TooltipContent className="text-[12.5px]">
+      <TooltipContent>
         {complete
           ? 'All requirements on file'
           : `${total - done} requirement${total - done === 1 ? '' : 's'} outstanding`}
@@ -214,7 +218,7 @@ export function JobProgress({ job }: { job: GroundsJob }) {
   return (
     <span className="inline-flex items-center gap-2">
       <SegmentMeter done={done} total={total} tone={done === total ? 'green' : 'gold'} width={6} />
-      <span className="tabular text-[12px] text-muted">
+      <span className="text-caption tabular text-muted">
         {done}/{total}
       </span>
     </span>
@@ -239,7 +243,7 @@ export function CapacityMeter({
         tone={used >= capacity ? 'green' : 'gold'}
         width={capacity > 4 ? 5 : 9}
       />
-      <span className="text-[12px] text-muted">
+      <span className="text-caption text-muted">
         <span className="tabular">
           {used} of {capacity}
         </span>{' '}

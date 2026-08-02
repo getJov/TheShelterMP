@@ -51,7 +51,7 @@ export function VoidPaymentDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="flex max-h-dvh w-full max-w-none flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[520px] sm:rounded-lg">
         <AlertDialogHeader className="shrink-0 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-4 text-left sm:px-6 sm:pt-6">
-          <AlertDialogTitle className="font-display text-[21px]">
+          <AlertDialogTitle className="font-display text-section-title">
             Void {payment?.orNo}?
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -65,7 +65,7 @@ export function VoidPaymentDialog({
         </AlertDialogHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
-          <ul className="space-y-1.5 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-[12.5px] leading-snug text-muted">
+          <ul className="space-y-1.5 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-body leading-snug text-muted">
             <li>The schedule is rebuilt from the payments that remain posted.</li>
             <li>
               The trust-fund entry of{' '}
@@ -86,7 +86,7 @@ export function VoidPaymentDialog({
           </ul>
 
           <div className="space-y-1.5">
-            <Label htmlFor="vp-reason" className="text-[12.5px] text-muted">
+            <Label htmlFor="vp-reason" className="text-caption text-muted">
               Reason (required)
             </Label>
             <Textarea
@@ -95,7 +95,13 @@ export function VoidPaymentDialog({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Duplicate posting — corrected receipt issued."
+              required
+              aria-invalid={reason.length > 0 && reason.trim().length < 4}
+              aria-describedby="vp-reason-help"
             />
+            <p id="vp-reason-help" className="text-caption text-muted">
+              Enter at least four characters. This reason stays with the voided payment.
+            </p>
           </div>
         </div>
 

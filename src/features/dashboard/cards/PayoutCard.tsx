@@ -56,12 +56,12 @@ export function PayoutCard(props: CardProps) {
           className="flex w-full items-center gap-2 rounded-md border border-gold/45 bg-gold/12 px-2.5 py-2 text-left transition-colors hover:bg-gold/18"
         >
           <Icon icon={IconWarning} size={15} className="shrink-0 text-gold-deep dark:text-gold" />
-          <span className="min-w-0 flex-1 text-[12px] leading-snug text-ink">
+          <span className="min-w-0 flex-1 text-caption leading-snug text-ink">
             Run {fmtDateShort(d.awaitingApproval.periodStart)}–
             {fmtDateShort(d.awaitingApproval.periodEnd)} awaiting approval ·{' '}
             {formatPeso(d.awaitingApproval.totalCentavos, { compact: true })}
           </span>
-          <span className="shrink-0 text-[11.5px] font-semibold text-gold-deep dark:text-gold">
+          <span className="shrink-0 text-caption font-semibold text-gold-deep dark:text-gold">
             Approve
           </span>
         </button>

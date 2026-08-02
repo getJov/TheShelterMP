@@ -5,7 +5,8 @@ import { LogoLockup, LogoMark } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
 import { AppNavigation } from './AppNavigation'
-import { navItems } from './nav-items'
+import { DisplaySettings } from './DisplaySettings'
+import { RouteAccessibility, routeTitleFor } from './RouteAccessibility'
 import { Icon } from '@/components/ui-brand/Icon'
 import { IconClose, IconMenu, IconSidebar } from '@/components/ui-brand/icons'
 import { Button } from '@/components/ui/button'
@@ -36,14 +37,25 @@ export function AppShell() {
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-bg">
+      <a
+        href="#main-content"
+        className="fixed left-3 top-3 z-[100] -translate-y-24 rounded-md bg-ink px-4 py-3 text-control font-semibold text-bg shadow-lg transition-transform focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <Rail open={railOpen} onToggle={() => setRailOpen((v) => !v)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="relative min-h-0 flex-1 overflow-hidden">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative min-h-0 flex-1 overflow-hidden outline-none"
+        >
           <Outlet />
         </main>
       </div>
       <CommandPalette />
+      <RouteAccessibility />
     </div>
   )
 }
@@ -81,12 +93,14 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
 
       <div className="border-t border-line p-2.5">
         {user && <UserMenu compact={!open} />}
-        <button
+        <Button
+          type="button"
+          variant="ghost"
           onClick={onToggle}
           aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
           className={cn(
-            'mt-1.5 flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px]',
-            'text-muted transition-colors hover:bg-surface-2 hover:text-ink',
+            'mt-1.5 w-full gap-2.5 px-2.5 text-control text-muted',
+            'hover:bg-surface-2 hover:text-ink',
             !open && 'justify-center',
           )}
         >
@@ -104,7 +118,7 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
               </motion.span>
             )}
           </AnimatePresence>
-        </button>
+        </Button>
       </div>
     </motion.aside>
   )
@@ -113,10 +127,7 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
 function TopBar() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const { pathname } = useLocation()
-  // Longest prefix wins — otherwise '/map' shadows '/map-editor'.
-  const current = navItems
-    .filter((i) => pathname === i.to || pathname.startsWith(`${i.to}/`) || pathname.startsWith(i.to))
-    .sort((a, b) => b.to.length - a.to.length)[0]
+  const title = routeTitleFor(pathname)
   const user = useSession((s) => s.currentUser())
 
   useEffect(() => {
@@ -184,6 +195,10 @@ function TopBar() {
               <LocationSwitcher />
             </div>
             <div className="flex min-h-11 items-center justify-between rounded-md px-2 text-[13px] text-muted">
+              <span>Display</span>
+              <DisplaySettings trigger="button" />
+            </div>
+            <div className="flex min-h-11 items-center justify-between rounded-md px-2 text-[13px] text-muted">
               <span>Appearance</span>
               <ThemeToggle />
             </div>
@@ -192,8 +207,8 @@ function TopBar() {
         </SheetContent>
       </Sheet>
 
-      <h1 className="min-w-0 flex-1 truncate font-display text-[17px] font-semibold text-ink sm:text-[19px]">
-        {current?.label ?? 'The Shelter'}
+      <h1 className="min-w-0 flex-1 truncate font-display text-small-title font-semibold text-ink">
+        {title}
       </h1>
 
       <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">
@@ -207,7 +222,10 @@ function TopBar() {
           <LocationSwitcher />
         </div>
         <NotificationBell />
-        <div className="hidden sm:block">
+        <div className="hidden lg:block">
+          <DisplaySettings />
+        </div>
+        <div className="hidden lg:block">
           <ThemeToggle />
         </div>
         <div className="hidden sm:block">

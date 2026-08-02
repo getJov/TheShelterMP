@@ -186,8 +186,8 @@ export function AgentFormDialog({
           <DialogTitle>{mode === 'create' ? 'New agent' : 'Edit agent'}</DialogTitle>
           <DialogDescription>
             {mode === 'create'
-              ? 'Creating an agent also creates their login — a person who cannot sign in is not an agent.'
-              : 'Changing the upline affects future contracts only. Past commission is never restated.'}
+              ? 'Creates the agent profile and login.'
+              : 'Future contracts use the updated upline. Past commissions are unchanged.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -224,7 +224,7 @@ export function AgentFormDialog({
           </div>
 
           <div>
-            <Label className="mb-2 flex items-center gap-2 text-[12px] text-muted">
+            <Label className="mb-2 flex items-center gap-2 text-caption text-muted">
               Level <RatesAssumed />
             </Label>
             <RadioGroup
@@ -244,10 +244,10 @@ export function AgentFormDialog({
                 >
                   <RadioGroupItem value={l} className="mt-0.5" />
                   <span>
-                    <span className="block text-[13px] font-medium text-ink">
+                    <span className="block text-caption font-medium text-ink">
                       {levelLabel(l)}
                     </span>
-                    <span className="block tabular text-[12px] text-muted">
+                    <span className="block tabular text-caption text-muted">
                       {formatPercent(rateOf(l))} of every payment
                     </span>
                   </span>
@@ -325,7 +325,7 @@ export function AgentFormDialog({
             </Field>
           </div>
 
-          <p className="text-[12px] leading-relaxed text-muted">
+          <p className="text-caption leading-relaxed text-muted">
             The upline recorded here is copied onto every contract this agent signs
             from now on. Contracts already signed keep the upline they were signed
             with — an agent moving teams must not rewrite last year&rsquo;s payouts.
@@ -348,7 +348,7 @@ export function AgentFormDialog({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <Label className="mb-1.5 block text-[12px] text-muted">{label}</Label>
+      <Label className="mb-1.5 block text-caption text-muted">{label}</Label>
       {children}
     </div>
   )

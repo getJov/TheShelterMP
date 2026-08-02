@@ -62,7 +62,7 @@ export function PayoutsTab() {
       header: 'Release (Fri)',
       sortBy: (r) => r.releaseDate,
       cell: (r) => (
-        <span className="whitespace-nowrap text-[12.5px] text-muted">
+        <span className="whitespace-nowrap text-caption text-muted">
           {fmtDate(r.releaseDate)}
         </span>
       ),
@@ -97,7 +97,7 @@ export function PayoutsTab() {
       key: 'approver',
       header: 'Approved by',
       cell: (r) => (
-        <span className="text-[12.5px] text-muted">
+        <span className="text-caption text-muted">
           {r.approvedByUserId
             ? (indexes().usersById.get(r.approvedByUserId)?.fullName ?? '—')
             : '—'}
@@ -120,13 +120,13 @@ export function PayoutsTab() {
           <div className="flex flex-wrap items-start gap-5 p-5">
             <div className="min-w-[240px] flex-1">
               <p className="eyebrow text-gold-deep dark:text-gold">Current open run</p>
-              <h3 className="mt-1 font-display text-[22px] font-semibold text-ink">
+              <h3 className="mt-1 font-display text-section-title font-semibold text-ink">
                 {fmtDateLong(open.periodStart)} → {fmtDateLong(open.periodEnd)}
               </h3>
-              <p className="mt-0.5 text-[13px] text-muted">
+              <p className="mt-0.5 text-caption text-muted">
                 Releases {fmtDateLong(open.releaseDate)}
               </p>
-              <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/45 bg-gold/12 px-2.5 py-1 text-[12.5px] font-medium text-gold-deep dark:text-gold">
+              <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/45 bg-gold/12 px-2.5 py-1 text-caption font-medium text-gold-deep dark:text-gold">
                 <Icon icon={IconClock} size={14} />
                 {daysToFriday > 0
                   ? `${daysToFriday} day${daysToFriday === 1 ? '' : 's'} to Friday`
@@ -206,8 +206,8 @@ export function PayoutsTab() {
 function Figure({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10.5px] uppercase tracking-[0.07em] text-muted">{label}</p>
-      <p className="font-display text-[23px] font-semibold tabular text-ink">{value}</p>
+      <p className="text-micro uppercase tracking-[0.07em] text-muted">{label}</p>
+      <p className="font-display text-section-title font-semibold tabular text-ink">{value}</p>
     </div>
   )
 }

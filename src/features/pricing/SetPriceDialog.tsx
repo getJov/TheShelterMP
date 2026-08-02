@@ -74,9 +74,8 @@ export function SetPriceDialog({
         <DialogHeader>
           <DialogTitle>Set a price</DialogTitle>
           <DialogDescription>
-            The price book is append-only. Confirming closes the entry in force
-            and appends a new one — the old amount stays readable forever, and
-            every contract already signed keeps the price it was sold at.
+            Set the amount that takes effect on the selected date. Signed contracts keep their
+            price.
           </DialogDescription>
         </DialogHeader>
 
@@ -204,7 +203,7 @@ function SingleForm({
     const mutation = setPrice(input, user.id)
     toastWithUndo(
       `${tier.name} — ${NEED_TYPE_LABEL[needType]} ${PAYMENT_MODE_LABEL[paymentMode].toLowerCase()} is now ${formatPeso(amountCentavos)}`,
-      `Effective ${fmtDate(effectiveFrom)}. The superseded entry was closed, not edited.`,
+      `Effective ${fmtDate(effectiveFrom)}.`,
       () => undoSetPrice([mutation]),
     )
     onDone()
@@ -248,7 +247,7 @@ function SingleForm({
             className="flex gap-4 pt-1"
           >
             {(['pre_need', 'at_need'] as NeedType[]).map((n) => (
-              <label key={n} className="flex cursor-pointer items-center gap-2 text-[13.5px]">
+              <label key={n} className="flex cursor-pointer items-center gap-2 text-caption">
                 <RadioGroupItem value={n} />
                 {NEED_TYPE_LABEL[n]}
               </label>
@@ -268,10 +267,10 @@ function SingleForm({
                 <label
                   key={m}
                   className={cn(
-                    'flex items-center gap-2 text-[13.5px]',
+                    'flex items-center gap-2 text-caption',
                     allowed ? 'cursor-pointer' : 'cursor-not-allowed text-muted',
                   )}
-                  title={allowed ? undefined : 'At-need is spot cash only.'}
+                  title={allowed ? undefined : 'Installment unavailable.'}
                 >
                   <RadioGroupItem value={m} disabled={!allowed} />
                   {PAYMENT_MODE_LABEL[m]}
@@ -297,8 +296,8 @@ function SingleForm({
       <div className="rounded-[var(--radius-card)] border border-line bg-surface-2 p-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-[13.5px] font-medium text-ink">This is a promotion</p>
-            <p className="text-[12px] text-muted">
+            <p className="text-caption font-medium text-ink">This is a promotion</p>
+            <p className="text-caption text-muted">
               A promo layers over the list price instead of replacing it, so the
               list price keeps resolving for installment buyers.
             </p>
@@ -315,7 +314,7 @@ function SingleForm({
               placeholder="No end date"
             />
             {promoEndInvalid && (
-              <p className="mt-1 text-[12px] text-danger">
+              <p className="mt-1 text-caption text-danger">
                 The end date must fall after the start date.
               </p>
             )}
@@ -334,9 +333,8 @@ function SingleForm({
 
       {isPast && (
         <Callout tone="warn">
-          {fmtDate(effectiveFrom)} is in the past. Back-dating rewrites which
-          entry resolves for that window — it does not change any contract
-          already signed, but check that is what you meant.
+          {fmtDate(effectiveFrom)} is in the past. Back-dating changes the active price for that
+          date range. Signed contracts are unchanged.
         </Callout>
       )}
 
@@ -449,8 +447,8 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
     }))
     const mutations: PriceMutation[] = setPriceBulk(inputs, user.id)
     toastWithUndo(
-      `${inputs.length} price entries appended`,
-      `Effective ${fmtDate(effectiveFrom)}. Every superseded entry was closed, not edited.`,
+      `${inputs.length} prices updated`,
+      `Effective ${fmtDate(effectiveFrom)}.`,
       () => undoSetPrice(mutations),
     )
     onDone()
@@ -505,7 +503,7 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
           <p className="eyebrow mb-2 text-muted">Lot types</p>
           <div className="space-y-1.5">
             {tiers.map((t) => (
-              <label key={t.id} className="flex cursor-pointer items-center gap-2 text-[13px]">
+              <label key={t.id} className="flex cursor-pointer items-center gap-2 text-caption">
                 <Checkbox
                   checked={selectedTiers.includes(t.id)}
                   onCheckedChange={(c) =>
@@ -524,7 +522,7 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
           <p className="eyebrow mb-2 text-muted">Combinations</p>
           <div className="space-y-1.5">
             {PRICE_COMBINATIONS.map((c) => (
-              <label key={c.key} className="flex cursor-pointer items-center gap-2 text-[13px]">
+              <label key={c.key} className="flex cursor-pointer items-center gap-2 text-caption">
                 <Checkbox
                   checked={selectedCombos.includes(c.key)}
                   onCheckedChange={(v) =>
@@ -543,12 +541,12 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
       <div className="rounded-[var(--radius-card)] border border-line">
         <div className="flex items-center justify-between border-b border-line bg-surface-2 px-3 py-2">
           <p className="eyebrow text-gold-deep dark:text-gold">Preview</p>
-          <p className="text-[12px] text-muted">
+          <p className="text-caption text-muted">
             {applicable.length} of {preview.length} rows will be written
           </p>
         </div>
         <ScrollArea className="max-h-[200px]">
-          <table className="w-full text-[13px]">
+          <table className="w-full text-caption">
             <tbody>
               {preview.map((r) => (
                 <tr key={`${r.tierId}:${r.comboKey}`} className="border-b border-line-soft">
@@ -562,7 +560,7 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
                   </td>
                   <td className="tabular px-3 py-1.5 text-right font-medium">
                     {r.next === null ? (
-                      <span className="text-[12px] font-normal text-muted">
+                      <span className="text-caption font-normal text-muted">
                         no price on file — skipped
                       </span>
                     ) : (
@@ -584,8 +582,8 @@ function BulkForm({ asOf, onDone }: { asOf: ISODate; onDone: () => void }) {
       </div>
 
       <Callout tone="info">
-        Contracts already signed are untouched — each one snapshotted its price
-        at signing. Only lots still available will sell at the new figures.
+        Contracts already signed keep their prices. Only available lots sell at
+        the new figures.
       </Callout>
 
       <DialogFooter>
@@ -626,11 +624,11 @@ export function BeforeAfter({
   return (
     <div className="rounded-[var(--radius-card)] border border-gold/45 bg-gold/8 p-3">
       <p className="eyebrow mb-2 text-gold-deep dark:text-gold">Before / after</p>
-      <p className="flex flex-wrap items-baseline gap-2 text-[14px]">
+      <p className="flex flex-wrap items-baseline gap-2 text-caption">
         <span className="text-muted">Currently</span>
         <MoneyText
           centavos={currentCentavos}
-          className="font-display text-[19px] font-semibold"
+          className="font-display text-small-title font-semibold"
         />
         <Icon icon={IconArrowRight} size={15} className="translate-y-0.5 text-muted" />
         <span className="text-muted">will become</span>
@@ -639,21 +637,21 @@ export function BeforeAfter({
         ) : (
           <MoneyText
             centavos={nextCentavos}
-            className="font-display text-[19px] font-semibold text-gold-deep dark:text-gold"
+            className="font-display text-small-title font-semibold text-gold-deep dark:text-gold"
           />
         )}
         <span className="text-muted">from {fmtDate(effectiveFrom)}</span>
       </p>
-      <div className="mt-2.5 grid grid-cols-2 gap-3 text-[12.5px]">
+      <div className="mt-2.5 grid grid-cols-2 gap-3 text-caption">
         <div className="rounded-md border border-line bg-surface px-2.5 py-1.5">
-          <span className="tabular font-display text-[17px] text-ink">{contracts}</span>{' '}
+          <span className="tabular font-display text-small-title text-ink">{contracts}</span>{' '}
           <span className="text-muted">
             active contracts — <span className="text-green">unaffected</span>, they keep
-            their snapshotted price
+            their signed price
           </span>
         </div>
         <div className="rounded-md border border-line bg-surface px-2.5 py-1.5">
-          <span className="tabular font-display text-[17px] text-ink">
+          <span className="tabular font-display text-small-title text-ink">
             {availableLots}
           </span>{' '}
           <span className="text-muted">
@@ -676,7 +674,7 @@ function Callout({
   return (
     <div
       className={cn(
-        'flex gap-2 rounded-[var(--radius-card)] border p-2.5 text-[12.5px] leading-relaxed',
+        'flex gap-2 rounded-[var(--radius-card)] border p-2.5 text-caption leading-relaxed',
         tone === 'warn'
           ? 'border-gold/50 bg-gold/10 text-ink'
           : 'border-line bg-surface-2 text-muted',
