@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New Client From Sales Spec</title>
+  <style>
+    :root { color-scheme: light; --paper:#fff; --ink:#080808; --muted:#5f5f5f; --line:#d8d8d8; --soft:#f5f5f5; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,sans-serif; line-height:1.5; }
+    .spec-shell { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:48px 0; }
+    .spec-hero, .spec-card, .task-card { border:1px solid var(--line); border-radius:8px; background:var(--paper); }
+    .spec-hero { border-color:var(--ink); padding:32px; margin-bottom:20px; }
+    .hero-topline { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .spec-card { padding:28px; margin-top:16px; }
+    .task-card { padding:20px; background:var(--soft); }
+    .eyebrow, dt { color:var(--muted); font-size:.78rem; font-weight:700; text-transform:uppercase; }
+    .eyebrow { margin:0; }
+    .status-pill { display:inline-flex; align-items:center; min-height:34px; padding:0 12px; border:1px solid var(--ink); border-radius:999px; background:var(--ink); color:var(--paper); font-size:.78rem; font-weight:800; text-transform:uppercase; }
+    .status-card { border-color:var(--ink); }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { max-width:840px; margin-bottom:24px; font-size:clamp(2.25rem,6vw,5rem); line-height:.95; }
+    h2 { font-size:1.35rem; }
+    code { padding:.1rem .3rem; border:1px solid var(--line); border-radius:4px; background:var(--soft); font-size:.92em; }
+    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:0; }
+    .meta-grid div { border:1px solid var(--line); border-radius:8px; padding:16px; }
+    dd { margin:4px 0 0; font-weight:700; }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-top:1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">Alloro Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>New Client From Sales</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/07302026-new-client-from-sales</dd></div>
+        <div><dt>Size</dt><dd>Medium</dd></div>
+        <div><dt>Risk</dt><dd>Level 2</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>Agents cannot start a hold or contract for a walk-in who is not yet in the client book. Prospect-by-typing was hidden and contracts blocked it entirely.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Always-visible <strong>Create new client</strong> in the buyer combobox opens a compact dialog (first, last, phone required). Creates a real <code>Client</code> and selects it. Available on Request hold, New contract, and Transfer. Walk-in prospect path is removed from the combobox.</p>
+      <p><strong>Assumptions:</strong> 1A real Client · 2A first/last/phone · 3A always-visible row · 4A drop prospect.</p>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+      <ul>
+        <li><code>src/features/sales/components/ClientCombobox.tsx</code> — buyer picker</li>
+        <li><code>src/stores/agents.ts</code> — create + audit + touch analog</li>
+        <li><code>src/features/agents/AgentFormDialog.tsx</code> — dialog form analog</li>
+        <li><code>src/domain/people.ts</code> — Client shape (domain frozen; do not edit)</li>
+      </ul>
+      <p><strong>Reference file:</strong> <code>src/stores/agents.ts</code> createAgent / <code>AgentFormDialog.tsx</code></p>
+      <p>Articles touched: §1.1 naming, §2.1 one responsibility, §4.2 named constants, CONVENTIONS money/dates/icons.</p>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <ul>
+        <li>Must create a real Client with generated <code>clientRef</code></li>
+        <li>Must not edit frozen <code>@/domain</code> enums; audit via <code>record()</code> + lib labels</li>
+        <li>Must not keep prospect create path in the combobox</li>
+        <li>Must soft-warn on duplicate phone, still allow create</li>
+        <li>Out of scope: Clients list page, senior/ID full KYC form, migrating historical prospect holds</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level:</strong> 2</p>
+      <ul>
+        <li>Incomplete address data — Mitigation: TBD defaults for optional city/address/province</li>
+        <li>Duplicate clients — Mitigation: soft warn on matching phone</li>
+      </ul>
+      <p><strong>Blast radius:</strong> ClientCombobox consumers — RequestHoldDialog, ContractBuilder, TransferOwnershipDialog. Seeded holds may still carry <code>prospectName</code>.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+      <article class="task-card">
+        <h3>T1: createClient store</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add <code>src/stores/clients.ts</code> with createClient, nextClientRef, audit via record()</dd></div>
+          <div><dt>Files</dt><dd><code>src/stores/clients.ts</code>, <code>src/lib/audit.ts</code></dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code></dd></div>
+        </dl>
+      </article>
+      <article class="task-card">
+        <h3>T2: CreateClientDialog + combobox create row</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Compact dialog; always-visible Create new client; drop prospect; simplify BuyerValue to ClientId|null</dd></div>
+          <div><dt>Files</dt><dd><code>CreateClientDialog.tsx</code>, <code>ClientCombobox.tsx</code>, hold/contract/transfer dialogs</dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Verify</dt><dd>Manual: create from hold and contract selects new buyer</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" disabled> Create new client visible without typing in buyer combobox</li>
+        <li><input type="checkbox" disabled> Hold and contract can select a newly created Client</li>
+        <li><input type="checkbox" disabled> Prospect create path gone from combobox</li>
+        <li><input type="checkbox" disabled> <code>npx tsc --noEmit -p tsconfig.app.json</code> clean for these changes</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
