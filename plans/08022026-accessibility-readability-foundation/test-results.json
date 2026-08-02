@@ -1,0 +1,170 @@
+{
+  "plan": "plans/08022026-accessibility-readability-foundation",
+  "generatedAt": "2026-08-02",
+  "status": "In Progress",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Repository quality gates pass",
+      "surface": "cli",
+      "precondition": "Run from the recorded accessibility worktree with dependencies installed.",
+      "steps": [
+        "Run the configured TypeScript check.",
+        "Run lint, production build, and mock-data validation.",
+        "Check the diff for whitespace errors and disallowed fixed text utilities."
+      ],
+      "expected": "All required gates exit successfully, with no new lint errors or disallowed typography utilities.",
+      "status": "pass",
+      "evidence": "TypeScript, build, mock validation, and git diff checks exited 0. Lint exited 0 with existing warnings only. Static inventory found zero non-print fixed-pixel text utilities and zero truncation utilities.",
+      "notes": "The repository does not define check:all or check:conventions scripts, so the documented project gates were used.",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Display preferences scale text and persist",
+      "surface": "ui",
+      "precondition": "Open the app with browser storage enabled.",
+      "steps": [
+        "Open Display Settings before authentication.",
+        "Select Standard, Large, and Extra Large text.",
+        "Reload, sign in, sign out, and reset demo data.",
+        "Enable Enhanced Contrast and Reduced Motion."
+      ],
+      "expected": "Text scales to 100%, 112.5%, and 125%. Every preference persists through the approved lifecycle.",
+      "status": "pass",
+      "evidence": "Automated browser acceptance verified 16px, 18px, and 20px body values, pre-auth settings, persistence, and demo reset behavior. Static contrast checks passed the specified thresholds.",
+      "notes": "Account synchronization remains outside this release.",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Map and accessible Lot List stay aligned",
+      "surface": "ui",
+      "precondition": "Sign in with the deterministic demo account and open Map.",
+      "steps": [
+        "Apply representative map filters.",
+        "Switch from Map to List.",
+        "Inspect the result announcement and 25-item page.",
+        "Open a permitted lot, close its details, and return to Map."
+      ],
+      "expected": "Map and List share scoped results. Restricted fields stay hidden, and focus returns to the opening action.",
+      "status": "pass",
+      "evidence": "Automated browser acceptance verified 25-item pagination, permission-safe rows, detail focus, focus return, view persistence, and Map restoration.",
+      "notes": "The map canvas remains a visual enhancement; the Lot List is the nonvisual path.",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Core forms expose usable invalid states",
+      "surface": "ui",
+      "precondition": "Open Login, Sales and Payments, and Burials with the demo data set.",
+      "steps": [
+        "Submit Login with invalid input.",
+        "Attempt the representative Sales hold flow with missing data.",
+        "Advance the representative Burials form with missing data."
+      ],
+      "expected": "Each form identifies invalid fields, associates guidance, and announces the actionable error state.",
+      "status": "pass",
+      "evidence": "Automated browser acceptance verified Login alerts and field associations, the Sales required combobox and disabled submit state, and Burials error announcements.",
+      "notes": "The acceptance run covered representative failure paths without changing business rules.",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Routes reflow across approved sizes",
+      "surface": "ui",
+      "precondition": "Sign in and use the registered application routes.",
+      "steps": [
+        "Open each registered route at every text preference.",
+        "Check the three core workflows at desktop, laptop, and both tablet orientations.",
+        "Check Map and List at an effective 320 CSS-pixel width.",
+        "Use the narrow-layout navigation sheet."
+      ],
+      "expected": "No route crashes or creates document overflow. Essential controls remain reachable and meet the approved target floor.",
+      "status": "pass",
+      "evidence": "Automated browser acceptance passed 11 routes at three text sizes, four representative viewports, tablet navigation, 320 CSS-pixel reflow, and shared target-size checks.",
+      "notes": "The browser run completed 95 checks without uncaught page errors.",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Map editor geometry remains aligned",
+      "surface": "ui",
+      "precondition": "Sign in with permission to open the map editor.",
+      "steps": [
+        "Run the map editor alignment check.",
+        "Run the guided map editor browser smoke test."
+      ],
+      "expected": "The readability changes preserve editor alignment, layered controls, and existing geometry behavior.",
+      "status": "pass",
+      "evidence": "qa/map-editor-alignment.ts and qa/map-editor-layered-smoke.mjs both passed against the isolated worktree runtime.",
+      "notes": "Dense 24px geometry handles remain an approved canvas exception.",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Keyboard, zoom, theme, and success-path review",
+      "surface": "ui",
+      "precondition": "Use a desktop browser with the demo account and a visible focus indicator.",
+      "steps": [
+        "Complete all three core workflows using only the keyboard.",
+        "Repeat representative routes at 200% browser zoom.",
+        "Check Standard and Enhanced Contrast in light and dark themes.",
+        "Complete representative success paths for Sales and Burials."
+      ],
+      "expected": "Focus order, focus return, reflow, contrast presentation, and success feedback remain usable without clipped essential actions.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Record browser, operating system, text preference, contrast mode, result, and screenshots.",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "NVDA and Chrome representative review",
+      "surface": "ui",
+      "precondition": "Use current NVDA with Chrome on Windows and the demo account.",
+      "steps": [
+        "Check skip navigation and route announcements.",
+        "Operate Map and Lot List without the canvas.",
+        "Complete representative Sales and Burials form checks."
+      ],
+      "expected": "Names, roles, states, result updates, errors, and focus changes are announced clearly.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Record Windows, Chrome, and NVDA versions, plus text and contrast preferences.",
+      "waiver": ""
+    },
+    {
+      "id": "T9",
+      "title": "VoiceOver and Safari iPad review",
+      "surface": "ui",
+      "precondition": "Use VoiceOver with Safari on an iPad and the demo account.",
+      "steps": [
+        "Check settings and navigation in portrait orientation.",
+        "Operate Map and Lot List in both orientations.",
+        "Complete representative Sales and Burials form checks."
+      ],
+      "expected": "Touch exploration and swipe navigation expose clear names, states, errors, and reachable actions in both orientations.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Record iPad, iPadOS, Safari, and VoiceOver versions, plus text and contrast preferences.",
+      "waiver": ""
+    },
+    {
+      "id": "T10",
+      "title": "TalkBack and Chrome Android review",
+      "surface": "ui",
+      "precondition": "Use TalkBack with Chrome on Android and the demo account.",
+      "steps": [
+        "Check settings and navigation in portrait orientation.",
+        "Operate Map and Lot List in both orientations.",
+        "Complete representative Sales and Burials form checks."
+      ],
+      "expected": "Touch exploration and swipe navigation expose clear names, states, errors, and reachable actions in both orientations.",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Record device, Android, Chrome, and TalkBack versions, plus text and contrast preferences.",
+      "waiver": ""
+    }
+  ]
+}

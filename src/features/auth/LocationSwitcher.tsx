@@ -27,7 +27,7 @@ export function LocationSwitcher() {
   if (!canSwitch) {
     const loc = locations[0]
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[12px] text-muted">
+      <span className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-surface-2 px-3 py-2 text-caption text-muted">
         <Icon icon={IconLocation} size={14} />
         {loc?.name ?? '—'}
       </span>
@@ -39,7 +39,7 @@ export function LocationSwitcher() {
       value={activeId ?? ALL}
       onValueChange={(v) => switchLocation(v === ALL ? null : (v as LocationId))}
     >
-      <SelectTrigger size="sm" className="h-8 w-[190px] text-[12.5px]">
+      <SelectTrigger size="sm" className="w-[min(190px,100%)] text-control">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

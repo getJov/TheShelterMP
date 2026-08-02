@@ -50,7 +50,7 @@ export function ScheduleTable({
         <span className="eyebrow text-gold-deep dark:text-gold">
           Amortization · {schedule.length} months
         </span>
-        <span className="flex items-center gap-1.5 text-[11.5px] text-muted">
+        <span className="flex flex-wrap items-center gap-1.5 text-caption text-muted">
           No downpayment, no interest
           <AssumedChip why={ASSUMPTIONS.downpayment.why} />
           <AssumedChip why={ASSUMPTIONS.interest.why} />
@@ -58,7 +58,7 @@ export function ScheduleTable({
       </div>
 
       <ScrollArea style={{ maxHeight }} className="overflow-y-auto">
-        <table className="w-full text-[12.5px]">
+        <table className="w-full text-body">
           <thead className="sticky top-0 z-10 bg-surface-2">
             <tr className="eyebrow text-gold-deep dark:text-gold">
               <th className="px-3.5 py-1.5 text-left font-semibold">#</th>
@@ -79,7 +79,7 @@ export function ScheduleTable({
                     lit && 'bg-gold/10',
                   )}
                 >
-                  <td className="px-3.5 py-1.5 font-mono text-[11.5px] text-muted">
+                  <td className="px-3.5 py-2 font-mono text-caption text-muted">
                     {String(i.installmentNo).padStart(2, '0')}
                   </td>
                   <td className="px-3.5 py-1.5 tabular text-ink">{fmtDate(i.dueDate)}</td>
@@ -107,7 +107,7 @@ export function ScheduleTable({
         </table>
       </ScrollArea>
 
-      <div className="flex items-center justify-between border-t border-line bg-surface-2 px-3.5 py-2 text-[12px]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2 px-3.5 py-2 text-caption">
         <span className="text-muted">Schedule total</span>
         <span className="flex gap-4">
           <span className="text-muted">

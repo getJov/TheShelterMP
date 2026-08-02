@@ -47,7 +47,7 @@ export function BrandTooltip({
       {label !== undefined && (
         <p className="eyebrow mb-0.5 text-muted">{String(label)}</p>
       )}
-      <p className="text-[12.5px] font-semibold tabular text-ink">
+      <p className="text-caption font-semibold tabular text-ink">
         {value}
         {suffix && <span className="ml-1 font-normal text-muted">{suffix}</span>}
       </p>
@@ -239,7 +239,7 @@ export function LegendRow({
         onClick?.()
       }}
       className={cn(
-        'flex w-full items-center gap-2 rounded px-1 py-[3px] text-left text-[12px] transition-colors',
+        'flex min-h-10 w-full items-center gap-2 rounded px-1 py-[3px] text-left text-caption transition-colors',
         onClick ? 'cursor-pointer hover:bg-surface-2' : 'cursor-default',
       )}
     >
@@ -248,7 +248,7 @@ export function LegendRow({
         style={{ background: color }}
         aria-hidden
       />
-      <span className={cn('min-w-0 flex-1 truncate', emphasise ? 'text-ink' : 'text-muted')}>
+      <span className={cn('min-w-0 flex-1 break-words', emphasise ? 'text-ink' : 'text-muted')}>
         {label}
       </span>
       {count !== undefined && (

@@ -64,7 +64,7 @@ export function ServicesTab() {
     {
       key: 'code',
       header: 'Code',
-      cell: (s) => <span className="font-mono text-[12px]">{s.code}</span>,
+      cell: (s) => <span className="font-mono text-caption">{s.code}</span>,
       sortBy: (s) => s.code,
       width: '150px',
     },
@@ -78,7 +78,7 @@ export function ServicesTab() {
       key: 'category',
       header: 'Category',
       cell: (s) => (
-        <Badge variant="outline" className="text-[11px]">
+        <Badge variant="outline" className="text-micro">
           {CATEGORY_LABEL[s.category]}
         </Badge>
       ),
@@ -149,7 +149,7 @@ export function ServicesTab() {
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 text-muted"
+            className="size-10 text-muted"
             aria-label="Edit service"
             onClick={() => {
               setEditing(s)
@@ -162,7 +162,7 @@ export function ServicesTab() {
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 text-muted"
+              className="size-10 text-muted"
               aria-label="Archive service"
               onClick={() => {
                 archiveService(s.id)
@@ -293,7 +293,7 @@ function ServiceDialog({
             <Input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              className="font-mono text-[12px]"
+              className="font-mono text-caption"
               placeholder="OPEN_CLOSE"
             />
           </div>
@@ -350,7 +350,7 @@ function ServiceDialog({
             </Select>
           </div>
           <div className="col-span-2 flex items-center justify-between rounded-md border border-line bg-surface-2 px-3 py-2">
-            <span className="text-[13px]">Active in the catalog</span>
+            <span className="text-caption">Active in the catalog</span>
             <Switch checked={active} onCheckedChange={setActive} />
           </div>
         </div>

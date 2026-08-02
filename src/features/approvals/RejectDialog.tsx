@@ -56,30 +56,32 @@ export function RejectDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[22px]">
+          <DialogTitle className="font-display text-section-title">
             Reject this {meta.label.toLowerCase()}?
           </DialogTitle>
           <DialogDescription>{taskHeadline(task)}</DialogDescription>
         </DialogHeader>
 
-        <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] leading-relaxed text-ink">
+        <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-caption leading-relaxed text-ink">
           <Icon icon={IconWarning} size={15} className="mt-0.5 shrink-0 text-danger" />
           {CONSEQUENCE[task.kind]}
         </p>
 
         <div className="space-y-1.5">
-          <Label htmlFor="reject-reason" className="text-[12.5px] text-muted">
+          <Label htmlFor="reject-reason" className="text-caption text-muted">
             Reason (required)
           </Label>
           <Textarea
             id="reject-reason"
+            aria-describedby="reject-reason-help"
+            required
             rows={3}
             autoFocus
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="The family already reserved the adjacent lot…"
           />
-          <p className="text-[11.5px] text-muted">
+          <p id="reject-reason-help" className="text-caption text-muted">
             The person who asked sees this reason, and it goes onto the audit trail.
           </p>
         </div>

@@ -8,7 +8,6 @@ export function MoneyText({
   decimals,
   sign,
   muted,
-  size,
   className,
 }: {
   centavos: Centavos | null | undefined
@@ -16,13 +15,11 @@ export function MoneyText({
   decimals?: boolean
   sign?: boolean
   muted?: boolean
-  size?: number
   className?: string
 }) {
   return (
     <span
       className={cn('tabular', muted && 'text-muted', className)}
-      style={size ? { fontSize: size } : undefined}
     >
       {formatPeso(centavos, { compact, decimals, sign })}
     </span>

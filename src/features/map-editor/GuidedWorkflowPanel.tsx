@@ -75,8 +75,8 @@ export function GuidedWorkflowPanel() {
   return (
     <section className="border-b border-line px-3.5 py-3.5">
       <div className="mb-3">
-        <p className="text-[12.5px] font-semibold text-ink">Layout setup</p>
-        <p className="mt-0.5 text-[11.5px] leading-snug text-muted">
+        <p className="text-caption font-semibold text-ink">Layout setup</p>
+        <p className="mt-0.5 text-caption leading-snug text-muted">
           Work from top to bottom. Use Advanced only when the normal step does not cover the job.
         </p>
       </div>
@@ -91,7 +91,7 @@ export function GuidedWorkflowPanel() {
                 onClick={() => setLayerMode(step.id)}
                 aria-label={`Open ${step.label} step`}
                 className={cn(
-                  'flex w-full items-start gap-2.5 rounded-md border px-2.5 py-2 text-left transition-colors',
+                  'flex min-h-10 w-full items-start gap-2.5 rounded-md border px-2.5 py-2 text-left transition-colors',
                   active
                     ? 'border-gold bg-gold/10 text-ink'
                     : 'border-line bg-surface hover:bg-surface-2',
@@ -100,7 +100,7 @@ export function GuidedWorkflowPanel() {
               >
                 <span
                   className={cn(
-                    'mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border font-mono text-[10px] font-semibold tabular',
+                    'mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border font-mono text-micro font-semibold tabular',
                     active
                       ? 'border-gold bg-gold text-black'
                       : 'border-line bg-surface-2 text-muted',
@@ -109,15 +109,15 @@ export function GuidedWorkflowPanel() {
                   {index + 1}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink">
+                  <span className="flex items-center gap-1.5 text-caption font-semibold text-ink">
                     <Icon icon={step.icon} size={13} className="text-muted" />
                     {step.label}
                   </span>
-                  <span className="mt-0.5 block text-[11px] leading-snug text-muted">
+                  <span className="mt-0.5 block text-micro leading-snug text-muted">
                     {active ? step.hint : step.plainAction}
                   </span>
                 </span>
-                <span className="mt-0.5 shrink-0 text-right font-mono text-[10px] text-muted">
+                <span className="mt-0.5 shrink-0 text-right font-mono text-micro text-muted">
                   {stepStatus(step.id, {
                     blocks: blocks.length,
                     lots: lots.length,

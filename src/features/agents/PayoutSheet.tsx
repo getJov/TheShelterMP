@@ -39,7 +39,7 @@ export function PayoutSheet({
       }`}</style>
 
       <div className="no-print sticky top-0 z-10 flex items-center gap-2 border-b border-line bg-surface px-5 py-2.5">
-        <p className="text-[13px] font-medium text-ink">Payout sheet</p>
+        <p className="text-caption font-medium text-ink">Payout sheet</p>
         <div className="ml-auto flex items-center gap-2">
           <Button size="sm" className="gap-1.5" onClick={() => window.print()}>
             <Icon icon={IconPrint} size={15} /> Print
@@ -52,17 +52,17 @@ export function PayoutSheet({
 
       <div className="mx-auto max-w-[860px] px-8 py-8 print:max-w-none print:px-0 print:py-0">
         <header className="border-b border-line pb-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-gold-deep">
+          <p className="text-micro uppercase tracking-[0.14em] text-gold-deep">
             {PARK_FACTS.corporateName}
           </p>
-          <h1 className="mt-1 font-display text-[26px] font-semibold text-ink">
+          <h1 className="mt-1 font-display text-page-title font-semibold text-ink">
             Commission payout sheet
           </h1>
-          <p className="mt-1 text-[13px] text-muted">
+          <p className="mt-1 text-caption text-muted">
             Period {fmtDateLong(run.periodStart)} → {fmtDateLong(run.periodEnd)} ·
             Release {fmtDateLong(run.releaseDate)}
           </p>
-          <p className="mt-0.5 text-[12px] text-muted">
+          <p className="mt-0.5 text-caption text-muted">
             Saturday to Thursday window; Sunday excluded from the earning window.
             {run.locationId
               ? ` ${indexes().locationsById.get(run.locationId)?.name ?? ''}`
@@ -70,28 +70,28 @@ export function PayoutSheet({
           </p>
         </header>
 
-        <table className="mt-5 w-full border-collapse text-[13px]">
+        <table className="mt-5 w-full border-collapse text-caption">
           <thead>
             <tr className="border-b border-line text-left">
-              <th className="py-2 pr-3 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-micro uppercase tracking-[0.08em] text-muted">
                 #
               </th>
-              <th className="py-2 pr-3 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-micro uppercase tracking-[0.08em] text-muted">
                 Agent
               </th>
-              <th className="py-2 pr-3 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-micro uppercase tracking-[0.08em] text-muted">
                 Code
               </th>
-              <th className="py-2 pr-3 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-micro uppercase tracking-[0.08em] text-muted">
                 Level
               </th>
-              <th className="py-2 pr-3 text-right text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-right text-micro uppercase tracking-[0.08em] text-muted">
                 Entries
               </th>
-              <th className="py-2 pr-3 text-right text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="py-2 pr-3 text-right text-micro uppercase tracking-[0.08em] text-muted">
                 Amount
               </th>
-              <th className="w-[190px] py-2 text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <th className="w-[190px] py-2 text-micro uppercase tracking-[0.08em] text-muted">
                 Signature &amp; date
               </th>
             </tr>
@@ -105,10 +105,10 @@ export function PayoutSheet({
                   <td className="py-2.5 pr-3 font-medium text-ink">
                     {agentName(g.agentId)}
                   </td>
-                  <td className="py-2.5 pr-3 font-mono text-[11.5px] text-muted">
+                  <td className="py-2.5 pr-3 font-mono text-caption text-muted">
                     {agent?.agentCode ?? '—'}
                   </td>
-                  <td className="py-2.5 pr-3 text-[12.5px] text-muted">
+                  <td className="py-2.5 pr-3 text-caption text-muted">
                     {agent ? levelLabel(agent.level) : '—'}
                   </td>
                   <td className="py-2.5 pr-3 text-right tabular">{g.entries.length}</td>
@@ -128,7 +128,7 @@ export function PayoutSheet({
                 Total — {groups.length} agent{groups.length === 1 ? '' : 's'}
               </td>
               <td className="py-3 pr-3 text-right tabular">{entryCount}</td>
-              <td className="py-3 pr-3 text-right font-display text-[19px] font-semibold tabular text-ink">
+              <td className="py-3 pr-3 text-right font-display text-small-title font-semibold tabular text-ink">
                 {formatPeso(total)}
               </td>
               <td />
@@ -136,7 +136,7 @@ export function PayoutSheet({
           </tfoot>
         </table>
 
-        <div className="mt-10 grid grid-cols-2 gap-10 text-[12.5px]">
+        <div className="mt-10 grid grid-cols-2 gap-10 text-caption">
           <div>
             <span className="block h-8 border-b border-line" />
             <p className="mt-1 text-muted">Prepared by</p>

@@ -19,7 +19,7 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => navigate('/map')}
-            className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[12px] text-muted transition-colors hover:text-ink"
+            className="flex min-h-10 items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-control text-muted transition-colors hover:text-ink"
           >
             <Icon icon={IconMap} size={14} />
             Open the map

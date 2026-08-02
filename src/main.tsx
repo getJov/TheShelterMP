@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@/styles/globals.css'
 import App from '@/App'
+import {
+  applyAccessibilityPreferences,
+  getStoredAccessibilityPreferences,
+} from '@/lib/accessibility-preferences'
 
 /**
  * ?demo=1 — start from a clean slate.
@@ -26,6 +30,8 @@ if (new URLSearchParams(window.location.search).has('demo')) {
   url.searchParams.delete('demo')
   window.history.replaceState({}, '', url)
 }
+
+applyAccessibilityPreferences(getStoredAccessibilityPreferences())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

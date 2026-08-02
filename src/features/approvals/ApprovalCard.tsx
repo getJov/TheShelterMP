@@ -54,7 +54,7 @@ export function ApprovalCard({
         selected ? 'border-gold' : 'border-line',
       )}
     >
-      <div className="flex items-start gap-3 p-3.5">
+      <div className="flex flex-col items-stretch gap-3 p-3.5 sm:flex-row sm:items-start">
         {selectable && (
           <span className="pt-1" onClick={(e) => e.stopPropagation()}>
             <Checkbox
@@ -69,22 +69,22 @@ export function ApprovalCard({
           type="button"
           onClick={onToggle}
           aria-expanded={expanded}
-          className="min-w-0 flex-1 text-left"
+          className="min-h-11 min-w-0 flex-1 rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.06em]',
+                'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-micro font-medium uppercase tracking-[0.06em]',
                 meta.tone,
               )}
             >
               <Icon icon={meta.icon} size={12} />
               {meta.label}
             </span>
-            <span className="min-w-0 truncate font-mono text-[13.5px] text-ink">
+            <span className="min-w-0 break-words font-mono text-caption text-ink">
               {taskHeadline(task)}
             </span>
-            <span className="ml-auto shrink-0 text-[11.5px] text-muted">
+            <span className="ml-auto shrink-0 text-caption text-muted">
               {fmtRelative(task.requestedAt, NOW)}
             </span>
             <Icon
@@ -103,7 +103,7 @@ export function ApprovalCard({
         </button>
 
         {/* Pinned: these stay in the same place whether the card is 92px or 600px. */}
-        <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 pt-0.5">
           <Button
             variant="outline"
             size="sm"

@@ -65,13 +65,13 @@ export function AsOfControl({
                     setOpen(false)
                   }}
                   className={cn(
-                    'flex items-baseline justify-between gap-4 rounded-md px-2 py-1.5 text-left text-[13px]',
+                    'flex min-h-10 items-baseline justify-between gap-4 rounded-md px-2 py-1.5 text-left text-caption',
                     'transition-colors hover:bg-surface-2',
                     value === p.date && 'bg-gold/12 text-gold-deep dark:text-gold',
                   )}
                 >
                   <span className="font-medium">{p.label}</span>
-                  <span className="text-[11.5px] text-muted">{p.hint}</span>
+                  <span className="text-caption text-muted">{p.hint}</span>
                 </button>
               ))}
             </div>

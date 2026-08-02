@@ -62,7 +62,7 @@ export function AgentCommissionsByRun({ agentId }: { agentId: AgentId }) {
       <div className="flex flex-wrap items-center gap-2">
         <p className="eyebrow text-gold-deep dark:text-gold">Commission entries</p>
         <RatesAssumed />
-        <span className="ml-auto text-[12.5px] text-muted">
+        <span className="ml-auto text-caption text-muted">
           {groups.reduce((s, g) => s + g.entries.length, 0)} entries ·{' '}
           <span className="tabular font-medium text-ink">
             {formatPeso(total, { decimals: false })}
@@ -121,27 +121,27 @@ function RunGroupCard({
           />
           {run ? (
             <>
-              <span className="text-[13.5px] font-medium text-ink">
+              <span className="text-caption font-medium text-ink">
                 {fmtDate(run.periodStart)} → {fmtDate(run.periodEnd)}
               </span>
               <RunStatusChip status={run.status} />
               <Link
                 to={`/agents/payouts/${run.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-[12px] text-muted hover:text-ink hover:underline"
+                className="text-caption text-muted hover:text-ink hover:underline"
               >
                 open run
               </Link>
             </>
           ) : (
-            <span className="text-[13.5px] font-medium text-ink">
+            <span className="text-caption font-medium text-ink">
               Not yet in a payout run
             </span>
           )}
-          <span className="ml-auto text-[12.5px] text-muted">
+          <span className="ml-auto text-caption text-muted">
             {group.entries.length} entries
           </span>
-          <span className="w-[110px] text-right font-display text-[17px] font-semibold tabular text-ink">
+          <span className="w-[110px] text-right font-display text-small-title font-semibold tabular text-ink">
             {formatPeso(group.totalCentavos)}
           </span>
         </button>
@@ -149,7 +149,7 @@ function RunGroupCard({
 
       <CollapsibleContent>
         <div className="overflow-x-auto border-t border-line-soft">
-          <table className="w-full text-[12.5px]">
+          <table className="w-full text-caption">
             <thead>
               <tr className="bg-surface-2 text-left">
                 {['Earned', 'Contract', 'OR no.', 'Level', 'Rate', 'Basis', 'Commission', 'Status'].map(
@@ -157,7 +157,7 @@ function RunGroupCard({
                     <th
                       key={h}
                       className={cn(
-                        'px-3.5 py-2 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-gold-deep dark:text-gold',
+                        'px-3.5 py-2 text-micro font-semibold uppercase tracking-[0.08em] text-gold-deep dark:text-gold',
                         i >= 4 && i <= 6 && 'text-right',
                       )}
                     >
@@ -173,10 +173,10 @@ function RunGroupCard({
                   <td className="px-3.5 py-1.5 whitespace-nowrap">
                     {fmtDate(e.earnedAt.slice(0, 10))}
                   </td>
-                  <td className="px-3.5 py-1.5 font-mono text-[11.5px] text-muted">
+                  <td className="px-3.5 py-1.5 font-mono text-caption text-muted">
                     {indexes().contractsById.get(e.contractId)?.contractNo ?? '—'}
                   </td>
-                  <td className="px-3.5 py-1.5 font-mono text-[11.5px] text-muted">
+                  <td className="px-3.5 py-1.5 font-mono text-caption text-muted">
                     {indexes().paymentsById.get(e.paymentId)?.orNo ?? '—'}
                   </td>
                   <td className="px-3.5 py-1.5">

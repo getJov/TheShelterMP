@@ -102,7 +102,7 @@ export function CommissionsTab() {
       header: 'Earned',
       sortBy: (e) => e.earnedAt,
       cell: (e) => (
-        <span className="whitespace-nowrap text-[12.5px]">
+        <span className="whitespace-nowrap text-caption">
           {fmtDate(e.earnedAt.slice(0, 10))}
         </span>
       ),
@@ -138,7 +138,7 @@ export function CommissionsTab() {
       key: 'contract',
       header: 'Contract',
       cell: (e) => (
-        <span className="font-mono text-[11.5px] text-muted">
+        <span className="font-mono text-caption text-muted">
           {indexes().contractsById.get(e.contractId)?.contractNo ?? '—'}
         </span>
       ),
@@ -147,7 +147,7 @@ export function CommissionsTab() {
       key: 'or',
       header: 'OR no.',
       cell: (e) => (
-        <span className="font-mono text-[11.5px] text-muted">
+        <span className="font-mono text-caption text-muted">
           {indexes().paymentsById.get(e.paymentId)?.orNo ?? '—'}
         </span>
       ),
@@ -184,14 +184,14 @@ export function CommissionsTab() {
         e.payoutRunId ? (
           <Link
             to={`/agents/payouts/${e.payoutRunId}`}
-            className="font-mono text-[11.5px] text-muted hover:text-ink hover:underline"
+            className="font-mono text-caption text-muted hover:text-ink hover:underline"
           >
             {indexes().payoutRunsById.get(e.payoutRunId)
               ? fmtDate(indexes().payoutRunsById.get(e.payoutRunId)!.periodStart)
               : e.payoutRunId}
           </Link>
         ) : (
-          <span className="text-[12px] text-muted">Unassigned</span>
+          <span className="text-caption text-muted">Unassigned</span>
         ),
     },
   ]
@@ -199,7 +199,7 @@ export function CommissionsTab() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
+        <div className="relative min-w-0 flex-[1_1_230px]">
           <Icon
             icon={IconSearch}
             size={15}
@@ -212,7 +212,7 @@ export function CommissionsTab() {
               setPage(0)
             }}
             placeholder="Agent, contract or OR no."
-            className="h-8 w-[230px] pl-8 text-[13px]"
+            className="w-full pl-8 text-caption"
           />
         </div>
 
@@ -223,7 +223,7 @@ export function CommissionsTab() {
             setPage(0)
           }}
         >
-          <SelectTrigger size="sm" className="w-[160px]">
+          <SelectTrigger size="sm" className="w-full sm:w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -243,7 +243,7 @@ export function CommissionsTab() {
             setPage(0)
           }}
         >
-          <SelectTrigger size="sm" className="w-[170px]">
+          <SelectTrigger size="sm" className="w-full sm:w-[170px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -263,7 +263,7 @@ export function CommissionsTab() {
             setPage(0)
           }}
         >
-          <SelectTrigger size="sm" className="w-[210px]">
+          <SelectTrigger size="sm" className="w-full sm:w-[210px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -276,7 +276,7 @@ export function CommissionsTab() {
           </SelectContent>
         </Select>
 
-        <span className="ml-auto text-[12px] text-muted">{period.label}</span>
+        <span className="ml-auto text-caption text-muted">{period.label}</span>
       </div>
 
       <DataTable
@@ -305,7 +305,7 @@ export function CommissionsTab() {
                 </span>
               ))}
             </div>
-            <p className="text-[11.5px] text-muted">
+            <p className="text-caption text-muted">
               Rows are based on posted payments and the contract upline recorded
               at signing.
             </p>
@@ -323,7 +323,7 @@ export function CommissionsTab() {
           >
             Previous
           </Button>
-          <span className="tabular text-[12.5px] text-muted">
+          <span className="tabular text-caption text-muted">
             Page {safePage + 1} of {pageCount}
           </span>
           <Button

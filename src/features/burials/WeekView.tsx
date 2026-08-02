@@ -42,7 +42,12 @@ export function WeekView({
   onOpenInterment: (i: Interment) => void
 }) {
   return (
-    <div className="overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface">
+    <div
+      className="overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface"
+      role="region"
+      aria-label="Week burial calendar"
+      tabIndex={0}
+    >
       <div className="min-w-[860px]">
         <div className="grid grid-cols-[76px_repeat(7,minmax(0,1fr))] border-b border-line bg-surface-2">
           <div />
@@ -57,7 +62,7 @@ export function WeekView({
               <p className="eyebrow text-muted">{DOW[n]}</p>
               <p
                 className={cn(
-                  'font-display text-[16px] leading-tight',
+                  'text-small-title font-display leading-tight',
                   d === today ? 'font-semibold text-gold-deep dark:text-gold' : 'text-ink',
                 )}
               >
@@ -72,7 +77,7 @@ export function WeekView({
             key={slot}
             className="grid grid-cols-[76px_repeat(7,minmax(0,1fr))] border-b border-line-soft last:border-b-0"
           >
-            <div className="flex items-start gap-1.5 px-2 py-3 text-[12px] text-muted">
+            <div className="text-caption flex items-start gap-1.5 px-2 py-3 text-muted">
               <SlotIcon slot={slot} size={13} />
               <span className="leading-tight">{SLOT_LABEL[slot]}</span>
             </div>
@@ -94,12 +99,13 @@ export function WeekView({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.28, ease: EASE, delay: n * 0.02 }}
                       onClick={() => onOpenInterment(i)}
+                      aria-label={`View ${deceasedFullName(i)} on ${d}, ${slot}`}
                       className="w-full rounded-lg border border-line bg-surface p-2 text-left transition-colors hover:border-gold"
                     >
-                      <p className="truncate font-display text-[14px] leading-tight text-ink">
+                      <p className="text-body font-display leading-tight text-ink">
                         {deceasedFullName(i)}
                       </p>
-                      <p className="mt-0.5 truncate font-mono text-[11px] text-muted">
+                      <p className="text-micro mt-0.5 font-mono text-muted">
                         {lotCode(i.lotId)}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-1">
@@ -123,13 +129,14 @@ export function WeekView({
                     <button
                       type="button"
                       onClick={() => onOpenSlot(d, slot)}
-                      className="flex h-full min-h-[64px] w-full items-center justify-center gap-1 rounded-lg border border-dashed border-line text-[11.5px] text-muted transition-colors hover:border-gold hover:text-gold-deep dark:hover:text-gold"
+                      aria-label={`Schedule ${slot} burial on ${d}`}
+                      className="text-caption flex h-full min-h-16 w-full items-center justify-center gap-1 rounded-lg border border-dashed border-line text-muted transition-colors hover:border-gold hover:text-gold-deep dark:hover:text-gold"
                     >
                       <Icon icon={IconAdd} size={13} />
                       Open
                     </button>
                   ) : (
-                    <div className="flex h-full min-h-[64px] items-center justify-center text-[11.5px] text-muted/60">
+                    <div className="text-caption flex h-full min-h-16 items-center justify-center text-muted/60">
                       —
                     </div>
                   )}
@@ -139,7 +146,7 @@ export function WeekView({
           </div>
         ))}
       </div>
-      <p className="border-t border-line bg-surface-2 px-3 py-2 text-[11.5px] text-muted">
+      <p className="text-caption border-t border-line bg-surface-2 px-3 py-2 text-muted">
         {fmtDateShort(days[0]!)} – {fmtDateShort(days[6]!)} · two services a day, no more.
       </p>
     </div>

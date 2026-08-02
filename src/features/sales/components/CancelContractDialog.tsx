@@ -66,7 +66,7 @@ export function CancelContractDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="sm:max-w-[560px]">
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-display text-[21px]">
+          <AlertDialogTitle className="font-display text-section-title">
             Cancel contract {contract?.contractNo}?
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -75,7 +75,7 @@ export function CancelContractDialog({
         </AlertDialogHeader>
 
         {c && (
-          <ul className="space-y-2 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-[12.5px]">
+          <ul className="space-y-2 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-body">
             <Consequence tone="warn">
               Lot <span className="font-mono text-ink">{c.lotCode}</span> returns to{' '}
               <span className="text-ink">available</span>.
@@ -109,7 +109,7 @@ export function CancelContractDialog({
         )}
 
         <div className="space-y-1.5">
-          <Label htmlFor="cc-reason" className="text-[12.5px] text-muted">
+          <Label htmlFor="cc-reason" className="text-caption text-muted">
             Reason (required)
           </Label>
           <Textarea
@@ -118,7 +118,13 @@ export function CancelContractDialog({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Buyer requested cancellation after two missed installments."
+            required
+            aria-invalid={reason.length > 0 && reason.trim().length < 4}
+            aria-describedby="cc-reason-help"
           />
+          <p id="cc-reason-help" className="text-caption text-muted">
+            Enter at least four characters. This reason stays in the audit history.
+          </p>
         </div>
 
         <AlertDialogFooter>

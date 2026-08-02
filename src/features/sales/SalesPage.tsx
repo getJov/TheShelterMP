@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -96,7 +97,7 @@ export default function SalesPage() {
 
   if (isAgent && rows.length === 0) {
     return (
-      <div className="h-full overflow-y-auto p-6">
+      <div className="h-full overflow-y-auto p-4 sm:p-6">
         <EmptyState
           icon={IconContract}
           title="No contracts yet"
@@ -114,17 +115,17 @@ export default function SalesPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1400px] space-y-5 p-6">
+      <div className="mx-auto max-w-[1400px] space-y-5 p-4 sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="eyebrow text-gold-deep dark:text-gold">
               {isAgent ? 'My book' : 'Transactions'}
             </p>
-            <h1 className="font-display text-[30px] font-semibold leading-tight text-ink">
+            <h1 className="font-display text-page-title font-semibold text-ink">
               {isAgent ? 'My Sales' : 'Sales & Payments'}
             </h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {canHold && (
               <Button
                 variant="outline"
@@ -147,7 +148,7 @@ export default function SalesPage() {
         {canViewAll && <SummaryCards />}
 
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList>
+          <TabsList className="h-auto w-full flex-wrap justify-start">
             <TabsTrigger value="contracts">Contracts</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="receivables">Receivables</TabsTrigger>
@@ -292,7 +293,7 @@ function ContractsTab({
     {
       key: 'no',
       header: 'Contract',
-      cell: (r) => <span className="font-mono text-[12.5px]">{r.contractNo}</span>,
+      cell: (r) => <span className="font-mono">{r.contractNo}</span>,
       sortBy: (r) => r.contractNo,
       width: '132px',
     },
@@ -300,7 +301,7 @@ function ContractsTab({
     {
       key: 'lot',
       header: 'Lot',
-      cell: (r) => <span className="font-mono text-[12.5px]">{r.lotCode}</span>,
+      cell: (r) => <span className="font-mono">{r.lotCode}</span>,
       sortBy: (r) => r.lotCode,
       width: '96px',
     },
@@ -430,6 +431,7 @@ function ContractsTab({
         columns={columns}
         rowKey={(r) => r.contract.id}
         onRowClick={(r) => onOpen(r.contract.id)}
+        rowActionLabel={(r) => `View contract ${r.contractNo}`}
         emptyIcon={IconContract}
         empty={{
           title: 'No contracts match',
@@ -531,7 +533,7 @@ function PaymentsTab({
       cell: (p) => (
         <span
           className={cn(
-            'font-mono text-[12.5px]',
+            'font-mono',
             p.status === 'void' && 'line-through opacity-60',
           )}
         >
@@ -552,7 +554,7 @@ function PaymentsTab({
     {
       key: 'contract',
       header: 'Contract',
-      cell: (p) => <span className="font-mono text-[12.5px]">{p.contractNo}</span>,
+      cell: (p) => <span className="font-mono">{p.contractNo}</span>,
       sortBy: (p) => p.contractNo,
       width: '132px',
     },
@@ -602,11 +604,13 @@ function PaymentsTab({
       header: 'Status',
       cell: (p) =>
         p.status === 'void' ? (
-          <span className="rounded-full border border-danger/40 bg-danger/10 px-2 py-0.5 text-[12px] font-medium text-danger">
+          <span className="rounded-full border border-danger/40 bg-danger/10 px-2 py-0.5 text-caption font-medium text-danger">
             Void
           </span>
         ) : (
-          <span className="text-[12px] text-green">Posted</span>
+          <span className="rounded-full border border-green/40 bg-green/10 px-2 py-0.5 text-caption font-medium text-green">
+            Posted
+          </span>
         ),
       sortBy: (p) => p.status,
     },
@@ -634,16 +638,23 @@ function PaymentsTab({
             { value: 'void', label: 'Void' },
           ]}
         />
-        <div className="flex items-center gap-1.5">
-          <span className="text-[11.5px] text-muted">From</span>
-          <DateField value={from} onChange={setFrom} max={to} className="w-[148px]" />
-          <span className="text-[11.5px] text-muted">to</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <Label htmlFor="payments-from" className="text-caption text-muted">From</Label>
           <DateField
+            id="payments-from"
+            value={from}
+            onChange={setFrom}
+            max={to}
+            className="w-full sm:w-auto"
+          />
+          <Label htmlFor="payments-to" className="text-caption text-muted">to</Label>
+          <DateField
+            id="payments-to"
             value={to}
             onChange={setTo}
             min={from}
             max={TODAY}
-            className="w-[148px]"
+            className="w-full sm:w-auto"
           />
         </div>
       </FilterBar>
@@ -653,6 +664,7 @@ function PaymentsTab({
         columns={columns}
         rowKey={(p) => p.id}
         onRowClick={(p) => onOpen(p.contractId)}
+        rowActionLabel={(p) => `View contract ${p.contractNo} for payment ${p.orNo}`}
         emptyIcon={IconPayment}
         empty={{ title: 'No payments in range', body: 'Widen the date range or filters.' }}
         footer={
@@ -751,9 +763,9 @@ function ReceivablesTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5 text-[12.5px]">
+      <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-2.5 text-body">
         <span className="text-muted">Total receivable</span>
-        <MoneyText centavos={totalShown} className="text-[15px] font-medium text-ink" />
+        <MoneyText centavos={totalShown} className="text-small-title font-medium text-ink" />
         <span className="ml-auto text-muted">
           {canPost
             ? "The same figure as the dashboard's Receivables card."
@@ -770,12 +782,12 @@ function ReceivablesTab({
           <section key={bucket}>
             <div className="mb-2 flex flex-wrap items-baseline gap-2">
               <HealthChip health={bucket} />
-              <span className="text-[12.5px] text-muted">
+              <span className="text-caption text-muted">
                 {formatCount(rowsIn.length)} contract{rowsIn.length === 1 ? '' : 's'}
               </span>
               <MoneyText
                 centavos={total}
-                className="ml-auto text-[14px] font-medium text-ink"
+                className="ml-auto text-body font-medium text-ink"
               />
             </div>
 
@@ -789,10 +801,10 @@ function ReceivablesTab({
                     <button
                       type="button"
                       onClick={() => onOpen(r.contract.id)}
-                      className="min-w-[220px] flex-1 text-left"
+                      className="min-h-11 min-w-[min(220px,100%)] flex-1 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="block text-[13.5px] text-ink">{r.buyer}</span>
-                      <span className="block text-[11.5px] text-muted">
+                      <span className="block whitespace-normal break-words text-body text-ink">{r.buyer}</span>
+                      <span className="block whitespace-normal break-words text-caption text-muted">
                         <span className="font-mono">{r.contractNo}</span> ·{' '}
                         <span className="font-mono">{r.lotCode}</span> · {r.agent}
                       </span>
@@ -801,13 +813,13 @@ function ReceivablesTab({
                     <Cell label="Outstanding">
                       <MoneyText
                         centavos={r.outstandingCentavos}
-                        className="text-[13.5px] text-ink"
+                        className="text-body text-ink"
                       />
                     </Cell>
                     <Cell label="Past due" width={80}>
                       <span
                         className={cn(
-                          'tabular text-[13px]',
+                          'tabular text-body',
                           r.daysPastDue > 0 ? 'text-danger' : 'text-muted',
                         )}
                       >
@@ -815,24 +827,24 @@ function ReceivablesTab({
                       </span>
                     </Cell>
                     <Cell label="Last payment" width={104}>
-                      <span className="tabular text-[12.5px] text-muted">
+                      <span className="tabular text-caption text-muted">
                         {r.lastPaymentDate ? fmtDate(r.lastPaymentDate) : '—'}
                       </span>
                     </Cell>
                     <Cell label="Next due" width={104}>
-                      <span className="tabular text-[12.5px] text-muted">
+                      <span className="tabular text-caption text-muted">
                         {r.nextDueDate ? fmtDate(r.nextDueDate) : '—'}
                       </span>
                     </Cell>
 
                     <div className="flex gap-1.5">
                       {canPost && (
-                        <Button size="xs" onClick={() => onPay(r.contract)}>
+                        <Button size="sm" onClick={() => onPay(r.contract)}>
                           Post payment
                         </Button>
                       )}
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         className="gap-1"
                         onClick={() => remind(r)}
@@ -863,7 +875,7 @@ function Cell({
 }) {
   return (
     <div className="text-right" style={width ? { width } : undefined}>
-      <span className="block text-[11px] uppercase tracking-wide text-muted">{label}</span>
+      <span className="block text-micro uppercase tracking-wide text-muted">{label}</span>
       {children}
     </div>
   )
@@ -936,7 +948,7 @@ function ClientsTab({
     {
       key: 'ref',
       header: 'Reference',
-      cell: (c) => <span className="font-mono text-[12.5px] text-muted">{c.ref}</span>,
+      cell: (c) => <span className="font-mono text-muted">{c.ref}</span>,
       sortBy: (c) => c.ref,
       width: '128px',
     },
@@ -952,11 +964,14 @@ function ClientsTab({
       align: 'center',
       cell: (c) =>
         c.senior ? (
-          <Icon
-            icon={IconStar}
-            size={14}
-            className="mx-auto text-gold-deep dark:text-gold"
-          />
+          <span>
+            <Icon
+              icon={IconStar}
+              size={14}
+              className="mx-auto text-gold-deep dark:text-gold"
+            />
+            <span className="sr-only">Senior citizen</span>
+          </span>
         ) : (
           <span className="text-muted">—</span>
         ),
@@ -1014,6 +1029,7 @@ function ClientsTab({
         columns={columns}
         rowKey={(c) => c.id}
         onRowClick={(c) => onOpen(c.id)}
+        rowActionLabel={(c) => `View client ${c.name}`}
         initialSort={{ key: 'out', dir: 'desc' }}
         emptyIcon={IconContract}
         empty={{ title: 'No clients match', body: 'Adjust the search or filter.' }}
@@ -1052,7 +1068,8 @@ function SearchBox({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-9 pl-8"
+        className="pl-9"
+        aria-label="Search sales records"
       />
     </div>
   )
@@ -1073,7 +1090,7 @@ function FilterSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-9 w-auto min-w-[132px]">
+      <SelectTrigger className="w-full min-w-[min(132px,100%)] sm:w-auto" aria-label={`Filter by ${label}`}>
         <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent>

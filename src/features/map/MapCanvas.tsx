@@ -269,7 +269,7 @@ function Engine({ data }: { data: MapData }) {
           >
             <MapLegend data={data} dark={dark} />
             <ZoomControls moved={moved} onFit={() => fit(true)} />
-            <div className="pointer-events-none rounded-full border border-line bg-surface/80 px-2.5 py-1 text-[10.5px] text-muted backdrop-blur">
+            <div className="pointer-events-none rounded-full border border-line bg-surface/80 px-2.5 py-1 text-micro text-muted backdrop-blur">
               Illustrative layout — pending survey
             </div>
           </motion.div>
@@ -279,7 +279,7 @@ function Engine({ data }: { data: MapData }) {
       {lotsActive && !dragging && <LotTooltip target={tooltip} />}
 
       {debugPerf && perf && (
-        <div className="pointer-events-none absolute left-2 bottom-2 z-[610] rounded-md border border-line bg-surface/90 px-2 py-1 font-mono text-[10.5px] text-muted backdrop-blur">
+        <div className="pointer-events-none absolute left-2 bottom-2 z-[610] rounded-md border border-line bg-surface/90 px-2 py-1 font-mono text-micro text-muted backdrop-blur">
           redraw {perf.ms.toFixed(2)} ms · {perf.n} lots
         </div>
       )}

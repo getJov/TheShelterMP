@@ -69,14 +69,14 @@ export function LotHeader({
             {condensed && <StatusDot status={model.lot.status} size={16} />}
             <h2
               className={cn(
-                'truncate font-display font-semibold leading-none text-ink',
-                condensed ? 'text-[18px]' : 'text-[26px]',
+                'break-words font-display font-semibold leading-none text-ink',
+                condensed ? 'text-small-title' : 'text-page-title',
               )}
             >
               {model.code}
             </h2>
             {condensed && (
-              <span className="truncate text-[12px] text-muted">
+              <span className="break-words text-caption text-muted">
                 {restricted ? (model.tier?.name ?? '—') : appearance.label}
               </span>
             )}
@@ -84,7 +84,7 @@ export function LotHeader({
 
           {!condensed && (
             <>
-              <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink">
+              <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-body text-ink">
                 {!restricted && (
                   <>
                     <StatusDot status={model.lot.status} size={16} />
@@ -96,7 +96,7 @@ export function LotHeader({
                 )}
                 <span>{model.tier?.name ?? 'Unassigned type'}</span>
               </p>
-              <p className="mt-1 text-[12px] leading-snug text-muted">
+              <p className="mt-1 text-caption leading-snug text-muted">
                 {model.block?.name ?? `Block ${model.block?.code ?? '—'}`}
                 {' · '}
                 {model.footprint}

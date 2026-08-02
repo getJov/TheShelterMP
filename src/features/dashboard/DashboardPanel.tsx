@@ -178,7 +178,7 @@ function PanelRail({ onOpen }: { onOpen: () => void }) {
             <Icon icon={IconDashboard} size={17} />
             {count > 0 && (
               <span
-                className="absolute -right-1 -top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-danger px-[3px] text-[8.5px] font-bold leading-none text-white tabular"
+                className="absolute -right-1 -top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-danger px-[3px] text-micro font-bold leading-none text-white tabular"
                 aria-label={`${count} items need attention`}
               >
                 {count > 99 ? '99+' : count}
@@ -201,7 +201,7 @@ function PanelRail({ onOpen }: { onOpen: () => void }) {
         </button>
       </TooltipTrigger>
       <TooltipContent side="left">
-        Open dashboard <kbd className="ml-1 font-mono text-[10px]">⌘D</kbd>
+        Open dashboard <kbd className="ml-1 font-mono text-micro">⌘D</kbd>
       </TooltipContent>
     </Tooltip>
   )
@@ -216,23 +216,23 @@ function DockedPanel() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-line px-3.5">
+      <header className="flex min-h-12 shrink-0 items-center gap-2 border-b border-line px-3.5 py-2">
         <button
           type="button"
           onClick={() => setState('hidden')}
           aria-label="Hide dashboard"
-          className="grid size-6 shrink-0 place-items-center rounded text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+          className="grid size-10 shrink-0 place-items-center rounded text-muted transition-colors hover:bg-surface-2 hover:text-ink"
         >
           <Icon icon={IconChevronRight} size={16} />
         </button>
 
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-display text-[17px] font-semibold leading-tight text-ink">
+          <h2 className="font-display text-small-title font-semibold leading-tight text-ink">
             Dashboard
           </h2>
           {/* An unlabelled scoped number is how a manager's report becomes
               the whole business in the retelling. Name the scope. */}
-          <p className="truncate text-[11px] leading-tight text-muted">
+          <p className="text-caption leading-tight text-muted">
             {scope} · {periodLabel(period)}
           </p>
         </div>
@@ -241,7 +241,7 @@ function DockedPanel() {
           type="button"
           onClick={cycle}
           aria-label="Expand dashboard"
-          className="shrink-0 rounded px-2 py-1 text-[11.5px] font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+          className="min-h-10 shrink-0 rounded px-2 py-1 text-control font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink"
         >
           Expand
         </button>
@@ -284,7 +284,7 @@ function FullDashboard({
             <button
               type="button"
               onClick={collapse}
-              className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[12px] text-muted transition-colors hover:text-ink"
+              className="flex min-h-10 items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-control text-muted transition-colors hover:text-ink"
             >
               <Icon icon={IconChevronRight} size={14} />
               Back to the map
@@ -309,7 +309,7 @@ function FullDashboard({
         className="group pointer-events-auto absolute inset-x-0 bottom-0 z-30 flex items-end justify-center border-t border-line pb-3"
         style={{ height: DASHBOARD_MAP_STRIP_HEIGHT }}
       >
-        <span className="pointer-events-none flex items-center gap-1.5 rounded-full border border-line bg-surface/92 px-3 py-1.5 text-[12px] text-muted shadow-[0_2px_12px_-6px_rgba(0,0,0,0.5)] backdrop-blur-sm transition-colors group-hover:text-ink">
+        <span className="pointer-events-none flex items-center gap-1.5 rounded-full border border-line bg-surface/92 px-3 py-1.5 text-caption text-muted shadow-[0_2px_12px_-6px_rgba(0,0,0,0.5)] backdrop-blur-sm transition-colors group-hover:text-ink">
           <Icon icon={IconMap} size={14} />
           Click the map to return
         </span>
@@ -327,14 +327,14 @@ export function DashboardHeader({ action }: { action?: ReactNode }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-3 px-5 pb-4 pt-5">
       <div className="min-w-0">
-        <h1 className="font-display text-[30px] font-semibold leading-tight text-ink">
+        <h1 className="font-display text-page-title font-semibold leading-tight text-ink">
           {greeting()}, {first}
         </h1>
-        <p className="mt-0.5 text-[13px] text-muted">
+        <p className="mt-0.5 text-caption text-muted">
           {fmtDateLong(TODAY)} · <span className="text-ink">{scope}</span>
         </p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <PeriodSelector />
         {action}
       </div>

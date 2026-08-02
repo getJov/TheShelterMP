@@ -21,14 +21,14 @@ export function AssumedChip({
           className={cn(
             'inline-flex cursor-help items-center rounded border px-1.5 py-px align-middle',
             'border-gold/45 bg-gold/12 text-gold-deep dark:text-gold',
-            'text-[10px] font-semibold uppercase tracking-[0.06em] leading-[1.5]',
+            'text-micro font-semibold uppercase tracking-[0.06em]',
             className,
           )}
         >
           {label}
         </span>
       </TooltipTrigger>
-      <TooltipContent className="max-w-[300px] text-[12.5px] leading-relaxed">
+      <TooltipContent className="max-w-[300px] text-caption leading-relaxed">
         <span className="font-semibold">Not confirmed by the client. </span>
         {why}
       </TooltipContent>

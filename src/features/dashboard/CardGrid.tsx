@@ -83,7 +83,7 @@ export function CardGrid({
         {/* Heroes run full width; smalls pair up. */}
         {heroes.map(render)}
         {smalls.length > 0 && (
-          <div className="grid grid-cols-2 gap-3">{smalls.map(render)}</div>
+          <div className="grid grid-cols-1 gap-3">{smalls.map(render)}</div>
         )}
       </div>
     )

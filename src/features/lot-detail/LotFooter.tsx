@@ -148,7 +148,7 @@ export function LotFooter({ model }: { model: LotModel }) {
   return (
     <>
       <div className="shrink-0 border-t border-line bg-surface/95 px-5 py-3 backdrop-blur">
-        <div className="flex gap-2">{actions.slice(0, 2)}</div>
+        <div className="flex flex-wrap gap-2 [&>*]:min-w-[10rem]">{actions.slice(0, 2)}</div>
       </div>
 
       <RequestHoldDialog lotId={model.lot.id} open={holdOpen} onOpenChange={setHoldOpen} />

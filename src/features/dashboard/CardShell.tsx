@@ -57,7 +57,11 @@ export function CardShell({
   const setPanel = usePanel((s) => s.set)
 
   const hero = def.size === 'hero'
-  const valueSize = hero ? (layout === 'full' ? 40 : 34) : 23
+  const valueClass = hero
+    ? layout === 'full'
+      ? 'text-display'
+      : 'text-page-title'
+    : 'text-section-title'
 
   return (
     <section
@@ -78,9 +82,9 @@ export function CardShell({
 
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="eyebrow truncate text-muted">{def.title}</h3>
+          <h3 className="eyebrow break-words text-muted">{def.title}</h3>
           {subtitle && (
-            <p className="mt-1 text-[11.5px] leading-snug text-muted">{subtitle}</p>
+            <p className="mt-1 text-caption leading-snug text-muted">{subtitle}</p>
           )}
         </div>
 
@@ -89,7 +93,7 @@ export function CardShell({
             <button
               onClick={(e) => e.stopPropagation()}
               aria-label={`${def.title} options`}
-              className="-mr-1 -mt-1 grid size-6 shrink-0 place-items-center rounded text-muted opacity-0 transition-opacity hover:bg-surface-2 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+              className="-mr-1 -mt-1 grid size-10 shrink-0 place-items-center rounded text-muted opacity-0 transition-opacity hover:bg-surface-2 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
             >
               <Icon icon={IconMore} size={15} />
             </button>
@@ -119,8 +123,7 @@ export function CardShell({
       {value !== undefined && (
         <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
           <span
-            className="font-display font-semibold leading-none tabular text-ink"
-            style={{ fontSize: valueSize }}
+            className={cn('font-display font-semibold leading-none tabular text-ink', valueClass)}
           >
             {value}
           </span>
@@ -134,7 +137,7 @@ export function CardShell({
       )}
 
       {!collapsed && footer && (
-        <div className="mt-3 border-t border-line-soft pt-2.5 text-[11.5px] leading-snug text-muted">
+        <div className="mt-3 border-t border-line-soft pt-2.5 text-caption leading-snug text-muted">
           {footer}
         </div>
       )}
@@ -146,7 +149,7 @@ export function DeltaChip({ label, tone }: { label: string; tone: DeltaTone }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular',
+        'inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-micro font-semibold tabular',
         tone === 'positive' && 'bg-green/12 text-green',
         tone === 'negative' && 'bg-danger/12 text-danger',
         tone === 'neutral' && 'bg-surface-2 text-muted',
@@ -163,7 +166,7 @@ export function DeltaChip({ label, tone }: { label: string; tone: DeltaTone }) {
 /** Zero-data line — a designed sentence, never an empty chart frame. */
 export function CardEmpty({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-line-soft px-3 py-3 text-center text-[12px] leading-snug text-muted">
+    <p className="rounded-md border border-dashed border-line-soft px-3 py-3 text-center text-caption leading-snug text-muted">
       {children}
     </p>
   )
@@ -188,7 +191,7 @@ export function CardRow({
       }}
       disabled={!onClick}
       className={cn(
-        'flex w-full items-center gap-2.5 rounded-md px-1.5 py-1.5 text-left transition-colors',
+        'flex min-h-10 w-full items-center gap-2.5 rounded-md px-1.5 py-1.5 text-left transition-colors',
         onClick && 'hover:bg-surface-2',
         !onClick && 'cursor-default',
         className,

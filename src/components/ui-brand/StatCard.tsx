@@ -53,13 +53,15 @@ export function StatCard({
 
       <div className="mt-2 flex items-baseline gap-2.5">
         <span
-          className="font-display font-semibold tabular text-ink leading-none"
-          style={{ fontSize: hero ? 34 : 23 }}
+          className={cn(
+            'font-display font-semibold tabular text-ink',
+            hero ? 'text-page-title' : 'text-section-title',
+          )}
         >
           {value}
         </span>
         {delta && (
-          <span className={cn('text-[12px] font-semibold tabular', toneText[deltaTone])}>
+          <span className={cn('text-caption font-semibold tabular', toneText[deltaTone])}>
             {delta}
           </span>
         )}
@@ -67,7 +69,7 @@ export function StatCard({
 
       {children && <div className={cn(hero ? 'mt-4' : 'mt-3')}>{children}</div>}
 
-      {hint && <div className="mt-2.5 text-[12px] leading-snug text-muted">{hint}</div>}
+      {hint && <div className="mt-2.5 text-caption text-muted">{hint}</div>}
     </div>
   )
 }

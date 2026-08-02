@@ -1168,7 +1168,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
 
         {selectionChip && (
           <div
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-full border border-gold bg-surface/95 px-2.5 py-1 font-mono text-[11px] font-semibold text-gold-deep shadow-md backdrop-blur dark:text-gold"
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-full border border-gold bg-surface/95 px-2.5 py-1 font-mono text-micro font-semibold text-gold-deep shadow-md backdrop-blur dark:text-gold"
             style={{ left: selectionChip.x, top: selectionChip.y }}
           >
             {selection.size.toLocaleString()} selected
@@ -1176,7 +1176,7 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         )}
 
         {(tool === 'draw' || tool === 'blockFree') && !panMode && (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-caption text-muted shadow-sm backdrop-blur">
             {drawPts.length === 0
               ? `Click the map to start the ${tool === 'blockFree' ? 'block' : 'lot'} outline`
               : `${drawPts.length} point${drawPts.length === 1 ? '' : 's'} — hit Enter when you are done · double-click also closes · Backspace undoes · Esc cancels`}
@@ -1184,17 +1184,17 @@ export function EditorSurface({ dark }: { dark: boolean }) {
         )}
 
         {panMode && (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-caption text-muted shadow-sm backdrop-blur">
             Pan mode — release Space to return to the tool
           </div>
         )}
         {tool === 'editBlock' && editingBlock && mode.k === 'idle' && (
-          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-caption text-muted shadow-sm backdrop-blur">
             Drag inside the block to move · drag corners to reshape · use the handle to rotate
           </div>
         )}
         {isAlignmentLayer && alignFrame && mode.k === 'idle' && (
-          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-[11.5px] text-muted shadow-sm backdrop-blur">
+          <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-line bg-surface/92 px-3 py-1 text-caption text-muted shadow-sm backdrop-blur">
             Drag to move · use square handles for size · use the round handle to rotate
           </div>
         )}
@@ -1340,7 +1340,7 @@ function RotationHandle({
         title={title}
         className={cn(
           'absolute flex -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 border-gold bg-surface p-0 text-gold-deep shadow-sm active:cursor-grabbing dark:text-gold',
-          large ? 'size-8 ring-4 ring-surface/70' : 'size-4',
+          large ? 'size-10 ring-4 ring-surface/70' : 'size-6',
         )}
         style={{ left: hx, top: hy }}
       >

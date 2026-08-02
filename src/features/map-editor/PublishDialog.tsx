@@ -87,12 +87,12 @@ export function PublishDialog({
           <ScrollArea className="max-h-[46vh] pr-3">
             {validation.blockingCount > 0 && (
               <section className="mb-3 rounded-lg border border-gold/50 bg-gold/8 p-2.5">
-                <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-gold-deep dark:text-gold">
+                <p className="mb-2 flex items-center gap-1.5 text-caption font-semibold text-gold-deep dark:text-gold">
                   <Icon icon={IconWarning} size={14} />
                   {validation.blockingCount.toLocaleString()} layout warning
                   {validation.blockingCount === 1 ? '' : 's'} — publishing is still allowed
                 </p>
-                <ul className="space-y-1 text-[11.5px] text-gold-deep dark:text-gold">
+                <ul className="space-y-1 text-caption text-gold-deep dark:text-gold">
                   {conflictSummary(validation).map((line) => (
                     <li key={line}>{line}</li>
                   ))}
@@ -101,7 +101,7 @@ export function PublishDialog({
             )}
             {report.soldGroups.length > 0 && (
               <section className="mb-3 rounded-lg border border-gold/50 bg-gold/8 p-2.5">
-                <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-gold-deep dark:text-gold">
+                <p className="mb-2 flex items-center gap-1.5 text-caption font-semibold text-gold-deep dark:text-gold">
                   <Icon icon={IconWarning} size={14} />
                   Touches sold or occupied lots · {report.soldTouched}
                 </p>
@@ -110,7 +110,7 @@ export function PublishDialog({
                     <GroupRow key={g.id} group={g} />
                   ))}
                 </div>
-                <p className="mt-2 text-[11.5px] leading-snug text-gold-deep dark:text-gold">
+                <p className="mt-2 text-caption leading-snug text-gold-deep dark:text-gold">
                   Their contracts, prices and burials are untouched — a contract snapshots its price
                   when it is written.
                 </p>
@@ -152,14 +152,14 @@ function GroupRow({ group }: { group: ChangeGroup }) {
         )}
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-[13px] text-ink">{group.label}</span>
+          <span className="block text-caption text-ink">{group.label}</span>
           {group.detail && (
-            <span className="block text-[11px] leading-snug text-muted">{group.detail}</span>
+            <span className="block text-micro leading-snug text-muted">{group.detail}</span>
           )}
         </span>
         {expandable && (
           <>
-            <span className="shrink-0 font-mono text-[10.5px] text-muted">
+            <span className="shrink-0 font-mono text-micro text-muted">
               {group.codes.length}
             </span>
             <Icon
@@ -173,12 +173,12 @@ function GroupRow({ group }: { group: ChangeGroup }) {
       <CollapsibleContent>
         <div className="mt-1 flex flex-wrap gap-1 rounded-md border border-line bg-surface-2 p-2">
           {group.codes.slice(0, 240).map((c) => (
-            <span key={c} className="font-mono text-[10.5px] text-muted">
+            <span key={c} className="font-mono text-micro text-muted">
               {c}
             </span>
           ))}
           {group.codes.length > 240 && (
-            <span className="text-[10.5px] text-muted">
+            <span className="text-micro text-muted">
               and {group.codes.length - 240} more
             </span>
           )}

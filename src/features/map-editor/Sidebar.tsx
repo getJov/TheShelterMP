@@ -74,7 +74,7 @@ export function Sidebar({ canvas }: { canvas: CanvasHandle | null }) {
   const blocks = useEditor((s) => s.blocks)
 
   return (
-    <aside className="flex h-full w-[318px] shrink-0 flex-col border-r border-line bg-surface">
+    <aside className="flex h-full w-[min(318px,44vw)] shrink-0 flex-col border-r border-line bg-surface">
       <ScrollArea className="min-h-0 flex-1">
         <NewBlockCard />
         {view.screen === 'block' && blocks.some((b) => b.id === view.blockId) ? (
@@ -120,7 +120,7 @@ function TierSelect({
   const priceOf = useTierPriceLabel()
   return (
     <Select value={value ?? ''} onValueChange={(v) => v && onChange(v as TierId)}>
-      <SelectTrigger className="h-8 w-full text-[13px]">
+      <SelectTrigger className="w-full text-caption">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
@@ -132,7 +132,7 @@ function TierSelect({
                 style={{ background: t.appearance.fillColor }}
               />
               <span className="flex-1">{t.name}</span>
-              <span className="font-mono text-[11.5px] text-muted">{priceOf(t.id)}</span>
+              <span className="font-mono text-caption text-muted">{priceOf(t.id)}</span>
             </span>
           </SelectItem>
         ))}
@@ -157,7 +157,7 @@ function ToolButton({
       type="button"
       variant="secondary"
       className={cn(
-        'h-8 gap-1.5 border border-transparent text-[12px]',
+        'gap-1.5 border border-transparent text-caption',
         active && 'border-gold bg-gold/12 text-gold-deep dark:text-gold',
       )}
       onClick={onClick}
@@ -175,7 +175,7 @@ function StepCycler({ step, onChange }: { step: number; onChange: (v: number) =>
     <Button
       type="button"
       variant="secondary"
-      className="size-8 shrink-0 p-0 font-mono text-[9.5px] tabular"
+      className="size-10 shrink-0 p-0 font-mono text-micro tabular"
       title="Nudge step in metres — click to cycle 0.05 / 0.25 / 1"
       onClick={() => {
         const i = NUDGE_STEPS.indexOf(step)
@@ -199,7 +199,7 @@ function MoveCluster({
   onNudge: (eastM: number, northM: number) => void
   onRotate: (dir: 1 | -1, fast: boolean) => void
 }) {
-  const cell = 'size-8 shrink-0'
+  const cell = 'size-10 shrink-0'
   return (
     <div className="grid w-fit grid-cols-3 gap-1.5">
       <Button
@@ -338,7 +338,7 @@ function NewBlockCard() {
             <Input
               value={pending.code}
               onChange={(e) => patch({ code: e.target.value.toUpperCase() })}
-              className="h-8 font-mono text-[13px]"
+              className="font-mono text-caption"
               placeholder={suggested}
             />
           </Field>
@@ -346,7 +346,7 @@ function NewBlockCard() {
             <Input
               value={pending.name}
               onChange={(e) => patch({ name: e.target.value })}
-              className="h-8 text-[13px]"
+              className="text-caption"
               placeholder="Garden of…"
             />
           </Field>
@@ -382,7 +382,7 @@ function NewBlockCard() {
           <div className="flex gap-2">
             <Button
               variant="secondary"
-              className="h-8 flex-1 text-[12px]"
+              className="flex-1 text-caption"
               disabled={!!err}
               onClick={createEmpty}
             >
@@ -390,7 +390,7 @@ function NewBlockCard() {
             </Button>
             <Button
               variant="secondary"
-              className="h-8 flex-1 text-[12px]"
+              className="flex-1 text-caption"
               onClick={() => setPending(null)}
             >
               Discard
@@ -419,7 +419,7 @@ function HomeView({ canvas }: { canvas: CanvasHandle | null }) {
       <PanelSection title="Blocks">
         <div className="space-y-3">
           <div>
-            <p className="mb-1.5 text-[11.5px] font-medium text-muted">Add block</p>
+            <p className="mb-1.5 text-caption font-medium text-muted">Add block</p>
             <div className="grid grid-cols-2 gap-2">
               <ToolButton
                 icon={IconDrawBlock}
@@ -434,13 +434,13 @@ function HomeView({ canvas }: { canvas: CanvasHandle | null }) {
                 onClick={() => setTool('blockFree')}
               />
             </div>
-            <p className="mt-1.5 text-[11px] leading-snug text-muted">
+            <p className="mt-1.5 text-caption leading-snug text-muted">
               Draw on the map — Shift constrains, Alt draws from centre.
             </p>
           </div>
 
           {blocks.length === 0 ? (
-            <p className="text-[12px] leading-relaxed text-muted">
+            <p className="text-caption leading-relaxed text-muted">
               No blocks yet — draw your first.
             </p>
           ) : (
@@ -493,7 +493,7 @@ function BlockListRow({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center justify-between gap-2 rounded-md border border-line px-2.5 py-2 text-left transition-colors hover:bg-surface-2"
+      className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line px-2.5 py-2 text-left transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
     >
       <span className="flex min-w-0 items-center gap-2">
         <span
@@ -501,15 +501,15 @@ function BlockListRow({
           style={{ background: color }}
         />
         <span className="min-w-0">
-          <span className="block font-mono text-[12.5px] font-semibold text-ink">
+          <span className="block font-mono text-caption font-semibold text-ink">
             {block.code}
           </span>
-          <span className="block truncate text-[11.5px] text-muted">
+          <span className="block break-words text-caption text-muted">
             {block.name ?? 'Unnamed block'}
           </span>
         </span>
       </span>
-      <span className="shrink-0 font-mono text-[10.5px] text-muted tabular">
+      <span className="shrink-0 font-mono text-micro text-muted tabular">
         {count.toLocaleString()} lots
       </span>
     </button>
@@ -540,7 +540,7 @@ function BaseMapPanel({ canvas }: { canvas: CanvasHandle | null }) {
             className="h-10 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
           >
             <Icon icon={IconSatellite} size={15} />
-            <span className="text-[12px]">Satellite</span>
+            <span className="text-caption">Satellite</span>
           </ToggleGroupItem>
           <ToggleGroupItem
             value="plain"
@@ -548,12 +548,12 @@ function BaseMapPanel({ canvas }: { canvas: CanvasHandle | null }) {
             className="h-10 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
           >
             <Icon icon={IconMap} size={15} />
-            <span className="text-[12px]">Default</span>
+            <span className="text-caption">Default</span>
           </ToggleGroupItem>
         </ToggleGroup>
         <Button
           variant="secondary"
-          className="h-8 w-full gap-1.5 text-[12px]"
+          className="w-full gap-1.5 text-caption"
           onClick={() => canvas?.fit()}
         >
           <Icon icon={IconFitBounds} size={14} />
@@ -599,7 +599,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 gap-1 px-1.5 text-[12px] text-muted hover:text-ink"
+          className="h-7 gap-1 px-1.5 text-caption text-muted hover:text-ink"
           onClick={() => setView({ screen: 'home' })}
         >
           <Icon icon={IconChevronLeft} size={14} />
@@ -614,14 +614,14 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
               <Input
                 value={block.code}
                 onChange={(e) => updateBlock(block.id, { code: e.target.value.toUpperCase() })}
-                className="h-8 font-mono text-[13px]"
+                className="font-mono text-caption"
               />
             </Field>
             <Field label="Name">
               <Input
                 value={block.name ?? ''}
                 onChange={(e) => updateBlock(block.id, { name: e.target.value || null })}
-                className="h-8 text-[13px]"
+                className="text-caption"
                 placeholder="Unnamed block"
               />
             </Field>
@@ -634,7 +634,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
           </Field>
           <Button
             variant="secondary"
-            className="h-8 w-full gap-1.5 text-[12px]"
+            className="w-full gap-1.5 text-caption"
             onClick={() => canvas?.zoomToBlock(block.id)}
           >
             <Icon icon={IconFitBounds} size={14} />
@@ -652,7 +652,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
             transformBlock(block.id, { rotateDeg: dir * (fast ? 5 : 0.5) })
           }
         />
-        <p className="mt-2 text-[11px] leading-snug text-muted">
+        <p className="mt-2 text-caption leading-snug text-muted">
           Moves the block WITH its lots. Shift-click rotate for 5°.
         </p>
       </PanelSection>
@@ -661,7 +661,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
         <div className="grid grid-cols-4 gap-1.5">
           <Button
             variant="secondary"
-            className="h-8 font-mono text-[11.5px]"
+            className="font-mono text-caption"
             title="Shrink width"
             onClick={() => resize(-step, 0)}
           >
@@ -669,7 +669,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
           </Button>
           <Button
             variant="secondary"
-            className="h-8 font-mono text-[11.5px]"
+            className="font-mono text-caption"
             title="Grow width"
             onClick={() => resize(step, 0)}
           >
@@ -677,7 +677,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
           </Button>
           <Button
             variant="secondary"
-            className="h-8 font-mono text-[11.5px]"
+            className="font-mono text-caption"
             title="Shrink length"
             onClick={() => resize(0, -step)}
           >
@@ -685,14 +685,14 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
           </Button>
           <Button
             variant="secondary"
-            className="h-8 font-mono text-[11.5px]"
+            className="font-mono text-caption"
             title="Grow length"
             onClick={() => resize(0, step)}
           >
             L+
           </Button>
         </div>
-        <p className="mt-1.5 text-[11px] leading-snug text-muted">
+        <p className="mt-1.5 text-caption leading-snug text-muted">
           Steps follow the {step} m cycler above. Shrinking tucks lots in; sold or occupied lots
           refuse.
         </p>
@@ -702,7 +702,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
         <Button
           type="button"
           variant="ghost"
-          className="h-8 w-full gap-1.5 text-[12px] text-danger hover:bg-danger/10 hover:text-danger"
+          className="w-full gap-1.5 text-caption text-danger hover:bg-danger/10 hover:text-danger"
           onClick={() => setConfirmDelete(true)}
         >
           <Icon icon={IconDelete} size={14} />
@@ -725,7 +725,7 @@ function BlockView({ blockId, canvas }: { blockId: BlockId; canvas: CanvasHandle
             onClick={() => setTool('draw')}
           />
         </div>
-        <p className="mt-1.5 text-[11px] leading-snug text-muted">Draw inside the block.</p>
+        <p className="mt-1.5 text-caption leading-snug text-muted">Draw inside the block.</p>
       </PanelSection>
 
       <GenerateSection />
@@ -791,7 +791,7 @@ function GenerateSection() {
   return (
     <PanelSection title="Generate">
       {selection.size === 0 ? (
-        <p className="text-[11.5px] leading-snug text-muted">
+        <p className="text-caption leading-snug text-muted">
           Select a lot or group first — generation copies the selection.
         </p>
       ) : (
@@ -805,7 +805,7 @@ function GenerateSection() {
                 variant="secondary"
                 aria-label={`Generate toward ${d.label.toLowerCase()}`}
                 className={cn(
-                  'size-8 border border-transparent',
+                  'size-10 border border-transparent',
                   dir === d.id && 'border-gold bg-gold/12 text-gold-deep dark:text-gold',
                 )}
                 onClick={() => setDir(d.id)}
@@ -815,13 +815,13 @@ function GenerateSection() {
             ))}
           </div>
           <div className="grid content-start gap-1.5">
-            <Button variant="secondary" className="h-8 text-[12px]" onClick={() => run(10)}>
+            <Button variant="secondary" className="text-caption" onClick={() => run(10)}>
               ×10
             </Button>
-            <Button variant="secondary" className="h-8 text-[12px]" onClick={() => run(100)}>
+            <Button variant="secondary" className="text-caption" onClick={() => run(100)}>
               ×100
             </Button>
-            <Button variant="secondary" className="h-8 text-[12px]" onClick={() => run('fill')}>
+            <Button variant="secondary" className="text-caption" onClick={() => run('fill')}>
               Fill
             </Button>
           </div>
@@ -879,7 +879,7 @@ function SelectionSection() {
             onMinus={() => resizeLots(ids, 0, -0.05)}
             onPlus={() => resizeLots(ids, 0, 0.05)}
           />
-          <p className="text-[11px] leading-snug text-muted">0.05 m per press.</p>
+          <p className="text-caption leading-snug text-muted">0.05 m per press.</p>
         </div>
 
         <div className="flex gap-2">
@@ -888,7 +888,7 @@ function SelectionSection() {
           </div>
           <Button
             variant="secondary"
-            className="h-8 shrink-0 text-[12px]"
+            className="shrink-0 text-caption"
             disabled={!tier}
             onClick={() => {
               if (!tier) return
@@ -905,7 +905,7 @@ function SelectionSection() {
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="secondary"
-            className="h-8 text-[12px]"
+            className="text-caption"
             onClick={() => {
               changeStatus(ids, 'available', null)
               toast.success(`Status set to ${STATUS_LABEL.available}`)
@@ -915,7 +915,7 @@ function SelectionSection() {
           </Button>
           <Button
             variant="secondary"
-            className="h-8 text-[12px]"
+            className="text-caption"
             onClick={() => {
               changeStatus(ids, 'not_for_sale', 'Set aside from the editor')
               toast.success(`Status set to ${STATUS_LABEL.not_for_sale}`)
@@ -932,7 +932,7 @@ function SelectionSection() {
             </Field>
             <Field label="Numbering">
               <Select value={scheme} onValueChange={(v) => setScheme(v as Numbering)}>
-                <SelectTrigger className="h-8 w-full text-[13px]">
+                <SelectTrigger className="w-full text-caption">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -949,7 +949,7 @@ function SelectionSection() {
             <NumberingDiagram scheme={scheme} />
             <Button
               variant="secondary"
-              className="h-8 flex-1 text-[12px]"
+              className="flex-1 text-caption"
               onClick={() => {
                 renumberSelection(ids, scheme, start)
                 toast.success(`${ids.length} lots renumbered from ${start}`)
@@ -968,7 +968,7 @@ function SelectionSection() {
         <Button
           type="button"
           variant="ghost"
-          className="h-8 w-full gap-1.5 text-[12px] text-danger hover:bg-danger/10 hover:text-danger"
+          className="w-full gap-1.5 text-caption text-danger hover:bg-danger/10 hover:text-danger"
           disabled={allProtected}
           title={
             allProtected
@@ -1025,27 +1025,27 @@ function SizeStepRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-[11.5px] text-muted">{label}</span>
+      <span className="text-caption text-muted">{label}</span>
       <div className="flex gap-1">
         <Button
           type="button"
           size="icon"
           variant="secondary"
-          className="size-7"
+          className="size-10"
           aria-label={`${label} decrease`}
           onClick={onMinus}
         >
-          <span className="text-[13px] leading-none">−</span>
+          <span className="text-caption leading-none">−</span>
         </Button>
         <Button
           type="button"
           size="icon"
           variant="secondary"
-          className="size-7"
+          className="size-10"
           aria-label={`${label} increase`}
           onClick={onPlus}
         >
-          <span className="text-[13px] leading-none">+</span>
+          <span className="text-caption leading-none">+</span>
         </Button>
       </div>
     </div>

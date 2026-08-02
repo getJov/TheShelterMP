@@ -31,7 +31,7 @@ export function ZoomControls({
               size="sm"
               variant="secondary"
               onClick={onFit}
-              className="pointer-events-auto h-8 gap-1.5 border border-line bg-surface/90 text-[12.5px] shadow-md backdrop-blur"
+              className="pointer-events-auto gap-1.5 border border-line bg-surface/90 text-control shadow-md backdrop-blur"
             >
               <Icon icon={IconFitBounds} size={14} />
               Reset view
@@ -42,13 +42,13 @@ export function ZoomControls({
 
       <div className="pointer-events-auto flex flex-col overflow-hidden rounded-lg border border-line bg-surface/90 shadow-md backdrop-blur">
         <ZoomButton label="Zoom in" onClick={() => zoomMapIn(map)}>
-          <span aria-hidden className="text-[17px] leading-none">
+          <span aria-hidden className="text-small-title leading-none">
             +
           </span>
         </ZoomButton>
         <div className="h-px bg-line" />
         <ZoomButton label="Zoom out" onClick={() => zoomMapOut(map)}>
-          <span aria-hidden className="text-[17px] leading-none">
+          <span aria-hidden className="text-small-title leading-none">
             −
           </span>
         </ZoomButton>
@@ -76,7 +76,7 @@ function ZoomButton({
         <button
           onClick={onClick}
           aria-label={label}
-          className="grid size-9 place-items-center text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+          className="grid size-11 place-items-center text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
         >
           {children}
         </button>

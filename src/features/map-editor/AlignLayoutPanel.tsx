@@ -119,7 +119,7 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
     <>
       <PanelSection title={alignmentPanelTitle(target)}>
         <div className="space-y-3.5">
-          <div className="rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-[12px] leading-relaxed text-muted">
+          <div className="rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-caption leading-relaxed text-muted">
             <span className="font-semibold text-ink">Business records stay unchanged.</span> This
             only moves the drawing on the map. Lot numbers, clients, contracts, burials, prices and
             statuses stay as they are.
@@ -141,10 +141,10 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
                       className="h-12 justify-start gap-2 rounded-md border border-line px-2.5 data-[state=on]:border-gold data-[state=on]:bg-gold/12 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
                     >
                       <Icon icon={item.icon} size={16} />
-                      <span className="text-[12.5px]">{item.label}</span>
+                      <span className="text-caption">{item.label}</span>
                     </ToggleGroupItem>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[220px] text-[12px]">
+                  <TooltipContent side="bottom" className="max-w-[220px] text-caption">
                     {item.hint}
                   </TooltipContent>
                 </Tooltip>
@@ -169,7 +169,7 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
             <NudgeButton label="Nudge left" icon={IconChevronLeft} onClick={() => nudge(-0.25, 0)} />
             <Button
               variant="secondary"
-              className="h-8 gap-1.5 text-[12px]"
+              className="gap-1.5 text-caption"
               disabled={!canAlign}
               onClick={start}
             >
@@ -186,7 +186,7 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
             <Button
               type="button"
               variant="secondary"
-              className="h-8 gap-1.5 text-[12px]"
+              className="gap-1.5 text-caption"
               disabled={!canAlign}
               onClick={() => rotate(-1)}
             >
@@ -196,7 +196,7 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
             <Button
               type="button"
               variant="secondary"
-              className="h-8 gap-1.5 text-[12px]"
+              className="gap-1.5 text-caption"
               disabled={!canAlign}
               onClick={() => rotate(1)}
             >
@@ -232,7 +232,7 @@ export function AlignLayoutPanel({ showTargetPicker = true }: { showTargetPicker
             </Button>
           </div>
 
-          <p className="text-[11px] leading-snug text-muted">
+          <p className="text-micro leading-snug text-muted">
             Drag the selected shape to move it. Use square handles for size and the round handle
             for rotation. Lots keep the size set by their tier.
           </p>
@@ -258,7 +258,7 @@ function NudgeButton({
           type="button"
           size="icon"
           variant="secondary"
-          className="size-8"
+          className="size-10"
           aria-label={label}
           onClick={onClick}
         >

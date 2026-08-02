@@ -47,7 +47,7 @@ export function PriceCard({
       </p>
 
       {missing ? (
-        <div className="mt-3 flex items-start gap-2 text-[13px] text-muted">
+        <div className="mt-3 flex items-start gap-2 text-body text-muted">
           <Icon icon={IconWarning} size={16} className="mt-0.5 text-danger" />
           <span>
             <span className="font-medium text-ink">Contact for pricing.</span> No
@@ -61,22 +61,22 @@ export function PriceCard({
             {resolved.isPromo && resolved.listEntry?.amountCentavos != null && (
               <>
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-[12.5px] text-muted">List price</span>
+                  <span className="text-caption text-muted">List price</span>
                   <MoneyText
                     centavos={resolved.listEntry.amountCentavos}
-                    className="text-[13px] text-muted line-through"
+                    className="text-body text-muted line-through"
                   />
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="flex items-center gap-1.5 text-[12.5px] text-muted">
+                  <span className="flex items-center gap-1.5 text-caption text-muted">
                     {resolved.label}
-                    <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
+                    <span className="rounded border border-gold/45 bg-gold/12 px-1.5 py-px text-micro font-semibold uppercase tracking-[0.06em] text-gold-deep dark:text-gold">
                       Promo
                     </span>
                   </span>
                   <MoneyText
                     centavos={-resolved.savingCentavos}
-                    className="text-[13px] text-green"
+                    className="text-body text-green"
                   />
                 </div>
               </>
@@ -84,24 +84,24 @@ export function PriceCard({
           </div>
 
           <div className="mt-2.5 flex items-baseline justify-between gap-4 border-t border-line pt-2.5">
-            <span className="text-[12.5px] font-medium text-ink">Lot price</span>
+            <span className="text-caption font-medium text-ink">Lot price</span>
             <MoneyText
               centavos={resolved.amountCentavos}
-              className="font-display text-[24px] font-semibold leading-none text-ink"
+              className="font-display text-section-title font-semibold text-ink"
             />
           </div>
 
-          <p className="mt-2.5 text-[11.5px] leading-snug text-muted">
+          <p className="mt-2.5 text-caption text-muted">
             Priced from{' '}
             <span className="text-ink">“{resolved.entry?.label ?? 'unlabelled entry'}”</span>
             , effective {fmtDate(resolved.entry?.effectiveFrom)}
             {resolved.entry?.effectiveTo
               ? ` until ${fmtDate(resolved.entry.effectiveTo)}`
               : ''}
-            . <span className="font-mono text-[10.5px]">{resolved.entry?.id}</span>
+            . <span className="font-mono text-micro">{resolved.entry?.id}</span>
           </p>
           {resolved.entry?.note && (
-            <p className="mt-1 text-[11.5px] leading-snug text-muted">
+            <p className="mt-1 text-caption text-muted">
               {resolved.entry.note}
             </p>
           )}

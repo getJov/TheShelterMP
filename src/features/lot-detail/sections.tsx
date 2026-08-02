@@ -56,7 +56,7 @@ export function ContractBody({ model }: { model: LotModel }) {
       {cancelled && (
         <Panel tone="danger" className="flex items-start gap-2 py-2.5">
           <Icon icon={IconWarning} size={15} className="mt-0.5 shrink-0 text-danger" />
-          <p className="text-[12px] leading-snug text-ink">
+          <p className="text-caption leading-snug text-ink">
             <span className="font-medium">Cancelled {fmtDate(c.cancelledAt)}.</span>{' '}
             {c.cancelReason ?? 'No reason recorded.'} The trust-fund accrual was retained.
           </p>
@@ -66,7 +66,7 @@ export function ContractBody({ model }: { model: LotModel }) {
       <Panel className="py-2.5">
         <div className="flex items-center justify-between gap-3 pb-1.5">
           <span
-            className={cn('font-mono text-[13px] text-ink', cancelled && 'line-through')}
+            className={cn('font-mono text-body text-ink', cancelled && 'line-through')}
           >
             {c.contractNo}
           </span>
@@ -103,7 +103,7 @@ export function ContractBody({ model }: { model: LotModel }) {
                 </Field>
               </div>
             </TooltipTrigger>
-            <TooltipContent className="max-w-[260px] text-[12.5px]">
+            <TooltipContent className="max-w-[260px] text-body">
               {c.discountReason ?? 'No reason was recorded for this discount.'}
             </TooltipContent>
           </Tooltip>
@@ -118,7 +118,7 @@ export function ContractBody({ model }: { model: LotModel }) {
             <MoneyText centavos={c.contractPriceCentavos} className="font-medium" />
           </Field>
         </div>
-        <p className="mt-2 text-[11px] leading-snug text-muted">
+        <p className="mt-2 text-caption leading-snug text-muted">
           Priced from entry <span className="font-mono">{c.priceBookEntryId}</span>, effective{' '}
           {fmtDate(c.signedAt)}. Future price changes do not alter this contract.
         </p>
@@ -130,7 +130,7 @@ export function ContractBody({ model }: { model: LotModel }) {
           size={16}
           className={cn('mt-0.5 shrink-0', c.certificateNo ? 'text-green' : 'text-muted')}
         />
-        <div className="min-w-0 text-[12.5px]">
+        <div className="min-w-0 text-body">
           {c.certificateNo ? (
             <p className="text-ink">
               Certificate <span className="font-mono">{c.certificateNo}</span> issued{' '}
@@ -179,7 +179,7 @@ export function PaymentsBody({
           <span className="flex items-center gap-2">
             <HealthChip health={model.health} dense />
           </span>
-          <span className="text-[12px] text-muted">
+          <span className="text-caption text-muted">
             <MoneyText centavos={bal.paidCentavos} className="text-ink" /> of{' '}
             <MoneyText centavos={bal.totalCentavos} />
           </span>
@@ -187,7 +187,7 @@ export function PaymentsBody({
 
         <HealthBar ratio={bal.paidRatio} health={model.health} />
 
-        <p className="mt-2 text-[12px]">
+        <p className="mt-2 text-caption">
           {model.overdue.length > 0 ? (
             <span className="text-danger">
               {model.overdue.length}{' '}
@@ -226,30 +226,32 @@ export function PaymentsBody({
                   className="flex items-center gap-2.5 px-3.5 py-2"
                 >
                   <Icon icon={METHOD_ICON[p.method]} size={14} className="text-muted" />
-                  <span className="font-mono text-[12px] text-ink">{p.orNo}</span>
-                  <span className="text-[11.5px] text-muted">{fmtDate(p.paidAt)}</span>
+                  <span className="font-mono text-caption text-ink">{p.orNo}</span>
+                  <span className="text-caption text-muted">{fmtDate(p.paidAt)}</span>
                   <MoneyText
                     centavos={p.amountCentavos}
-                    className="ml-auto text-[12.5px] text-ink"
+                    className="ml-auto text-body text-ink"
                   />
                 </motion.li>
               ))}
             </AnimatePresence>
           </ul>
           {onViewAll && postedCount > model.recentPayments.length && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={onViewAll}
-              className="flex w-full items-center justify-end gap-1 border-t border-line px-3.5 py-2 text-[12px] font-medium text-gold-deep hover:underline dark:text-gold"
+              className="w-full justify-end gap-1 rounded-none border-t border-line px-3.5 text-control font-medium text-gold-deep hover:underline dark:text-gold"
             >
               View all {postedCount}
               <Icon icon={IconArrowRight} size={13} />
-            </button>
+            </Button>
           )}
         </div>
       ) : (
         <Panel className="py-2.5">
-          <p className="text-[12.5px] text-muted">No payment has been posted yet.</p>
+          <p className="text-body text-muted">No payment has been posted yet.</p>
         </Panel>
       )}
 
@@ -272,16 +274,16 @@ export function CommissionBody({ model }: { model: LotModel }) {
           className={cn(archived && 'opacity-45')}
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13.5px] font-medium text-ink">
+          <p className="break-words text-body font-medium text-ink">
             {model.agentUser?.fullName ?? model.agent.agentCode}
           </p>
-          <p className="truncate text-[11.5px] text-muted">
+          <p className="break-words text-caption text-muted">
             <span className="font-mono">{model.agent.agentCode}</span> ·{' '}
             {levelLabel(model.agent.level)}
           </p>
         </div>
         {archived && (
-          <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[11px] text-muted">
+          <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-caption text-muted">
             Archived
           </span>
         )}
@@ -292,7 +294,7 @@ export function CommissionBody({ model }: { model: LotModel }) {
           <span className="eyebrow text-gold-deep dark:text-gold">Upline & split</span>
           <AssumedChip why={ASSUMPTIONS.commissionRates.why} label="Rates assumed" />
         </div>
-        <table className="w-full text-[12px]">
+        <table className="w-full text-caption">
           <thead>
             <tr className="eyebrow text-muted">
               <th className="px-3.5 py-1.5 text-left font-semibold">Level</th>
@@ -305,8 +307,8 @@ export function CommissionBody({ model }: { model: LotModel }) {
             {model.upline.map((r) => (
               <tr key={r.level} className="border-t border-line-soft">
                 <td className="px-3.5 py-1.5">
-                  <span className="block truncate text-ink">{r.name}</span>
-                  <span className="flex items-center gap-1 text-[10.5px] text-muted">
+                  <span className="block break-words text-ink">{r.name}</span>
+                  <span className="flex items-center gap-1 text-micro text-muted">
                     {levelLabel(r.level)}
                     <AssumedChip
                       why={ASSUMPTIONS.commissionLevelNames.why}
@@ -335,10 +337,10 @@ export function CommissionBody({ model }: { model: LotModel }) {
           </tbody>
         </table>
         <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-2 px-3.5 py-2">
-          <span className="text-[12px] text-muted">Commission earned to date</span>
+          <span className="text-caption text-muted">Commission earned to date</span>
           <MoneyText
             centavos={model.commissionEarnedCentavos}
-            className="text-[13.5px] font-medium text-ink"
+            className="text-body font-medium text-ink"
           />
         </div>
       </div>
@@ -358,20 +360,20 @@ function IntermentCard({ interment }: { interment: Interment }) {
     <Panel className="py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-display text-[17px] font-semibold leading-tight text-ink">
+          <p className="break-words font-display text-small-title font-semibold leading-tight text-ink">
             {deceasedFullName(interment)}
           </p>
-          <p className="mt-0.5 text-[11.5px] text-muted">
+          <p className="mt-0.5 text-caption text-muted">
             {interment.dateOfBirth ? fmtDate(interment.dateOfBirth) : '—'} –{' '}
             {fmtDate(interment.dateOfDeath)}
           </p>
         </div>
-        <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[11px] text-muted">
+        <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-caption text-muted">
           {INTERMENT_TYPE_LABEL[interment.type]}
         </span>
       </div>
 
-      <div className="mt-2 space-y-0.5 text-[12px] text-muted">
+      <div className="mt-2 space-y-0.5 text-caption text-muted">
         <p>
           {fmtDate(interment.scheduledDate)} · {SLOT_LABEL[interment.slot]} ·{' '}
           <span className="text-ink">{INTERMENT_STATUS_LABEL[interment.status]}</span>
@@ -388,7 +390,7 @@ function IntermentCard({ interment }: { interment: Interment }) {
               Requirements · {progress.done} of {progress.total}
             </Caption>
             {blocking.length > 0 && (
-              <span className="text-[11px] font-medium text-danger">
+              <span className="text-caption font-medium text-danger">
                 {blocking.length} blocking outstanding
               </span>
             )}
@@ -414,7 +416,7 @@ export function IntermentsBody({ model }: { model: LotModel }) {
       <Panel className="py-2.5">
         <div className="flex items-baseline justify-between gap-3 pb-1.5">
           <Caption>Capacity</Caption>
-          <span className="text-[12px] text-muted">
+          <span className="text-caption text-muted">
             <span className="text-ink">{used}</span> of {model.lot.capacity} used
           </span>
         </div>
@@ -430,12 +432,12 @@ export function IntermentsBody({ model }: { model: LotModel }) {
 
       {model.interments.length === 0 && (
         <Panel className="py-2.5">
-          <p className="text-[12.5px] text-muted">No interment is recorded on this lot.</p>
+          <p className="text-body text-muted">No interment is recorded on this lot.</p>
         </Panel>
       )}
 
       {model.capacityRemaining === 0 && (
-        <p className="flex items-center gap-1.5 text-[12px] text-muted">
+        <p className="flex items-center gap-1.5 text-caption text-muted">
           <Icon icon={IconInterment} size={14} />
           This lot is at full capacity.
         </p>
@@ -449,7 +451,7 @@ export function DocumentsBody({ model }: { model: LotModel }) {
   if (model.documents.length === 0) {
     return (
       <Panel className="py-2.5">
-        <p className="text-[12.5px] text-muted">
+        <p className="text-body text-muted">
           No paperwork is expected until this lot is under contract.
         </p>
       </Panel>
@@ -467,8 +469,8 @@ export function DocumentsBody({ model }: { model: LotModel }) {
               className={d.present ? 'text-green' : 'text-muted'}
             />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[12.5px] text-ink">{d.label}</span>
-              <span className="block truncate text-[11px] text-muted">
+              <span className="block break-words text-body text-ink">{d.label}</span>
+              <span className="block break-words text-caption text-muted">
                 {d.present ? d.detail : 'Not on file'}
               </span>
             </span>
@@ -477,14 +479,14 @@ export function DocumentsBody({ model }: { model: LotModel }) {
                 Download
               </Button>
             ) : (
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+              <span className="text-caption font-semibold uppercase tracking-wide text-muted">
                 Missing
               </span>
             )}
           </li>
         ))}
       </ul>
-      <p className="flex items-center gap-1.5 text-[11px] text-muted">
+      <p className="flex items-center gap-1.5 text-caption text-muted">
         <Icon icon={IconDocument} size={13} />
         Files are tracked in the office checklist.
       </p>
@@ -507,7 +509,7 @@ export function HistoryBody({ model }: { model: LotModel }) {
   if (model.history.length === 0) {
     return (
       <Panel className="py-2.5">
-        <p className="text-[12.5px] text-muted">No recorded events for this lot.</p>
+        <p className="text-body text-muted">No recorded events for this lot.</p>
       </Panel>
     )
   }
@@ -529,27 +531,29 @@ export function HistoryBody({ model }: { model: LotModel }) {
                 TONE_CLASS[e.tone],
               )}
             />
-            <p className="text-[12.5px] leading-snug text-ink">{e.label}</p>
-            <p className="text-[11px] text-muted">
+            <p className="text-body leading-snug text-ink">{e.label}</p>
+            <p className="text-caption text-muted">
               {e.actor ? `${e.actor} · ` : ''}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="cursor-help">{fmtRelative(e.at, NOW)}</span>
                 </TooltipTrigger>
-                <TooltipContent className="text-[12px]">{fmtDateTime(e.at)}</TooltipContent>
+                <TooltipContent className="text-caption">{fmtDateTime(e.at)}</TooltipContent>
               </Tooltip>
             </p>
           </motion.li>
         ))}
       </ol>
       {model.history.length > 5 && (
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => setShowAll((v) => !v)}
-          className="mt-2.5 text-[12px] font-medium text-gold-deep hover:underline dark:text-gold"
+          className="mt-2.5 px-0 text-control font-medium text-gold-deep hover:underline dark:text-gold"
         >
           {showAll ? 'Show less' : `Show all ${model.history.length}`}
-        </button>
+        </Button>
       )}
     </div>
   )

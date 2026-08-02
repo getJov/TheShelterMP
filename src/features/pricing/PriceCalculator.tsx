@@ -100,7 +100,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
       <header className="flex items-center gap-2 border-b border-line px-4 py-3">
         <Icon icon={IconCalculator} size={17} className="text-gold-deep dark:text-gold" />
         <div>
-          <p className="text-[14px] font-semibold text-ink">Price calculator</p>
+          <p className="text-caption font-semibold text-ink">Price calculator</p>
         </div>
       </header>
 
@@ -133,7 +133,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
               className="gap-1.5"
             >
               {(['pre_need', 'at_need'] as NeedType[]).map((n) => (
-                <label key={n} className="flex cursor-pointer items-center gap-2 text-[13px]">
+                <label key={n} className="flex cursor-pointer items-center gap-2 text-caption">
                   <RadioGroupItem value={n} />
                   {NEED_TYPE_LABEL[n]}
                 </label>
@@ -153,7 +153,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                   <label
                     key={m}
                     className={cn(
-                      'flex items-center gap-2 text-[13px]',
+                      'flex items-center gap-2 text-caption',
                       allowed ? 'cursor-pointer' : 'cursor-not-allowed text-muted',
                     )}
                     title={allowed ? undefined : 'Installment unavailable.'}
@@ -191,8 +191,8 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
       <div className="p-4">
         {price === null ? (
           <div className="rounded-md border border-line bg-surface-2 px-3 py-4 text-center">
-            <p className="text-[13.5px] italic text-muted">Contact for pricing</p>
-            <p className="mt-1 text-[12px] leading-relaxed text-muted">
+            <p className="text-caption italic text-muted">Contact for pricing</p>
+            <p className="mt-1 text-caption leading-relaxed text-muted">
               No price is set for this combination.
             </p>
           </div>
@@ -211,14 +211,14 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                 <MoneyText
                   centavos={price}
                   className={cn(
-                    'font-display text-[26px] font-semibold leading-none',
+                    'font-display text-page-title font-semibold leading-none',
                     resolved.isPromo && 'text-gold-deep dark:text-gold',
                   )}
                 />
               </span>
             </div>
             {resolved.isPromo && resolved.listEntry?.amountCentavos != null && (
-              <p className="tabular mt-1 text-right text-[12px] text-muted">
+              <p className="tabular mt-1 text-right text-caption text-muted">
                 <span className="line-through">
                   {formatPeso(resolved.listEntry.amountCentavos)}
                 </span>{' '}
@@ -229,7 +229,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
               </p>
             )}
 
-            <dl className="mt-3.5 space-y-1.5 text-[13px]">
+            <dl className="mt-3.5 space-y-1.5 text-caption">
               {isInstallment && monthly !== null && (
                 <>
                   <Line
@@ -250,7 +250,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                 value={<MoneyText centavos={price} className="font-medium" />}
               />
               {isInstallment && (
-                <p className="flex items-center gap-1.5 pt-0.5 text-[11.5px] text-muted">
+                <p className="flex items-center gap-1.5 pt-0.5 text-caption text-muted">
                   No interest or installment premium
                   <AssumedChip why={ASSUMPTIONS.interest.why} />
                 </p>
@@ -264,12 +264,12 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
             </p>
             <div className="rounded-md border border-line bg-surface-2 px-3 py-2">
               <div className="flex items-baseline justify-between">
-                <span className="text-[12.5px] text-muted">
+                <span className="text-caption text-muted">
                   Accrued across the contract's life
                 </span>
                 <MoneyText
                   centavos={trustFund}
-                  className="font-display text-[18px] font-semibold text-green"
+                  className="font-display text-small-title font-semibold text-green"
                 />
               </div>
             </div>
@@ -280,7 +280,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
               Commission · {formatPercent(TOTAL_COMMISSION_PERCENT, 0)} total
               <AssumedChip why={ASSUMPTIONS.commissionRates.why} />
             </p>
-            <dl className="space-y-1.5 text-[13px]">
+            <dl className="space-y-1.5 text-caption">
               {commissionRows.map((r) => (
                 <Line
                   key={r.level}
@@ -289,7 +289,7 @@ export function PriceCalculator({ asOf }: { asOf: ISODate }) {
                 />
               ))}
               <div className="flex items-baseline justify-between border-t border-line-soft pt-1.5">
-                <dt className="text-[12.5px] text-muted">Total commission</dt>
+                <dt className="text-caption text-muted">Total commission</dt>
                 <dd>
                   <MoneyText centavos={commissionTotal} className="font-medium" />
                 </dd>
@@ -313,9 +313,9 @@ function Line({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <dt className="text-[12.5px] text-muted">
+      <dt className="text-caption text-muted">
         {label}
-        {hint && <span className="ml-1 text-[11px] opacity-80">({hint})</span>}
+        {hint && <span className="ml-1 text-micro opacity-80">({hint})</span>}
       </dt>
       <dd className="tabular">{value}</dd>
     </div>

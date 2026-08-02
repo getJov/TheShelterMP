@@ -23,10 +23,10 @@ export function Forbidden() {
   return (
     <div className="flex h-full flex-col items-center justify-center px-6 text-center">
       <LogoMark size={44} className="text-gold-deep/40 dark:text-gold/40" />
-      <h2 className="mt-6 font-display text-[26px] font-semibold text-ink">
+      <h2 className="mt-6 font-display text-page-title font-semibold text-ink">
         You don't have access to this area
       </h2>
-      <p className="mt-2 max-w-[44ch] text-[13.5px] text-muted">
+      <p className="mt-2 max-w-[44ch] text-body leading-normal text-muted">
         Your role doesn't include this screen. If you think that's wrong, an
         administrator can adjust your access.
       </p>

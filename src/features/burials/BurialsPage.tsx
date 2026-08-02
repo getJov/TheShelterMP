@@ -112,7 +112,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1360px] space-y-4 p-5">
+      <div className="mx-auto max-w-[1360px] space-y-4 p-3 sm:p-5">
         <SectionHeading
           eyebrow={park.name}
           title="Burials & Grounds"
@@ -139,7 +139,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
             <TabsTrigger value="jobs">
               Grounds Jobs
               {stats && stats.flagged > 0 && (
-                <span className="ml-1.5 grid min-w-[16px] place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-4 text-black">
+                <span className="text-micro ml-1.5 grid min-w-6 place-items-center rounded-full bg-gold px-1 font-bold leading-5 text-black">
                   {stats.flagged}
                 </span>
               )}
@@ -175,7 +175,7 @@ function BurialsShell({ tab }: { tab: Tab }) {
         )}
 
         {!stats?.upcoming && tab === 'calendar' && (
-          <p className="flex items-center gap-2 text-[12.5px] text-muted">
+          <p className="text-caption flex items-center gap-2 text-muted">
             <Icon icon={IconBurials} size={14} />
             Nothing is booked in the next 30 days.
           </p>

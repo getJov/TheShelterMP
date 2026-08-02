@@ -18,7 +18,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-      className="relative h-8 w-8 text-muted hover:text-ink"
+      className="relative text-muted hover:text-ink"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span

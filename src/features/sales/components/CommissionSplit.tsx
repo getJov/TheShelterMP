@@ -53,13 +53,13 @@ export function CommissionSplit({
       </div>
 
       <div className="px-3.5 py-2">
-        <div className="flex items-baseline justify-between gap-4 pb-1.5 text-[12px] text-muted">
+        <div className="flex items-baseline justify-between gap-4 pb-1.5 text-caption text-muted">
           <span>{basisLabel}</span>
           <MoneyText centavos={basisCentavos} className="text-ink" />
         </div>
 
         {rows.length === 0 ? (
-          <p className="py-2 text-[12.5px] text-muted">
+          <p className="py-2 text-body text-muted">
             No upline on this contract — nothing to split.
           </p>
         ) : (
@@ -67,22 +67,22 @@ export function CommissionSplit({
             {rows.map((r) => (
               <li key={r.level} className="flex items-center justify-between gap-3 py-1.5">
                 <span className="min-w-0">
-                  <span className="block truncate text-[13px] text-ink">
+                  <span className="block whitespace-normal break-words text-body text-ink">
                     {agentNameOf(r.agentId)}
                   </span>
-                  <span className="block text-[11.5px] text-muted">
+                  <span className="block text-caption text-muted">
                     {LEVEL_NAMES[r.level]} · {formatPercent(r.ratePercent, 0)}
                   </span>
                 </span>
-                <MoneyText centavos={r.amountCentavos} className="text-[13px] text-ink" />
+                <MoneyText centavos={r.amountCentavos} className="text-body text-ink" />
               </li>
             ))}
           </ul>
         )}
 
         <div className="mt-1.5 flex items-baseline justify-between gap-4 border-t border-line pt-1.5">
-          <span className="text-[12.5px] font-medium text-ink">Total commission</span>
-          <MoneyText centavos={total} className="text-[13.5px] font-medium text-ink" />
+          <span className="text-caption font-medium text-ink">Total commission</span>
+          <MoneyText centavos={total} className="text-body font-medium text-ink" />
         </div>
       </div>
     </div>
@@ -106,7 +106,7 @@ export function TrustFundNote({
       )}
     >
       <Icon icon={IconTrustFund} size={17} className="mt-0.5 text-green" />
-      <div className="min-w-0 text-[12.5px] leading-snug text-ink">
+      <div className="min-w-0 text-body text-ink">
         {amountCentavos !== undefined ? (
           <p>
             <MoneyText centavos={amountCentavos} className="font-medium text-green" /> accrues

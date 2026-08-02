@@ -50,21 +50,21 @@ export function ClawbacksSection() {
         <p className="eyebrow text-gold-deep dark:text-gold">Clawbacks</p>
         <AssumedChip why={ASSUMPTIONS.cancellationClawback.why} />
         {rows.length > 0 && (
-          <span className="ml-auto tabular text-[13px] text-danger">
+          <span className="ml-auto tabular text-caption text-danger">
             {rows.length} pending · {formatPeso(total, { decimals: false })}
           </span>
         )}
       </header>
 
       {rows.length === 0 ? (
-        <p className="flex items-center gap-2 px-4 py-4 text-[13px] text-muted">
+        <p className="flex items-center gap-2 px-4 py-4 text-caption text-muted">
           <Icon icon={IconCheck} size={15} className="text-green" />
           Nothing to recover. No released commission sits against a cancelled
           contract.
         </p>
       ) : (
         <>
-          <p className="border-b border-line-soft px-4 py-2.5 text-[12.5px] leading-relaxed text-muted">
+          <p className="border-b border-line-soft px-4 py-2.5 text-caption leading-relaxed text-muted">
             These entries were released before their contract was cancelled.
             Unreleased commission on the same contracts was voided automatically.
             <strong className="font-medium text-ink">
@@ -79,9 +79,9 @@ export function ClawbacksSection() {
               return (
                 <li
                   key={e.id}
-                  className="flex flex-wrap items-center gap-3 px-4 py-2.5 text-[13px]"
+                  className="flex flex-wrap items-center gap-3 px-4 py-2.5 text-caption"
                 >
-                  <span className="w-[110px] whitespace-nowrap text-[12.5px] text-muted">
+                  <span className="w-[110px] whitespace-nowrap text-caption text-muted">
                     {fmtDate(e.earnedAt.slice(0, 10))}
                   </span>
                   <Link
@@ -91,7 +91,7 @@ export function ClawbacksSection() {
                     {agentName(e.agentId)}
                   </Link>
                   <LevelBadge level={e.level} />
-                  <span className="font-mono text-[11.5px] text-muted">
+                  <span className="font-mono text-caption text-muted">
                     {contract?.contractNo ?? '—'}
                   </span>
                   <span className="w-[110px] text-right tabular font-medium text-danger">

@@ -26,12 +26,18 @@ export function ClientCombobox({
   placeholder = 'Search clients by name, reference or phone',
   exclude,
   id,
+  required = false,
+  describedBy,
+  invalid,
 }: {
   value: ClientId | null
   onChange: (v: ClientId | null) => void
   placeholder?: string
   exclude?: ClientId | null
   id?: string
+  required?: boolean
+  describedBy?: string
+  invalid?: boolean
 }) {
   const clients = useDataset((s) => s.data.clients)
   const version = useDataset((s) => s.version)
@@ -70,9 +76,17 @@ export function ClientCombobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-required={required || undefined}
+            aria-describedby={describedBy}
+            aria-invalid={invalid || undefined}
             className="w-full justify-between font-normal"
           >
-            <span className={cn('truncate', !label && 'text-muted')}>
+            <span
+              className={cn(
+                'min-w-0 whitespace-normal break-words text-left',
+                !label && 'text-muted',
+              )}
+            >
               {label ?? 'Select a buyer'}
             </span>
             <Icon icon={IconSelectorDown} size={15} className="opacity-60" />
@@ -81,7 +95,7 @@ export function ClientCombobox({
 
         <PopoverContent
           align="start"
-          className="w-[var(--radix-popover-trigger-width)] min-w-[320px] p-0"
+          className="w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-2rem)] min-w-[min(320px,calc(100vw-2rem))] p-0"
         >
           <Command shouldFilter={false}>
             <CommandInput
@@ -91,7 +105,7 @@ export function ClientCombobox({
             />
             <button
               type="button"
-              className="flex w-full items-center gap-2 border-b border-line px-2 py-2 text-left text-[13px] font-medium text-ink hover:bg-surface-2"
+              className="flex min-h-11 w-full items-center gap-2 border-b border-line px-3 py-2 text-left text-body font-medium text-ink outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => {
                 setOpen(false)
                 setCreateOpen(true)
@@ -157,15 +171,15 @@ function ClientOption({
         className={cn(selected ? 'text-gold-deep dark:text-gold' : 'text-muted')}
       />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13px] text-ink">
+        <span className="block whitespace-normal break-words text-body text-ink">
           {clientFullName(client)}
           {client.seniorCitizen && (
-            <span className="ml-1.5 text-[10.5px] uppercase tracking-wide text-gold-deep dark:text-gold">
+            <span className="ml-1.5 text-micro uppercase tracking-wide text-gold-deep dark:text-gold">
               senior
             </span>
           )}
         </span>
-        <span className="block truncate font-mono text-[11px] text-muted">
+        <span className="block whitespace-normal break-words font-mono text-caption text-muted">
           {client.clientRef} · {client.phone}
         </span>
       </span>

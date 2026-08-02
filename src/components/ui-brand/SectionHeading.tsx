@@ -14,12 +14,13 @@ export function SectionHeading({
   className?: string
   size?: 'sm' | 'md' | 'lg'
 }) {
-  const fs = size === 'lg' ? 30 : size === 'sm' ? 17 : 22
+  const titleSize =
+    size === 'lg' ? 'text-page-title' : size === 'sm' ? 'text-small-title' : 'text-section-title'
   return (
     <div className={cn('flex items-end justify-between gap-4', className)}>
       <div className="min-w-0">
         {eyebrow && <p className="eyebrow mb-1 text-gold-deep dark:text-gold">{eyebrow}</p>}
-        <h2 className="font-display font-semibold text-ink truncate" style={{ fontSize: fs }}>
+        <h2 className={cn('font-display font-semibold text-ink', titleSize)}>
           {title}
         </h2>
       </div>
