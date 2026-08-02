@@ -2,6 +2,27 @@
 
 All notable changes to TheShelter are documented here.
 
+## [0.0.2] - August 2026
+
+### Standalone Dashboard Content Responsiveness
+
+Made the standalone dashboard content responsive from a 320px available container through wide desktop while preserving role permissions and the map dashboard panel.
+
+**Key Changes:**
+
+- Added an explicit standalone dashboard surface context for shared dashboard components.
+- Moved Needs Attention first for eligible roles without changing cross-device card order or permissions.
+- Added container-aware header, period selector, hero-card, supporting-card, and bounded wide-screen layouts.
+- Kept every authorized card and detail accessible with mobile-safe targets, visible card menus, and safe financial-value wrapping.
+- Preserved the map panel's hidden, docked, and full geometry, ordering, state, and panel-only actions.
+- Added automated role, breakpoint, touch, keyboard, large-text, long-value, and map regression coverage.
+
+**Commits:**
+
+- Updated the standalone dashboard route and shared dashboard presentation components.
+- Added the focused responsive QA runner and its package script.
+- Added the completed plan, acceptance viewer, recorded results, and visual evidence under `plans/08032026-standalone-dashboard-content-responsiveness/`.
+
 ## [0.0.1] - July 2026
 
 ### App Copy Cleanup

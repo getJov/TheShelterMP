@@ -1,0 +1,157 @@
+{
+  "plan": "plans/08032026-standalone-dashboard-content-responsiveness",
+  "generatedAt": "2026-08-03",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Standalone dashboard is container-responsive from 320px through wide desktop",
+      "surface": "ui",
+      "precondition": "Run the isolated Vite app as owner with the focused Puppeteer runner.",
+      "steps": [
+        "Measure the marked standalone surface at every specified width and breakpoint boundary.",
+        "Inspect computed content width, centering, grid columns, gaps, card bounds, and horizontal overflow."
+      ],
+      "expected": "Dashboard-owned content is fluid, has no horizontal overflow beyond the 1px tolerance, and is centered with a 1400px maximum width.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json (977/977); evidence/owner-320px.png; evidence/owner-1440px.png; evidence/owner-1920px.png",
+      "notes": "The runner measures available container width independently of the external AppShell.",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Role permissions and cross-device card ordering are preserved",
+      "surface": "ui",
+      "precondition": "Deterministic owner, admin, manager, and agent identities are available in localStorage.",
+      "steps": [
+        "Open /dashboard at the role matrix widths.",
+        "Compare the rendered card IDs, counts, and DOM order with the permission-derived contract."
+      ],
+      "expected": "Eligible roles see Needs Attention first; owner/admin/manager/agent keep their authorized cards and the same ordering at every tested width.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json — owner device matrix plus admin, manager, and agent role matrices",
+      "notes": "No card manifest or permission policy was changed.",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Mobile header and period controls remain complete and operable",
+      "surface": "ui",
+      "precondition": "Open the owner dashboard with a 320px to 768px available container.",
+      "steps": [
+        "Verify stacked title and controls below 768px and short labels below 480px.",
+        "Activate Today and inspect full accessible names and target dimensions."
+      ],
+      "expected": "Greeting, date, scope, all four periods, and Open the map remain visible; period targets are at least 40px and the map action is at least 44px.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json; evidence/owner-320px.png",
+      "notes": "The 479/480 and 767/768 boundaries are explicitly probed.",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Values and details remain contained at mobile width and Extra Large text",
+      "surface": "ui",
+      "precondition": "Open the owner dashboard at a 320px available container with Extra Large text.",
+      "steps": [
+        "Check every rendered value and card boundary.",
+        "Stress the existing value surface with representative long peso and numeric strings without changing application formatters."
+      ],
+      "expected": "Values wrap safely without truncation, overlap, clipping, card overflow, or formatter changes.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json — Extra Large matrix and nine-value long-content stress assertion",
+      "notes": "The checked-out park intentionally has no lots, so the runner adds a DOM-only layout stress string to prove the CSS boundary while leaving finance code untouched.",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Touch and keyboard access do not depend on hover",
+      "surface": "ui",
+      "precondition": "Open the owner dashboard in a 320px coarse-pointer browser context.",
+      "steps": [
+        "Verify every authorized card menu is visibly discoverable and receives focus.",
+        "Open all nine menus with Enter, close each with Escape, and focus Open the map."
+      ],
+      "expected": "All menus and card actions remain reachable; standalone menus omit Open full screen and retain Collapse/detail actions.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json — coarse-pointer and nine-menu keyboard traversal",
+      "notes": "Secondary targets meet the 40px floor and the primary map action meets 44px.",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Protected map dashboard-panel behavior is unchanged",
+      "surface": "ui",
+      "precondition": "Open /map as owner and manager with the panel in docked state.",
+      "steps": [
+        "Check docked geometry and card order, expand to full, then return and hide the panel.",
+        "Verify map persistence, full strip height, menu action, and hidden rail geometry."
+      ],
+      "expected": "The panel remains 420px docked, uses a 240px map strip when full, preserves map content and manifest order, retains Open full screen, and collapses to a 36px rail.",
+      "status": "pass",
+      "evidence": "evidence/dashboard-responsive-results.json; evidence/baseline-map-docked-1440x900.png; evidence/owner-1440-map-full.png; evidence/manager-1024-map-full.png",
+      "notes": "Screenshots were visually inspected; DOM geometry and state checks cover owner and manager consumers.",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Repository type, lint, build, mock, and focused browser gates pass",
+      "surface": "cli",
+      "precondition": "Use Node 24.18.0 with worktree-local dependencies.",
+      "steps": [
+        "Run npx tsc --noEmit -p tsconfig.app.json, npm run lint, npm run build, and npm run validate:mock.",
+        "Run the focused dashboard responsive browser command and git diff --check."
+      ],
+      "expected": "Every command exits zero; focused browser acceptance reports no failures.",
+      "status": "pass",
+      "evidence": "Typecheck 0; lint 0 with pre-existing warnings; build 0; validate:mock 0; focused QA 977/977; git diff --check 0",
+      "notes": "validate:mock reports the current intentional empty-park dataset: 0 blocks, lots, contracts, payments, and related rows.",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "Repository-wide accessibility regression reaches a pre-existing empty-park fixture incompatibility",
+      "surface": "cli",
+      "precondition": "Run qa/accessibility-smoke.mjs against the isolated app.",
+      "steps": [
+        "Run the repository accessibility regression.",
+        "Record the first failing invariant without altering map data or out-of-scope accessibility code."
+      ],
+      "expected": "The broad suite passes, or a pre-existing out-of-scope baseline failure is identified explicitly and waived only for this dashboard-scoped execution.",
+      "status": "fail",
+      "evidence": "The first 12 checks pass; the suite then times out at [data-lot-list-action=true]. validate:mock confirms 0 lots, and src/mock/seed-park.ts intentionally returns an empty park when PARK_LAYOUT is absent.",
+      "notes": "This is not a dashboard regression. The focused suite separately proves dashboard keyboard, target, overflow, role, value, and map-panel behavior.",
+      "waiver": "Accepted only for this standalone-dashboard plan because repairing the repository accessibility fixture requires out-of-scope map/mock-data work. The repository-wide suite remains honestly reported as failing and should be repaired by its owning workflow."
+    },
+    {
+      "id": "T9",
+      "title": "Mutation scope stays inside the approved dashboard boundary",
+      "surface": "cli",
+      "precondition": "Inspect the final diff against execution baseline 0fc8a80.",
+      "steps": [
+        "Review every changed application and QA file.",
+        "Confirm no AppShell, route, map geometry, domain, permission, selector, finance, store schema, dependency, or database file changed."
+      ],
+      "expected": "Only dashboard components/types, the focused QA runner, its package script, plan evidence, and the required finalization changelog change.",
+      "status": "pass",
+      "evidence": "git status --short and git diff --stat in /tmp/shelter-dashboard-content-responsiveness",
+      "notes": "No dependency or lockfile change is present. CHANGELOG.md is included only because -d requires the patch entry.",
+      "waiver": ""
+    },
+    {
+      "id": "T10",
+      "title": "Acceptance artifacts trace the executed contract",
+      "surface": "none",
+      "precondition": "Execution and verification are complete.",
+      "steps": [
+        "Validate test-results.json against the project schema.",
+        "Compare test.html byte-for-byte with the approved repository viewer."
+      ],
+      "expected": "The JSON rolls up to Passed under the written waiver rule, and the viewer is an exact approved copy.",
+      "status": "pass",
+      "evidence": "plans/08032026-standalone-dashboard-content-responsiveness/test-results.json and test.html; cmp exits 0",
+      "notes": "No manual result was fabricated; the one broad-suite failure has explicit evidence and a narrow waiver.",
+      "waiver": ""
+    }
+  ]
+}

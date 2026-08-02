@@ -25,6 +25,7 @@ import {
 import { CardGrid } from './CardGrid'
 import { PeriodSelector } from './PeriodSelector'
 import { selectAttentionCount } from './selectors'
+import type { DashboardSurface } from './types'
 
 export interface DashboardPanelProps {
   /**
@@ -248,7 +249,7 @@ function DockedPanel() {
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-        <CardGrid layout="docked" />
+        <CardGrid layout="docked" surface="map-panel" />
       </div>
     </>
   )
@@ -280,6 +281,7 @@ function FullDashboard({
         style={{ bottom: DASHBOARD_MAP_STRIP_HEIGHT }}
       >
         <DashboardHeader
+          surface="map-panel"
           action={
             <button
               type="button"
@@ -292,7 +294,7 @@ function FullDashboard({
           }
         />
         <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">
-          <CardGrid layout="full" />
+          <CardGrid layout="full" surface="map-panel" />
         </div>
       </motion.div>
 
@@ -319,14 +321,28 @@ function FullDashboard({
 }
 
 /** Shared by the full state and the standalone /dashboard route. */
-export function DashboardHeader({ action }: { action?: ReactNode }) {
+export function DashboardHeader({
+  action,
+  surface,
+}: {
+  action?: ReactNode
+  surface: DashboardSurface
+}) {
   const user = useCurrentUserOrNull()
   const scope = useLocationScopeLabel()
   const first = user?.fullName.split(' ')[0] ?? ''
+  const isStandalone = surface === 'standalone'
 
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3 px-5 pb-4 pt-5">
-      <div className="min-w-0">
+    <header
+      data-dashboard-header={surface}
+      className={cn(
+        isStandalone
+          ? 'flex flex-col items-stretch gap-3 px-4 pb-4 pt-5 @min-[640px]/dashboard:px-6 @min-[768px]/dashboard:flex-row @min-[768px]/dashboard:flex-wrap @min-[768px]/dashboard:items-end @min-[768px]/dashboard:justify-between'
+          : 'flex flex-wrap items-end justify-between gap-3 px-5 pb-4 pt-5',
+      )}
+    >
+      <div className={cn('min-w-0', isStandalone && 'w-full @min-[768px]/dashboard:w-auto')}>
         <h1 className="font-display text-page-title font-semibold leading-tight text-ink">
           {greeting()}, {first}
         </h1>
@@ -334,8 +350,15 @@ export function DashboardHeader({ action }: { action?: ReactNode }) {
           {fmtDateLong(TODAY)} · <span className="text-ink">{scope}</span>
         </p>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <PeriodSelector />
+      <div
+        data-dashboard-header-controls
+        className={cn(
+          isStandalone
+            ? 'flex w-full min-w-0 flex-col items-stretch gap-2 @min-[480px]/dashboard:flex-row @min-[480px]/dashboard:flex-wrap @min-[768px]/dashboard:w-auto @min-[768px]/dashboard:items-center @min-[768px]/dashboard:justify-end'
+            : 'flex flex-wrap items-center gap-2',
+        )}
+      >
+        <PeriodSelector surface={surface} />
         {action}
       </div>
     </header>

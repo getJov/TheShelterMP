@@ -1,0 +1,4894 @@
+{
+  "generatedAt": "2026-08-02T20:12:39.259Z",
+  "baseUrl": "http://127.0.0.1:1624",
+  "browser": "/home/jovanie_getalla/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
+  "checks": 977,
+  "failures": 0,
+  "results": [
+    {
+      "ok": true,
+      "message": "owner 320px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard uses the requested available width",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard content width is fluid and capped",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard uses the requested available width",
+      "detail": "360px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard content width is fluid and capped",
+      "detail": "360px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 360px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard uses the requested available width",
+      "detail": "390px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard content width is fluid and capped",
+      "detail": "390px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 390px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard uses the requested available width",
+      "detail": "430px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard content width is fluid and capped",
+      "detail": "430px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 430px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard uses the requested available width",
+      "detail": "667px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard content width is fluid and capped",
+      "detail": "667px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 667px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses the requested available width",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard content width is fluid and capped",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard uses the requested available width",
+      "detail": "1024px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard content width is fluid and capped",
+      "detail": "1024px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1024px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard uses the requested available width",
+      "detail": "1280px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard content width is fluid and capped",
+      "detail": "1280px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard supporting columns match",
+      "detail": "4"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1280px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard uses the requested available width",
+      "detail": "1440px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1440px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard uses the requested available width",
+      "detail": "1920px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1920px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard uses the requested available width",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard content width is fluid and capped",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 320px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard uses the requested available width",
+      "detail": "1440px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "admin 1440px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard uses the requested available width",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard content width is fluid and capped",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 320px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard uses the requested available width",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard content width is fluid and capped",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "manager 768px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 768px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard uses the requested available width",
+      "detail": "1440px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard supporting columns match",
+      "detail": "4"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager 1440px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard uses the requested available width",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard content width is fluid and capped",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard card order and permissions match",
+      "detail": "inventory, leaderboard, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 320px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard uses the requested available width",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard content width is fluid and capped",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard card order and permissions match",
+      "detail": "inventory, leaderboard, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "agent 768px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 768px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard uses the requested available width",
+      "detail": "1440px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard card order and permissions match",
+      "detail": "inventory, leaderboard, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "agent 1440px has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large uses the requested available width",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large content width is fluid and capped",
+      "detail": "320px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large Open the map is at least 44px",
+      "detail": "47px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large applies the requested text preference",
+      "detail": "extra-large"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 320px extra-large has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large uses the requested available width",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large content width is fluid and capped",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large Open the map is at least 44px",
+      "detail": "47px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large applies the requested text preference",
+      "detail": "extra-large"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px extra-large has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large uses the requested available width",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large Open the map is at least 44px",
+      "detail": "47px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large applies the requested text preference",
+      "detail": "extra-large"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px extra-large has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard uses the requested available width",
+      "detail": "479px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard content width is fluid and capped",
+      "detail": "479px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard uses the expected visible period labels",
+      "detail": "Today, Week, Month, Quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px standard map action spans the control row",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 479px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard uses the requested available width",
+      "detail": "480px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard content width is fluid and capped",
+      "detail": "480px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 480px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard uses the requested available width",
+      "detail": "639px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard content width is fluid and capped",
+      "detail": "639px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard uses 16px inline padding",
+      "detail": "16px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard hero columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard supporting columns match",
+      "detail": "1"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard grid gaps match",
+      "detail": "{\"hero\":12,\"supporting\":12}"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 639px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard uses the requested available width",
+      "detail": "640px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard content width is fluid and capped",
+      "detail": "640px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 640px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard uses the requested available width",
+      "detail": "767px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard content width is fluid and capped",
+      "detail": "767px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px standard stacks header controls below the title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 767px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses the requested available width",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard content width is fluid and capped",
+      "detail": "768px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 768px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 768px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard uses the requested available width",
+      "detail": "895px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard content width is fluid and capped",
+      "detail": "895px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard supporting columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 895px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 895px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard uses the requested available width",
+      "detail": "896px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard content width is fluid and capped",
+      "detail": "896px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 896px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 896px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard uses the requested available width",
+      "detail": "959px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard content width is fluid and capped",
+      "detail": "959px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard hero columns match",
+      "detail": "2"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 959px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 959px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard uses the requested available width",
+      "detail": "960px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard content width is fluid and capped",
+      "detail": "960px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 960px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 960px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard uses the requested available width",
+      "detail": "1199px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard content width is fluid and capped",
+      "detail": "1199px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard supporting columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1199px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard uses the requested available width",
+      "detail": "1200px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard content width is fluid and capped",
+      "detail": "1200px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard supporting columns match",
+      "detail": "4"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1200px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard uses the requested available width",
+      "detail": "1359px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard content width is fluid and capped",
+      "detail": "1359px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard supporting columns match",
+      "detail": "4"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1359px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard uses the requested available width",
+      "detail": "1360px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard content width is fluid and capped",
+      "detail": "1360px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1360px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard uses the requested available width",
+      "detail": "1399px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard content width is fluid and capped",
+      "detail": "1399px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1399px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard uses the requested available width",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1400px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard renders without the error boundary",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard uses the requested available width",
+      "detail": "1401px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard content width is fluid and capped",
+      "detail": "1400px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard content is centered",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard dashboard regions do not overflow",
+      "detail": "{\"surface\":0,\"content\":0}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard does not introduce document horizontal overflow",
+      "detail": "0px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard card order and permissions match",
+      "detail": "attention, collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard every card stays inside content bounds",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard uses 24px inline padding",
+      "detail": "24px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard hero columns match",
+      "detail": "3"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard supporting columns match",
+      "detail": "5"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard grid gaps match",
+      "detail": "{\"hero\":16,\"supporting\":16}"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard options are visible and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard period controls are complete and at least 40px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard period controls retain full accessible names",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard selected period remains This month",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard Open the map is at least 44px",
+      "detail": "44px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard regular card actions meet the 40px floor",
+      "detail": "40px"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard thin chart segments retain named larger alternatives",
+      "detail": "0 thin segments"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard card values remain contained",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard applies the requested text preference",
+      "detail": "standard"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard uses the expected visible period labels",
+      "detail": "Today, This week, This month, This quarter"
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px standard title and controls do not overlap",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner 1401px boundary has no uncaught page errors",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "standalone card menu keeps Collapse",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "standalone card menu omits Open full screen",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "320px period control remains operable",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "320px run uses a coarse pointer context",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "320px exposes every authorized card menu to touch and keyboard",
+      "detail": "9 menus"
+    },
+    {
+      "ok": true,
+      "message": "320px keeps card row/detail actions in the keyboard surface",
+      "detail": "5 actions"
+    },
+    {
+      "ok": true,
+      "message": "card menu 1 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 1 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 2 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 2 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 3 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 3 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 4 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 4 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 5 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 5 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 6 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 6 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 7 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 7 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 8 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 8 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 9 receives keyboard focus",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "card menu 9 opens from the keyboard",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "Open the map receives keyboard focus at 320px",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "320px Extra Large cards contain representative long financial and numeric values",
+      "detail": "9 values"
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 docked panel keeps 420px geometry",
+      "detail": "420px"
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 docked panel keeps manifest order",
+      "detail": "collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, attention, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 map-panel options keep hover/focus reveal",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 full panel keeps header and 240px map strip",
+      "detail": "240px"
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 map content remains mounted in full state",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 full panel keeps manifest order",
+      "detail": "collections, receivables, inventory, trust-fund, leaderboard, burials, sales-activity, attention, payout"
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 map-panel menu retains Open full screen",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "owner-1440 hidden rail keeps 36px geometry",
+      "detail": "36px"
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 docked panel keeps 420px geometry",
+      "detail": "420px"
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 docked panel keeps manifest order",
+      "detail": "collections, receivables, inventory, leaderboard, burials, sales-activity, attention, payout"
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 map-panel options keep hover/focus reveal",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 full panel keeps header and 240px map strip",
+      "detail": "240px"
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 map content remains mounted in full state",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 full panel keeps manifest order",
+      "detail": "collections, receivables, inventory, leaderboard, burials, sales-activity, attention, payout"
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 map-panel menu retains Open full screen",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "message": "manager-1024 hidden rail keeps 36px geometry",
+      "detail": "36px"
+    }
+  ]
+}

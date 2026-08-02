@@ -51,7 +51,7 @@ export function CardShell({
   children?: ReactNode
   className?: string
 }) {
-  const { def, layout, collapsed } = card
+  const { def, layout, surface, collapsed } = card
   const navigate = useNavigate()
   const toggleCard = usePanel((s) => s.toggleCard)
   const setPanel = usePanel((s) => s.set)
@@ -65,6 +65,8 @@ export function CardShell({
 
   return (
     <section
+      data-dashboard-card={def.id}
+      data-dashboard-card-size={def.size}
       onClick={onOpen}
       className={cn(
         'group relative flex flex-col rounded-[var(--radius-card)] border border-line bg-surface',
@@ -93,7 +95,11 @@ export function CardShell({
             <button
               onClick={(e) => e.stopPropagation()}
               aria-label={`${def.title} options`}
-              className="-mr-1 -mt-1 grid size-10 shrink-0 place-items-center rounded text-muted opacity-0 transition-opacity hover:bg-surface-2 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+              data-dashboard-card-options
+              className={cn(
+                '-mr-1 -mt-1 grid size-10 shrink-0 place-items-center rounded text-muted transition-opacity hover:bg-surface-2 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100',
+                surface === 'standalone' ? 'opacity-100' : 'opacity-0',
+              )}
             >
               <Icon icon={IconMore} size={15} />
             </button>
@@ -103,10 +109,12 @@ export function CardShell({
               <Icon icon={IconChevronDown} size={15} />
               {collapsed ? 'Expand' : 'Collapse'}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPanel('full')}>
-              <Icon icon={IconExpand} size={15} />
-              Open full screen
-            </DropdownMenuItem>
+            {surface === 'map-panel' && (
+              <DropdownMenuItem onClick={() => setPanel('full')}>
+                <Icon icon={IconExpand} size={15} />
+                Open full screen
+              </DropdownMenuItem>
+            )}
             {detailsHref && (
               <>
                 <DropdownMenuSeparator />
@@ -123,7 +131,11 @@ export function CardShell({
       {value !== undefined && (
         <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
           <span
-            className={cn('font-display font-semibold leading-none tabular text-ink', valueClass)}
+            data-dashboard-card-value
+            className={cn(
+              'min-w-0 max-w-full break-words font-display font-semibold leading-none tabular text-ink [overflow-wrap:anywhere]',
+              valueClass,
+            )}
           >
             {value}
           </span>
