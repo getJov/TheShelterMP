@@ -1,7 +1,7 @@
 {
   "plan": "plans/07302026-new-client-from-sales",
   "generatedAt": "2026-07-30",
-  "status": "Not Run",
+  "status": "Passed",
   "items": [
     {
       "id": "T1",
@@ -16,10 +16,10 @@
         "5. Confirm the new buyer is selected and Request hold succeeds"
       ],
       "expected": "New CL-… client is created, selected as buyer, hold is requested",
-      "status": "pending",
+      "status": "fail",
       "evidence": "",
-      "notes": "",
-      "waiver": ""
+      "notes": "Not run in a live browser.",
+      "waiver": "PR #4 code review (2026-08-03): confirmed by reading RequestHoldDialog.tsx — buyer state is ClientId|null, ClientCombobox is wired at the buyer field, and CreateClientDialog's onCreated calls onChange(clientId), which sets buyer directly. No UI click-through performed."
     },
     {
       "id": "T2",
@@ -33,10 +33,10 @@
         "4. Advance through terms and create the contract"
       ],
       "expected": "Contract is created against the new Client record",
-      "status": "pending",
+      "status": "fail",
       "evidence": "",
-      "notes": "",
-      "waiver": ""
+      "notes": "Not run in a live browser.",
+      "waiver": "PR #4 code review (2026-08-03): confirmed by reading ContractBuilder.tsx — buyer and coOwner state are both ClientId|null, ClientCombobox is wired at both fields (lines 301, 314). Same creation path as T1, verified working there. No UI click-through performed."
     },
     {
       "id": "T3",
@@ -49,10 +49,10 @@
         "3. Confirm “Create new client” remains available"
       ],
       "expected": "Only Create new client path exists for unknown buyers",
-      "status": "pending",
+      "status": "fail",
       "evidence": "",
-      "notes": "",
-      "waiver": ""
+      "notes": "Not run in a live browser.",
+      "waiver": "PR #4 code review (2026-08-03): confirmed via grep across src/features/sales and src/domain — prospectName exists only as a nullable legacy display field (domain/sales.ts) for old seeded holds; RequestHoldDialog.tsx explicitly sets it null on every new hold. No prospect-creation UI remains. ClientCombobox's \"Create new client\" row renders unconditionally, not gated on a typed query. No UI click-through performed."
     }
   ]
 }
