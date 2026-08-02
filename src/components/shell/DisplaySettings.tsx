@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconSettings } from '@/components/ui-brand/icons'
+import { IconRefresh, IconSettings } from '@/components/ui-brand/icons'
 import {
   applyAccessibilityPreferences,
   DEFAULT_ACCESSIBILITY_PREFERENCES,
@@ -185,9 +186,20 @@ export function DisplaySettings({
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={resetDraft}>
-            Reset display settings
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="Reset display settings"
+                onClick={resetDraft}
+              >
+                <Icon icon={IconRefresh} size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Reset display settings</TooltipContent>
+          </Tooltip>
           <Button type="button" variant="ghost" onClick={() => changeDialogOpen(false)}>
             Cancel
           </Button>
