@@ -54,24 +54,24 @@ export function InvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[92vh] flex-col sm:max-w-[780px]">
+      <DialogContent className="flex max-h-dvh w-full max-w-none flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[780px] sm:rounded-lg">
         <style>{PRINT_CSS}</style>
 
-        <DialogHeader className="no-print">
+        <DialogHeader className="no-print shrink-0 border-b border-line px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-12 pb-4 text-left sm:px-6 sm:pt-6 sm:pr-12">
           <DialogTitle className="font-display text-section-title">Statement preview</DialogTitle>
           <DialogDescription>
             Prints an A4 statement with the contract reference.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="min-h-0 flex-1 overflow-y-auto">
+        <ScrollArea className="min-h-0 flex-1 overscroll-contain">
           {contract && model && (
             <div
               id="invoice-sheet"
               className="mx-auto w-full max-w-[720px] bg-surface p-4 text-ink sm:p-8 print:p-0"
             >
               {/* brand header */}
-              <header className="flex flex-wrap items-start justify-between gap-6 border-b border-line pb-5">
+              <header className="flex flex-col items-start justify-between gap-4 border-b border-line pb-5 sm:flex-row sm:gap-6 print:flex-row print:gap-6">
                 <div className="flex items-start gap-3">
                   <LogoMark size={40} className="text-gold-deep dark:text-gold" />
                   <div>
@@ -85,7 +85,7 @@ export function InvoiceDialog({
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <p className="eyebrow text-gold-deep dark:text-gold">
                     Statement of account
                   </p>
@@ -149,7 +149,7 @@ export function InvoiceDialog({
                   <p className="eyebrow mb-2 text-gold-deep dark:text-gold">
                     Amortization schedule
                   </p>
-                  <table className="w-full min-w-[620px] border-collapse text-body print:min-w-0 print:text-[12px]">
+                  <table className="hidden w-full border-collapse text-body sm:table print:table print:min-w-0 print:text-[12px]">
                     <thead>
                       <tr className="border-b border-line text-left text-muted">
                         <th className="py-1.5 pr-2 font-semibold">#</th>
@@ -174,13 +174,57 @@ export function InvoiceDialog({
                           </td>
                           <td className="py-1 text-right tabular">
                             {formatPeso(
-                              Math.max(0, i.amountDueCentavos - i.amountPaidCentavos),
+                              installmentBalance(
+                                i.amountDueCentavos,
+                                i.amountPaidCentavos,
+                              ),
                             )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                  <ol className="divide-y divide-line-soft rounded border border-line sm:hidden print:hidden">
+                    {model.schedule.map((i) => (
+                      <li key={i.installmentNo} className="grid gap-2 px-3 py-2.5">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="font-mono text-[11px] text-muted">
+                            Installment {String(i.installmentNo).padStart(2, '0')}
+                          </span>
+                          <span className="text-[12px] tabular text-ink">
+                            {fmtDate(i.dueDate)}
+                          </span>
+                        </div>
+                        <dl className="grid grid-cols-3 gap-2 text-[11.5px]">
+                          <div>
+                            <dt className="text-muted">Amount</dt>
+                            <dd className="mt-0.5 tabular text-ink">
+                              {formatPeso(i.amountDueCentavos)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-muted">Paid</dt>
+                            <dd className="mt-0.5 tabular text-ink">
+                              {i.amountPaidCentavos > 0
+                                ? formatPeso(i.amountPaidCentavos)
+                                : '—'}
+                            </dd>
+                          </div>
+                          <div className="text-right">
+                            <dt className="text-muted">Balance</dt>
+                            <dd className="mt-0.5 tabular text-ink">
+                              {formatPeso(
+                                installmentBalance(
+                                  i.amountDueCentavos,
+                                  i.amountPaidCentavos,
+                                ),
+                              )}
+                            </dd>
+                          </div>
+                        </dl>
+                      </li>
+                    ))}
+                  </ol>
                 </section>
               ) : (
                 <section className="mt-6 text-body text-muted print:text-[12.5px]">
@@ -227,8 +271,8 @@ export function InvoiceDialog({
           )}
         </ScrollArea>
 
-        <DialogFooter className="no-print border-t border-line pt-3 sm:justify-between">
-          <span className="flex flex-wrap items-center gap-1.5 text-caption text-muted">
+        <DialogFooter className="no-print shrink-0 border-t border-line px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-6 sm:justify-between">
+          <span className="flex min-w-0 flex-wrap items-start gap-1.5 break-words text-left text-caption text-muted">
             <Icon icon={IconMail} size={14} />
             {model?.client?.email ? (
               <>
@@ -239,7 +283,10 @@ export function InvoiceDialog({
               'No email on record. Print this statement for handoff.'
             )}
           </span>
-          <Button onClick={() => window.print()} className="gap-1.5">
+          <Button
+            onClick={() => window.print()}
+            className="min-h-11 w-full gap-1.5 sm:min-h-0 sm:w-auto"
+          >
             <Icon icon={IconPrint} size={15} />
             Print
           </Button>
@@ -272,6 +319,13 @@ function Box({
       </p>
     </div>
   )
+}
+
+function installmentBalance(
+  amountDueCentavos: number,
+  amountPaidCentavos: number,
+): number {
+  return Math.max(0, amountDueCentavos - amountPaidCentavos)
 }
 
 /**

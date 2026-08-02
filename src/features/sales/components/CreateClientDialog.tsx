@@ -117,8 +117,8 @@ export function CreateClientDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px]">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[calc(100dvh-1rem)] max-w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[440px]">
+        <DialogHeader className="shrink-0 border-b border-line px-4 py-4 pr-12 text-left sm:px-6">
           <DialogTitle className="font-display text-section-title">New client</DialogTitle>
           <DialogDescription>
             Name and phone are enough to hold a lot or open a contract. Address can be
@@ -126,7 +126,7 @@ export function CreateClientDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid min-h-0 flex-1 gap-3 overflow-y-auto overscroll-contain px-4 py-4 sm:grid-cols-2 sm:px-6">
           <div className="space-y-1.5">
             <Label htmlFor="nc-first" className="text-caption text-muted">
               First name
@@ -195,16 +195,24 @@ export function CreateClientDialog({
         </div>
 
         {submitError && (
-          <p role="alert" className="rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger">
+          <p role="alert" className="mx-4 rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger sm:mx-6">
             {submitError}
           </p>
         )}
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="shrink-0 flex-col border-t border-line px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:flex-row sm:px-6">
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="h-11 sm:h-9"
+          >
             Cancel
           </Button>
-          <Button onClick={submit} disabled={!canSave || busy || !user}>
+          <Button
+            onClick={submit}
+            disabled={!canSave || busy || !user}
+            className="h-11 sm:h-9"
+          >
             Create client
           </Button>
         </DialogFooter>

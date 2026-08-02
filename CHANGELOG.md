@@ -2,6 +2,26 @@
 
 All notable changes to TheShelter are documented here.
 
+## [0.0.2] - August 2026
+
+### Sales Screen Responsiveness
+
+Made `/sales` usable from 320px phones through large desktops while keeping desktop density and existing sales behavior intact.
+
+**Key Changes:**
+
+- Added permission-aware mobile navigation below 1024px while preserving the desktop application rail.
+- Reworked Contracts, Payments, Receivables, and Clients into prioritized mobile record layouts with immediate search and compact secondary filters.
+- Refit contract details, contract and client creation, holds, payments, invoices, transfers, cancellation, void-payment, schedules, pricing, and commission surfaces for narrow viewports and on-screen keyboards.
+- Preserved semantic sorting, focus return, visible validation, reduced-motion behavior, readable type tokens, and comfortable touch targets through the latest accessibility foundation.
+- Verified the empty baseline and a populated sales fixture across owner, admin, manager, and agent roles at 320, 360, 390, 768, 1024, and 1440px plus phone landscape and 200% zoom.
+
+**Commits:**
+
+- Split the sales route into focused responsive tab and filter components.
+- Added sales-local mobile presentations and viewport-safe transactional surfaces.
+- Added focused browser QA and completed plan, evidence, and acceptance artifacts under `plans/08032026-sales-screen-responsiveness/`.
+
 ## [0.0.1] - July 2026
 
 ### App Copy Cleanup

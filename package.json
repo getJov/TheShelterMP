@@ -11,6 +11,7 @@
     "qa": "node qa/smoke.mjs && node qa/walkthrough.mjs",
     "qa:headful": "node qa/walkthrough.mjs --headful",
     "qa:smoke": "node qa/smoke.mjs",
+    "qa:sales-responsive": "node qa/sales-responsive-smoke.mjs",
     "qa:accessibility": "node qa/accessibility-smoke.mjs",
     "qa:walkthrough": "node qa/walkthrough.mjs",
     "validate:mock": "vite-node qa/validate-mock.ts"

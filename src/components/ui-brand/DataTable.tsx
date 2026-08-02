@@ -94,38 +94,43 @@ export function DataTable<T>({
             {columns.map((c) => (
               <TableHead
                 key={c.key}
+                style={c.width ? { width: c.width } : undefined}
                 aria-sort={
-                  sort?.key === c.key
-                    ? sort.dir === 'asc'
-                      ? 'ascending'
-                      : 'descending'
+                  c.sortBy
+                    ? sort?.key === c.key
+                      ? sort.dir === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
                     : undefined
                 }
-                style={c.width ? { width: c.width } : undefined}
                 className={cn(
-                  pad,
                   'h-auto bg-surface-2 text-caption font-semibold text-gold-deep dark:text-gold',
-                  c.align === 'right' && 'text-right',
-                  c.align === 'center' && 'text-center',
+                  c.sortBy ? 'p-0' : pad,
+                  !c.sortBy && c.align === 'right' && 'text-right',
+                  !c.sortBy && c.align === 'center' && 'text-center',
                   c.headClassName,
                 )}
               >
                 {c.sortBy ? (
                   <button
                     type="button"
-                    className={cn(
-                      'inline-flex min-h-10 w-full items-center gap-1 rounded-sm text-left outline-none',
-                      'hover:text-ink focus-visible:ring-2 focus-visible:ring-ring',
-                      c.align === 'right' && 'justify-end text-right',
-                      c.align === 'center' && 'justify-center text-center',
-                    )}
                     onClick={() =>
                       setSort((current) =>
                         current?.key === c.key
-                          ? { key: c.key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+                          ? {
+                              key: c.key,
+                              dir: current.dir === 'asc' ? 'desc' : 'asc',
+                            }
                           : { key: c.key, dir: 'asc' },
                       )
                     }
+                    className={cn(
+                      pad,
+                      'inline-flex min-h-10 w-full cursor-pointer select-none items-center gap-1 rounded-sm text-inherit outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                      c.align === 'right' && 'justify-end text-right',
+                      c.align === 'center' && 'justify-center text-center',
+                    )}
                   >
                     {c.header}
                     {sort?.key === c.key && (
@@ -135,7 +140,7 @@ export function DataTable<T>({
                     )}
                   </button>
                 ) : (
-                  <span>{c.header}</span>
+                  <span className="inline-flex items-center gap-1">{c.header}</span>
                 )}
               </TableHead>
             ))}

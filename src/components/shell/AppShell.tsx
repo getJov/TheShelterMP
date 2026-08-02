@@ -1,18 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LogoLockup, LogoMark } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
+import { AppNavigation } from './AppNavigation'
 import { DisplaySettings } from './DisplaySettings'
 import { RouteAccessibility, routeTitleFor } from './RouteAccessibility'
-import { navItems, type NavItem } from './nav-items'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconMenu, IconSidebar } from '@/components/ui-brand/icons'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { IconClose, IconMenu, IconSidebar } from '@/components/ui-brand/icons'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -20,14 +20,10 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
-import { useCanAny } from '@/lib/permissions'
-import { canAny, type Permission } from '@/domain'
 import { UserMenu } from '@/features/auth/UserMenu'
 import { LocationSwitcher } from '@/features/auth/LocationSwitcher'
 import { NotificationBell } from '@/features/approvals/NotificationBell'
 import { useSession } from '@/stores/session'
-import { useNotifications } from '@/stores/notifications'
-import { useDataset } from '@/stores/dataset'
 
 const RAIL_KEY = 'shelter-rail-open'
 
@@ -66,8 +62,6 @@ export function AppShell() {
 
 function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   const user = useSession((s) => s.currentUser())
-  const main = navItems.filter((i) => i.section !== 'manage')
-  const manage = navItems.filter((i) => i.section === 'manage')
 
   return (
     <motion.aside
@@ -90,10 +84,12 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
         )}
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2.5 py-3">
-        <NavList items={main} open={open} />
-        <ManageSection items={manage} open={open} />
-      </nav>
+      <AppNavigation
+        expanded={open}
+        instance="rail"
+        ariaLabel="Primary navigation"
+        className="flex-1 overflow-y-auto px-2.5 py-3"
+      />
 
       <div className="border-t border-line p-2.5">
         {user && <UserMenu compact={!open} />}
@@ -128,216 +124,113 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   )
 }
 
-/**
- * Hidden entirely when the user holds none of its permissions — which is
- * exactly what an agent sees. A "Manage" heading over an empty list reads
- * as a broken screen.
- */
-function ManageSection({
-  items,
-  open,
-  onNavigate,
-}: {
-  items: NavItem[]
-  open: boolean
-  onNavigate?: () => void
-}) {
-  const user = useSession((s) => s.currentUser())
-  if (!user) return null
-
-  const anyVisible = items.some((i) => {
-    const perms = Array.isArray(i.permission) ? i.permission : [i.permission]
-    return canAny(user.role, perms as Permission[])
-  })
-  if (!anyVisible) return null
-
-  return (
-    <>
-      <div className="my-3 border-t border-line-soft" />
-      {open && <p className="eyebrow px-2.5 pb-1.5 text-muted">Manage</p>}
-      <NavList items={items} open={open} onNavigate={onNavigate} />
-    </>
-  )
-}
-
-function NavList({
-  items,
-  open,
-  onNavigate,
-}: {
-  items: NavItem[]
-  open: boolean
-  onNavigate?: () => void
-}) {
-  return (
-    <ul className="space-y-0.5">
-      {items.map((item) => (
-        <NavRow key={item.to} item={item} open={open} onNavigate={onNavigate} />
-      ))}
-    </ul>
-  )
-}
-
-function NavRow({
-  item,
-  open,
-  onNavigate,
-}: {
-  item: NavItem
-  open: boolean
-  onNavigate?: () => void
-}) {
-  const perms = (Array.isArray(item.permission) ? item.permission : [item.permission]) as never[]
-  const allowed = useCanAny(...perms)
-  const user = useSession((s) => s.currentUser())
-
-  // Live pending count for any nav item that declares a badge. Subscribing to
-  // both versions is what makes the count move the instant a hold is raised or
-  // decided — including when the role switcher changes who "you" are.
-  const notificationsVersion = useNotifications((s) => s.version)
-  const datasetVersion = useDataset((s) => s.version)
-  const approvalCounts = useNotifications((s) => s.approvalCounts)
-  const badge = useMemo(
-    () => (item.badge === 'approvals' && user ? approvalCounts(user).all : 0),
-    [item.badge, user, approvalCounts, notificationsVersion, datasetVersion],
-  )
-
-  if (!allowed) return null
-
-  const label =
-    user?.role === 'agent' && item.agentLabel ? item.agentLabel : item.label
-
-  const link = (
-    <NavLink
-      to={item.to}
-      onClick={onNavigate}
-      className={({ isActive }) =>
-        cn(
-          'group relative flex min-h-10 items-center gap-2.5 rounded-md px-2.5 py-2 text-control transition-colors',
-          !open && 'justify-center',
-          isActive
-            ? 'bg-gold/12 font-medium text-gold-deep dark:text-gold'
-            : 'text-muted hover:bg-surface-2 hover:text-ink',
-        )
-      }
-    >
-      {({ isActive }) => (
-        <>
-          {isActive && (
-            <motion.span
-              layoutId="nav-active"
-              className="absolute left-0 top-1.5 bottom-1.5 w-[2.5px] rounded-r bg-gold"
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            />
-          )}
-          <Icon icon={item.icon} size={18} />
-          {badge > 0 && !open && (
-            <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-gold" />
-          )}
-          <AnimatePresence initial={false}>
-            {open && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.16 }}
-                className="flex-1 whitespace-nowrap"
-              >
-                {label}
-              </motion.span>
-            )}
-          </AnimatePresence>
-          {open && badge > 0 && (
-            <motion.span
-              key={badge}
-              initial={{ scale: 0.6 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 520, damping: 18 }}
-              className="grid min-w-6 shrink-0 place-items-center rounded-full bg-gold px-1 text-micro font-bold leading-6 text-black"
-            >
-              {badge}
-            </motion.span>
-          )}
-        </>
-      )}
-    </NavLink>
-  )
-
-  if (open) return <li>{link}</li>
-  return (
-    <li>
-      <Tooltip>
-        <TooltipTrigger asChild>{link}</TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
-      </Tooltip>
-    </li>
-  )
-}
-
-function MobileNavigation() {
-  const [open, setOpen] = useState(false)
-  const main = navItems.filter((item) => item.section !== 'manage')
-  const manage = navItems.filter((item) => item.section === 'manage')
-  const close = () => setOpen(false)
-
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label="Open navigation">
-          <Icon icon={IconMenu} size={20} />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="flex w-[min(90vw,360px)] flex-col p-0">
-        <SheetHeader className="border-b border-line px-4 py-4 text-left">
-          <LogoLockup variant="compact" />
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SheetDescription className="sr-only">
-            Open an authorized screen or change account and display settings.
-          </SheetDescription>
-        </SheetHeader>
-        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Primary navigation">
-          <NavList items={main} open onNavigate={close} />
-          <ManageSection items={manage} open onNavigate={close} />
-        </nav>
-        <div className="space-y-3 border-t border-line p-3">
-          <div className="[&_[data-slot=select-trigger]]:w-full">
-            <LocationSwitcher />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <DisplaySettings trigger="button" />
-            <ThemeToggle />
-          </div>
-          <UserMenu />
-        </div>
-      </SheetContent>
-    </Sheet>
-  )
-}
-
 function TopBar() {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const { pathname } = useLocation()
   const title = routeTitleFor(pathname)
   const user = useSession((s) => s.currentUser())
 
+  useEffect(() => {
+    const desktopViewport = window.matchMedia('(min-width: 1024px)')
+    const closeMobileNavigation = () => {
+      if (desktopViewport.matches) setMobileNavOpen(false)
+    }
+
+    closeMobileNavigation()
+    desktopViewport.addEventListener('change', closeMobileNavigation)
+    return () => desktopViewport.removeEventListener('change', closeMobileNavigation)
+  }, [])
+
   return (
-    <header className="z-20 flex min-h-14 shrink-0 items-center gap-1 border-b border-line bg-surface px-2 sm:gap-2 sm:px-4">
-      <MobileNavigation />
-      <h1 className="min-w-0 flex-1 font-display text-small-title font-semibold text-ink">
+    <header className="z-20 flex h-14 shrink-0 items-center gap-1.5 border-b border-line bg-surface px-2.5 sm:gap-3 sm:px-4">
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-11 shrink-0 text-muted hover:text-ink lg:hidden"
+            aria-label="Open navigation"
+          >
+            <Icon icon={IconMenu} size={19} />
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="w-[min(90vw,360px)] max-w-none gap-0 border-line bg-surface p-0 sm:max-w-none lg:hidden"
+        >
+          <SheetHeader className="relative h-14 justify-center border-b border-line px-3 py-0 pr-14 text-left">
+            <SheetTitle className="sr-only">Application navigation</SheetTitle>
+            <SheetDescription className="sr-only">
+              Choose a section of The Shelter application.
+            </SheetDescription>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <LogoMark size={24} className="text-gold-deep dark:text-gold" />
+              <span className="truncate font-display text-[15px] font-semibold tracking-[0.12em] text-ink">
+                THE SHELTER
+              </span>
+            </div>
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1.5 top-1.5 size-11 text-muted hover:text-ink"
+                aria-label="Close navigation"
+              >
+                <Icon icon={IconClose} size={18} />
+              </Button>
+            </SheetClose>
+          </SheetHeader>
+
+          <AppNavigation
+            expanded
+            instance="mobile"
+            ariaLabel="Mobile navigation"
+            className="min-h-0 flex-1 overflow-y-auto px-2.5 py-3"
+            onNavigate={() => setMobileNavOpen(false)}
+          />
+
+          <div className="space-y-2 border-t border-line px-2.5 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+            <div className="min-w-0 overflow-hidden [&>span]:w-full [&>span]:overflow-hidden [&>span]:text-ellipsis [&>span]:whitespace-nowrap [&_[data-slot=select-trigger]]:w-full">
+              <LocationSwitcher />
+            </div>
+            <div className="flex min-h-11 items-center justify-between rounded-md px-2 text-[13px] text-muted">
+              <span>Display</span>
+              <DisplaySettings trigger="button" />
+            </div>
+            <div className="flex min-h-11 items-center justify-between rounded-md px-2 text-[13px] text-muted">
+              <span>Appearance</span>
+              <ThemeToggle />
+            </div>
+            {user && <UserMenu />}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <h1 className="min-w-0 flex-1 truncate font-display text-small-title font-semibold text-ink">
         {title}
       </h1>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+      <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">
         {user && (
-          <span className="hidden rounded-full border border-line bg-surface-2 px-2.5 py-1 text-caption text-muted xl:inline-flex">
+          <span className="hidden rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[11.5px] text-muted xl:inline-flex">
             Viewing as{' '}
             <span className="ml-1 font-medium text-ink">{user.fullName}</span>
           </span>
         )}
-        <div className="hidden lg:block"><LocationSwitcher /></div>
+        <div className="hidden lg:block">
+          <LocationSwitcher />
+        </div>
         <NotificationBell />
-        <div className="hidden lg:block"><DisplaySettings /></div>
-        <div className="hidden lg:block"><ThemeToggle /></div>
-        <div className="hidden sm:block"><UserMenu trigger="avatar" /></div>
+        <div className="hidden lg:block">
+          <DisplaySettings />
+        </div>
+        <div className="hidden lg:block">
+          <ThemeToggle />
+        </div>
+        <div className="hidden sm:block">
+          <UserMenu trigger="avatar" />
+        </div>
       </div>
     </header>
   )

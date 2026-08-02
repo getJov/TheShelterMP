@@ -41,22 +41,35 @@ export function CommissionSplit({
   const total = sumCentavos(rows.map((r) => r.amountCentavos))
 
   return (
-    <div className={cn('rounded-[var(--radius-card)] border border-line bg-surface', className)}>
-      <div className="flex items-center justify-between gap-3 border-b border-line px-3.5 py-2">
-        <span className="eyebrow text-gold-deep dark:text-gold">
+    <div
+      className={cn(
+        'min-w-0 rounded-[var(--radius-card)] border border-line bg-surface',
+        className,
+      )}
+    >
+      <div className="flex flex-col items-start gap-1.5 border-b border-line px-3.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <span className="eyebrow break-words leading-relaxed text-gold-deep dark:text-gold">
           Commission split · {formatPercent(TOTAL_COMMISSION_PERCENT, 0)} total
         </span>
         <AssumedChip
           why={ASSUMPTIONS.commissionRates.why}
           label="Rates assumed"
+          className="shrink-0"
         />
       </div>
 
       <div className="px-3.5 py-2">
-        <div className="flex items-baseline justify-between gap-4 pb-1.5 text-caption text-muted">
-          <span>{basisLabel}</span>
-          <MoneyText centavos={basisCentavos} className="text-ink" />
-        </div>
+        <dl className="pb-1.5 text-caption text-muted">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+            <dt className="min-w-0 break-words">{basisLabel}</dt>
+            <dd className="m-0 text-right">
+              <MoneyText
+                centavos={basisCentavos}
+                className="whitespace-nowrap text-ink"
+              />
+            </dd>
+          </div>
+        </dl>
 
         {rows.length === 0 ? (
           <p className="py-2 text-body text-muted">
@@ -65,7 +78,10 @@ export function CommissionSplit({
         ) : (
           <ul className="divide-y divide-line-soft border-t border-line-soft">
             {rows.map((r) => (
-              <li key={r.level} className="flex items-center justify-between gap-3 py-1.5">
+              <li
+                key={r.level}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 py-2 sm:items-center sm:py-1.5"
+              >
                 <span className="min-w-0">
                   <span className="block whitespace-normal break-words text-body text-ink">
                     {agentNameOf(r.agentId)}
@@ -74,16 +90,28 @@ export function CommissionSplit({
                     {LEVEL_NAMES[r.level]} · {formatPercent(r.ratePercent, 0)}
                   </span>
                 </span>
-                <MoneyText centavos={r.amountCentavos} className="text-body text-ink" />
+                <MoneyText
+                  centavos={r.amountCentavos}
+                  className="whitespace-nowrap text-right text-body text-ink"
+                />
               </li>
             ))}
           </ul>
         )}
 
-        <div className="mt-1.5 flex items-baseline justify-between gap-4 border-t border-line pt-1.5">
-          <span className="text-caption font-medium text-ink">Total commission</span>
-          <MoneyText centavos={total} className="text-body font-medium text-ink" />
-        </div>
+        <dl className="mt-1.5 border-t border-line pt-1.5">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+            <dt className="min-w-0 break-words text-caption font-medium text-ink">
+              Total commission
+            </dt>
+            <dd className="m-0 text-right">
+              <MoneyText
+                centavos={total}
+                className="whitespace-nowrap text-body font-medium text-ink"
+              />
+            </dd>
+          </div>
+        </dl>
       </div>
     </div>
   )
@@ -101,16 +129,19 @@ export function TrustFundNote({
   return (
     <div
       className={cn(
-        'flex items-start gap-2.5 rounded-[var(--radius-card)] border border-green/35 bg-green/8 p-3',
+        'flex min-w-0 items-start gap-2.5 rounded-[var(--radius-card)] border border-green/35 bg-green/8 p-3',
         className,
       )}
     >
-      <Icon icon={IconTrustFund} size={17} className="mt-0.5 text-green" />
-      <div className="min-w-0 text-body text-ink">
+      <Icon icon={IconTrustFund} size={17} className="mt-0.5 shrink-0 text-green" />
+      <div className="min-w-0 break-words text-body leading-snug text-ink">
         {amountCentavos !== undefined ? (
           <p>
-            <MoneyText centavos={amountCentavos} className="font-medium text-green" /> accrues
-            to the perpetual care fund.
+            <MoneyText
+              centavos={amountCentavos}
+              className="whitespace-nowrap font-medium text-green"
+            />{' '}
+            accrues to the perpetual care fund.
           </p>
         ) : (
           <p>

@@ -16,6 +16,7 @@ export function DateField({
   min,
   id,
   className,
+  label,
   describedBy,
   invalid,
 }: {
@@ -25,6 +26,7 @@ export function DateField({
   min?: ISODate
   id?: string
   className?: string
+  label?: string
   describedBy?: string
   invalid?: boolean
 }) {
@@ -36,6 +38,8 @@ export function DateField({
         <Button
           id={id}
           variant="outline"
+          aria-label={label}
+          aria-expanded={open}
           aria-describedby={describedBy}
           aria-invalid={invalid || undefined}
           className={cn('w-full justify-start gap-2 font-normal', className)}
@@ -44,7 +48,11 @@ export function DateField({
           <span className="tabular">{fmtDate(value)}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-0">
+      <PopoverContent
+        align="start"
+        collisionPadding={8}
+        className="max-h-[var(--radix-popover-content-available-height)] w-auto max-w-[calc(100vw-1rem)] overflow-auto p-0"
+      >
         <Calendar
           mode="single"
           defaultMonth={toDate(value)}
