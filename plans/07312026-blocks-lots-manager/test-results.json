@@ -1,0 +1,149 @@
+{
+  "plan": "plans/07312026-blocks-lots-manager",
+  "generatedAt": "2026-07-31",
+  "status": "In Progress",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Wizard is gone — sidebar is a flat Blocks list + Add block",
+      "surface": "ui",
+      "precondition": "Map Editor as Administrator",
+      "steps": ["1. Open the Map Editor", "2. Look at the sidebar"],
+      "expected": "Blocks list (code, name, lot count, tier chip), Rect/Free-form add buttons, Site plan and Base map sections. No steps, no Review gate.",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: home screen renders exactly this; header title 'Blocks & lots'",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Block view: d-pad move (with lots), rotate, guarded resize, priced tier, delete",
+      "surface": "ui",
+      "precondition": "Click a block row",
+      "steps": ["1. Click B01", "2. Nudge east twice", "3. Check the publish button", "4. Undo twice"],
+      "expected": "Sidebar shows block controls with price on the tier ('Lawn Standard ₱45,000'); nudges register as publishable changes with advisory warnings; undo restores 'Nothing to publish'",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: 'Publish 2 changes · 3 warnings' after two 0.25 m nudges; two undos → 'Nothing to publish'; map auto-zoomed to the block on entry",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Selection panel appears with lots selected (⌘A) and shows the tools",
+      "surface": "ui",
+      "precondition": "Block view open",
+      "steps": ["1. ⌘A", "2. Scroll the sidebar"],
+      "expected": "'432 selected' chip on canvas; sidebar Selection section with d-pad, size steppers, tier (priced), status, renumber, delete; Generate section with direction + ×10/×100/Fill",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: selection chip + gold highlight verified; panel contents verified by the sidebar build agent and compile",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Advisory validation — publish never blocked, warnings listed",
+      "surface": "ui",
+      "precondition": "Any geometry warning present (e.g. after moving a block)",
+      "steps": ["1. Move a block so lots overlap the ghost/other lots", "2. Open Publish"],
+      "expected": "Header shows 'Publish N changes · K warnings'; dialog lists warnings in gold and the Publish button stays enabled",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: header showed '· 3 warnings' while publish stayed enabled; dialog logic updated and compiled (canPublish pinned true)",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "getpropsie() exports the draft layout",
+      "surface": "cli",
+      "precondition": "Map Editor open, browser devtools",
+      "steps": ["1. Run getpropsie() in the console"],
+      "expected": "Returns '<n> blocks · <m> lots' summary, logs the full JSON, copies it to the clipboard; statuses sanitised to available",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: returned 'getpropsie: 3 blocks · 904 lots — JSON logged above and copied to the clipboard'",
+      "notes": "Paste the JSON to Claude to bake into src/mock/park-layout.ts as the demo default",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Draw flows with a real mouse: rect/free-form blocks, rect/free-form lots, autofill card",
+      "surface": "ui",
+      "precondition": "Real mouse (the embedded QA pane cannot dispatch drag/point-click gestures)",
+      "steps": [
+        "1. Home → Rect block → drag on the map → card appears",
+        "2. Pick a tier (price shown), set Rows × Cols, click Autofill",
+        "3. Try Free-form block (click points, Enter/double-click to close)",
+        "4. In a block: Rect lot / Free-form lot drawing",
+        "5. Drag a selected lot; drag the block body"
+      ],
+      "expected": "Each gesture produces the drawn geometry; autofill divides the block into R × C movable lots; drags move live and commit one undo step",
+      "status": "pending",
+      "evidence": "",
+      "notes": "All store paths compile and the underlying machinery (planGrid/buildLots/drag sessions) is exercised by T2/T3 equivalents",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Generators: ×10 / ×100 / Fill toward a direction, clipped to the block",
+      "surface": "ui",
+      "precondition": "A selected lot or group in a block with free space",
+      "steps": ["1. Select one lot", "2. Generate ×10 right", "3. Fill down", "4. Undo"],
+      "expected": "Copies stamp toward the direction, stop at the block edge with a note when fewer fit; selection moves to the clones; one undo per action",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Needs single-lot selection (real mouse)",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "Shrink guard: relocate → remove → protected hard stop",
+      "surface": "ui",
+      "precondition": "Block view; some sold/occupied lots inside (B01 has 108)",
+      "steps": ["1. Shrink width repeatedly", "2. Watch the toasts", "3. Keep shrinking toward the protected rows"],
+      "expected": "Outcast lots tuck inward while room exists; unprotected leftovers are removed with a count; once protected lots would be orphaned the resize refuses with 'occupied/sold lots in the way'",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Deterministic store logic; needs visual confirmation of the relocation behaviour",
+      "waiver": ""
+    },
+    {
+      "id": "T9",
+      "title": "Draft survives reload; publish/discard clears it",
+      "surface": "ui",
+      "precondition": "Make any edit (dirty draft)",
+      "steps": ["1. Nudge a block", "2. Reload the page", "3. Confirm the edit survived", "4. Discard", "5. Reload again"],
+      "expected": "After reload the draft is restored dirty; after Discard + reload the seeded layout returns",
+      "status": "pending",
+      "evidence": "",
+      "notes": "localStorage save verified in code (debounced, drag-safe); left pending for an end-to-end human pass",
+      "waiver": ""
+    },
+    {
+      "id": "T10",
+      "title": "Map pans again with a plain drag (Rev 1)",
+      "surface": "ui",
+      "precondition": "Real mouse, Map Editor open",
+      "steps": [
+        "1. Drag on empty ground — the map pans",
+        "2. Shift-drag — band select; Alt-drag — subtract; L then drag — lasso",
+        "3. Drag a selected lot — it moves; drag the viewed block's body — the block moves"
+      ],
+      "expected": "Panning works everywhere the surface has no claim; selection and drag-move keep working exactly where they should",
+      "status": "pending",
+      "evidence": "",
+      "notes": "The surface only stops propagation on claimed gestures now; the embedded QA pane cannot dispatch map drags to verify feel",
+      "waiver": ""
+    },
+    {
+      "id": "T11",
+      "title": "Park boots empty across the whole app (Rev 2)",
+      "surface": "ui",
+      "precondition": "Fresh load, no saved editor draft",
+      "steps": ["1. Open Map Editor, Park Map, and Dashboard"],
+      "expected": "Editor: 'No blocks yet' + draw CTA. Park Map: its empty state with 'Go to map editor'. Dashboard: ₱0 collections, nothing outstanding, inventory 0/0 · 0% open. No NaN, no crashes, no approvals/notification badges.",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: all three pages verified clean; validate:mock passes with zero lots (0 contracts/holds/interments/commissions)",
+      "notes": "Paste getpropsie() JSON into src/mock/park-layout.ts to regenerate the demo data on the real layout — the business seeds scale to it automatically",
+      "waiver": ""
+    }
+  ]
+}

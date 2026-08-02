@@ -1,57 +1,58 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, useMap } from 'react-leaflet'
-import L from 'leaflet'
 import {
   DEFAULT_PARK_CENTROID,
   DEFAULT_PARK_ZOOM,
   type BlockId,
   type Bounds,
+  type LatLng,
 } from '@/domain'
-import { boundsOf, boundsPadded, boundsUnion, toLatLngBounds } from '@/lib/geo'
-import { cn } from '@/lib/utils'
-import { useMapStore } from '@/stores/map'
+import { boundsOf, boundsPadded, boundsUnion } from '@/lib/geo'
 import { BaseLayer } from '@/features/map/BaseLayer'
 import { LotCanvasLayer } from '@/features/map/LotCanvasLayer'
 import { ZoomControls } from '@/features/map/ZoomControls'
 import { MAP_EDGE_PADDING } from '@/features/map/layout'
 import { useIsDark } from '@/features/map/use-map-data'
+import { useGoogleMap, GoogleMapView } from '@/features/map/google/map-view'
+import {
+  distanceLatLng,
+  fitMapBounds,
+  flyMapToBounds,
+  getMapCenter,
+  getMapZoom,
+  getViewBounds,
+  stopMapEventPropagation,
+} from '@/features/map/google/helpers'
 import '@/features/map/map.css'
 import { DraftOverlayLayer } from './DraftOverlayLayer'
 import { EditorSurface } from './EditorSurface'
 import { useEditor } from './store'
 import { useDraftPaints, useDraftRecords, useTiers } from './helpers'
 
-/** Imperative hook the sidebar uses to zoom to a block. */
 export interface CanvasHandle {
   zoomToBlock: (id: BlockId) => void
   fit: () => void
-  /** Current viewport, inset a little — where a new overlay drops. */
   viewBounds: () => Bounds
 }
 
 export function EditorCanvas({ onReady }: { onReady: (h: CanvasHandle) => void }) {
-  const baseLayer = useMapStore((s) => s.baseLayer)
   return (
-    <div className={cn('absolute inset-0', baseLayer === 'plain' && 'map-plain')}>
-      <MapContainer
+    <div className="absolute inset-0">
+      <GoogleMapView
         center={DEFAULT_PARK_CENTROID}
         zoom={DEFAULT_PARK_ZOOM}
         minZoom={15}
         maxZoom={22}
-        zoomControl={false}
         doubleClickZoom={false}
-        preferCanvas
-        attributionControl
         className="absolute inset-0 h-full w-full"
       >
         <Engine onReady={onReady} />
-      </MapContainer>
+      </GoogleMapView>
     </div>
   )
 }
 
 function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
-  const map = useMap()
+  const map = useGoogleMap()
   const dark = useIsDark()
 
   const lots = useEditor((s) => s.lots)
@@ -83,16 +84,16 @@ function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
   )
 
   const [moved, setMoved] = useState(false)
-  const home = useRef<{ center: L.LatLng; zoom: number } | null>(null)
+  const home = useRef<{ center: LatLng; zoom: number } | null>(null)
 
   const fit = useCallback(
     (animate = true) => {
       if (!bounds) return
-      map.fitBounds(toLatLngBounds(bounds), {
+      fitMapBounds(map, bounds, {
         padding: [MAP_EDGE_PADDING, MAP_EDGE_PADDING],
         animate,
       })
-      home.current = { center: map.getCenter(), zoom: map.getZoom() }
+      home.current = { center: getMapCenter(map), zoom: getMapZoom(map) }
       setMoved(false)
     },
     [map, bounds],
@@ -102,8 +103,8 @@ function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
     (id: BlockId) => {
       const block = useEditor.getState().blocks.find((b) => b.id === id)
       if (!block) return
-      map.flyToBounds(toLatLngBounds(boundsPadded(boundsOf([block.polygon]), 0.12)), {
-        duration: 0.6,
+      flyMapToBounds(map, boundsPadded(boundsOf([block.polygon]), 0.12), {
+        padding: [MAP_EDGE_PADDING, MAP_EDGE_PADDING],
       })
     },
     [map],
@@ -116,13 +117,7 @@ function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
     fit(false)
   }, [bounds, fit])
 
-  const viewBounds = useCallback((): Bounds => {
-    const b = map.getBounds().pad(-0.22)
-    return [
-      [b.getSouth(), b.getWest()],
-      [b.getNorth(), b.getEast()],
-    ]
-  }, [map])
+  const viewBounds = useCallback((): Bounds => getViewBounds(map, 0.22), [map])
 
   useEffect(() => {
     onReady({ zoomToBlock, fit: () => fit(true), viewBounds })
@@ -133,35 +128,26 @@ function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
       const h = home.current
       if (!h) return
       setMoved(
-        Math.abs(map.getZoom() - h.zoom) > 0.01 || map.getCenter().distanceTo(h.center) > 6,
+        Math.abs(getMapZoom(map) - h.zoom) > 0.01 ||
+          distanceLatLng(getMapCenter(map), h.center) > 6,
       )
     }
-    map.on('zoomend moveend', onMove)
-    return () => {
-      map.off('zoomend moveend', onMove)
-    }
+    const listener = map.addListener('bounds_changed', onMove)
+    return () => listener.remove()
   }, [map])
 
-  // The editor's own resize discipline — panels open and close beside it.
   useEffect(() => {
-    const el = map.getContainer()
-    let t: number | undefined
-    const ro = new ResizeObserver(() => {
-      window.clearTimeout(t)
-      t = window.setTimeout(() => map.invalidateSize({ animate: false }), 120)
-    })
+    const el = map.getDiv()
+    const ro = new ResizeObserver(() => google.maps.event.trigger(map, 'resize'))
     ro.observe(el)
-    return () => {
-      window.clearTimeout(t)
-      ro.disconnect()
-    }
+    return () => ro.disconnect()
   }, [map])
 
   const noop = useCallback(() => {}, [])
 
   return (
     <>
-      <BaseLayer />
+      <BaseLayer plain="roadmap" />
       <DraftOverlayLayer
         overlays={overlays}
         show={layers.sitePlan}
@@ -178,19 +164,18 @@ function Engine({ onReady }: { onReady: (h: CanvasHandle) => void }) {
       />
       <EditorSurface dark={dark} />
       <Chrome>
-        <ZoomControls moved={moved} onFit={() => fit(true)} />
+        <div className="pointer-events-none absolute bottom-4 right-4 z-[600]">
+          <ZoomControls moved={moved} onFit={() => fit(true)} />
+        </div>
       </Chrome>
     </>
   )
 }
 
-/** Floating HTML inside the Leaflet container must not leak events into it. */
 function Chrome({ children }: { children: React.ReactNode }) {
   const ref = useCallback((el: HTMLDivElement | null) => {
     if (!el) return
-    L.DomEvent.disableClickPropagation(el)
-    L.DomEvent.disableScrollPropagation(el)
-    L.DomEvent.on(el, 'dblclick mousedown mousemove pointerdown', L.DomEvent.stopPropagation)
+    stopMapEventPropagation(el)
   }, [])
   return (
     <div ref={ref} className="relative z-[600]" style={{ display: 'contents' }}>

@@ -45,12 +45,6 @@ export function PublishDialog({
   const navigate = useNavigate()
 
   const confirm = () => {
-    if (!validation.canPublish) {
-      toast.error('Resolve geometry conflicts before publishing', {
-        description: conflictSummary(validation).join(' · '),
-      })
-      return
-    }
     const audit: PublishAudit[] = [...report.soldGroups, ...report.groups].map((g) => ({
       action: g.action,
       entityType: g.entityType,
@@ -87,23 +81,24 @@ export function PublishDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {!validation.canPublish ? (
-          <section className="rounded-lg border border-danger/40 bg-danger/10 p-3">
-            <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-danger">
-              <Icon icon={IconWarning} size={14} />
-              Publish blocked · {validation.blockingCount.toLocaleString()} geometry conflict
-              {validation.blockingCount === 1 ? '' : 's'}
-            </p>
-            <ul className="space-y-1 text-[12px] text-danger">
-              {conflictSummary(validation).map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </section>
-        ) : report.total === 0 ? (
+        {report.total === 0 ? (
           <EmptyState compact icon={IconCheck} title="Nothing to publish" body="The draft matches the live map." />
         ) : (
           <ScrollArea className="max-h-[46vh] pr-3">
+            {validation.blockingCount > 0 && (
+              <section className="mb-3 rounded-lg border border-gold/50 bg-gold/8 p-2.5">
+                <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-gold-deep dark:text-gold">
+                  <Icon icon={IconWarning} size={14} />
+                  {validation.blockingCount.toLocaleString()} layout warning
+                  {validation.blockingCount === 1 ? '' : 's'} — publishing is still allowed
+                </p>
+                <ul className="space-y-1 text-[11.5px] text-gold-deep dark:text-gold">
+                  {conflictSummary(validation).map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
             {report.soldGroups.length > 0 && (
               <section className="mb-3 rounded-lg border border-gold/50 bg-gold/8 p-2.5">
                 <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-gold-deep dark:text-gold">
@@ -134,7 +129,7 @@ export function PublishDialog({
           <Button variant="secondary" onClick={() => onOpenChange(false)}>
             Keep editing
           </Button>
-          <Button className="gap-1.5" disabled={report.total === 0 || !validation.canPublish} onClick={confirm}>
+          <Button className="gap-1.5" disabled={report.total === 0} onClick={confirm}>
             <Icon icon={IconPublish} size={15} />
             Publish
           </Button>

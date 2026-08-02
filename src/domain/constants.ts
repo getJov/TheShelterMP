@@ -31,10 +31,11 @@ export const isPaymentModeAllowed = (n: NeedType, m: PaymentMode) =>
 
 /**
  * Placeholder park centroid — Brgy. Ilangay, Lupon, Davao Oriental.
- * SWAP THIS ONE CONSTANT when the survey arrives. Nothing else in the
- * codebase may hard-code a coordinate.
+ * Chosen so the seeded layout's bounding box centres on the oval field in
+ * the satellite imagery. SWAP THIS ONE CONSTANT when the survey arrives.
+ * Nothing else in the codebase may hard-code a coordinate.
  */
-export const DEFAULT_PARK_CENTROID: LatLng = [6.8985, 126.0102]
+export const DEFAULT_PARK_CENTROID: LatLng = [6.89854, 126.00991]
 export const DEFAULT_PARK_ZOOM = 18
 
 /** Facts stated by the client, used by the mock data and empty states. */

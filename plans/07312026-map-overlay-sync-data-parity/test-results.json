@@ -1,0 +1,163 @@
+{
+  "plan": "plans/07312026-map-overlay-sync-data-parity",
+  "generatedAt": "2026-07-31",
+  "status": "In Progress",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Park Map — lots track the base map while panning, no cut-off edges",
+      "surface": "ui",
+      "precondition": "Signed in (any demo account), Park Map open, zoom at lot level",
+      "steps": ["1. Drag the map a few hundred pixels in any direction", "2. Watch the lot layer during and right after the drag"],
+      "expected": "Lots ride the ground with the tiles; regions that were off-screen paint in; no blank canvas edge, no stale offset after release",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: drag (750,450)→(520,560) — lot clusters moved with the ground, previously off-screen cluster fully painted, no cut-offs (screenshot pair in session)",
+      "notes": "Canvas is now pane-anchored (div-pixel space) and oversized by 200px per side",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Park Map — zoom re-projects lots immediately, no stale-size overlay",
+      "surface": "ui",
+      "precondition": "Park Map open",
+      "steps": ["1. Zoom in two steps (buttons or wheel)", "2. Look at the lot layer right after the zoom settles"],
+      "expected": "Lots are crisply re-projected at the new scale with status badges; no old-scale bitmap lingering",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: two zoom-ins — lots re-projected with badges, aligned to the field on satellite tiles",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Park Map — site plan image stays pinned to its ground bounds",
+      "surface": "ui",
+      "precondition": "Park Map open, 'Show site plan' toggled on",
+      "steps": ["1. Enable Show site plan", "2. Pan and zoom", "3. Watch the plan image against the tiles"],
+      "expected": "The plan renders under the lots, pinned to its bounds at all times; no size lag on zoom, no repositioning snap",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: overlay on at 55% — plan aligned with ground (chapel circle over white-roof building, BLOCK 02 frame around B02 lots); rendered in overlayLayer pane under the lot canvas",
+      "notes": "Overlay is now an OverlayView in a map pane, positioned in draw() — same mechanism as Google's GroundOverlay",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Map Editor — first paint shows lots inside their blocks (no frozen misplaced layer)",
+      "surface": "ui",
+      "precondition": "Signed in as Judith C. Montero (Administrator), Map Editor open",
+      "steps": ["1. Open Map Editor", "2. Compare lots, block outlines, and site plan"],
+      "expected": "Lots render inside their block outlines, over the site plan — not as a detached blob in a corner",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: B01/B02/B03 lots inside their outlines over the ghost plan; the pre-fix frozen bottom-right blob is gone",
+      "notes": "Was the clearest symptom of the container-pixel/pane mismatch",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Map Editor — all layers move together on camera and geometry changes",
+      "surface": "ui",
+      "precondition": "Map Editor open",
+      "steps": ["1. Click 'Reset north and fit layout'", "2. In Align mode, nudge the layout with an arrow key, then undo"],
+      "expected": "Lots, block outlines, labels, and site plan move as one unit in both cases; no layer lags or stays behind",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: fit re-anchored all layers together; 6 arrow-key nudges moved lot canvas + chrome coherently (then undone — draft left clean)",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Both pages read the same dataset (904 lots, same status counts)",
+      "surface": "ui",
+      "precondition": "Any admin/owner account",
+      "steps": ["1. Park Map: read legend counts", "2. Map Editor: read the Lots step count"],
+      "expected": "Park Map legend totals 904 (684/18/156/40/6) and Map Editor shows Lots 904 — identical inventory from the shared dataset",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: verified in both pages, two different roles (Owner, Administrator)",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T7",
+      "title": "Clean editor draft refreshes after a dataset mutation elsewhere",
+      "surface": "ui",
+      "precondition": "Editor draft has no staged changes (clean)",
+      "steps": ["1. Open Map Editor, make no edits, leave", "2. Record a payment or sale so lot status changes", "3. Return to Map Editor"],
+      "expected": "The draft re-hydrates: the changed lot shows its new status in the editor without a page reload",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Store logic implemented (dataset version tracking); needs a mutation flow to observe end-to-end. Dirty drafts intentionally keep priority.",
+      "waiver": ""
+    },
+    {
+      "id": "T8",
+      "title": "Wheel-zoom animation — overlays track the zoom with real input",
+      "surface": "ui",
+      "precondition": "Real mouse/trackpad (synthetic wheel events do not dispatch in the embedded QA pane)",
+      "steps": ["1. Wheel-zoom in and out rapidly on Park Map and Map Editor", "2. Watch lots/site plan against the tiles during the animation"],
+      "expected": "Overlays scale with the tiles during the animation (may soften briefly), then repaint crisp — no old-size freeze, no jump",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Pane transforms carry the bitmap during the animation by construction; needs a human wheel to confirm feel",
+      "waiver": ""
+    },
+    {
+      "id": "T9",
+      "title": "Cluster chips at low zoom ride the map while dragging",
+      "surface": "ui",
+      "precondition": "Park Map zoomed out below lot-visible zoom (18)",
+      "steps": ["1. Zoom out until block cluster chips replace lots", "2. Drag the map"],
+      "expected": "Chips stay glued to their blocks during the drag (no drift until drag-end)",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Chips now position via div-pixel space in draw() — same fix class as the verified layers; embedded pane could not reach low zoom synthetically",
+      "waiver": ""
+    },
+    {
+      "id": "T10",
+      "title": "Lot hover tooltip and click-select still work",
+      "surface": "ui",
+      "precondition": "Park Map at lot zoom",
+      "steps": ["1. Hover a lot — tooltip with code/tier/status appears near the cursor", "2. Click a lot — map flies to it and the drawer opens"],
+      "expected": "Tooltip lands at the cursor; click selects the right lot",
+      "status": "pending",
+      "evidence": "",
+      "notes": "Hit-testing shares coordinate space with drawing by construction; embedded pane throttles the rAF hover path while hidden, so needs a human hover",
+      "waiver": ""
+    },
+    {
+      "id": "T11",
+      "title": "Editor 'Default' base shows the standard street map (Rev 1)",
+      "surface": "ui",
+      "precondition": "Map Editor open",
+      "steps": ["1. In BASE MAP, click 'Default'", "2. Look at the base map"],
+      "expected": "Roads, building footprints, and place labels render; Park Map's 'Plain' stays parchment",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: roadmap rendered with streets, buildings, 'Lupon Sport Oval Ground' and school labels under the layout",
+      "notes": "BaseLayer 'plain' flavour: parchment (Park Map) vs roadmap (editor)",
+      "waiver": ""
+    },
+    {
+      "id": "T12",
+      "title": "Block outlines wrap their lots; editor review clean (Rev 2)",
+      "surface": "ui",
+      "precondition": "Fresh page load (seeded data)",
+      "steps": ["1. Open Map Editor", "2. Compare each block outline against its lot grid", "3. Check the Review step"],
+      "expected": "Outlines hug their grids (2 m verge); Review shows no issues; header says 'Nothing to publish'",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: rotated-frame centre fix removed the ~8.6 m drift; the previous 206 review issues dropped to zero ('ready')",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T13",
+      "title": "Seeded layout centres on the oval ground (Rev 2)",
+      "surface": "ui",
+      "precondition": "Fresh page load, satellite base",
+      "steps": ["1. Open Park Map or Map Editor at the fit view", "2. Compare the layout against the oval field in the imagery"],
+      "expected": "The three blocks straddle the oval field ('Lupon Sport Oval Ground'), not hanging off to its east",
+      "status": "pass",
+      "evidence": "Agent run 2026-07-31: satellite view shows lots over the field; roadmap labels the same area 'Lupon Sport Oval Ground'; fit-view centre latitude matched the computed target (6.898322) exactly",
+      "notes": "Fine-tuning by a few metres, if wanted, is a one-arrow-key job in the editor's Align mode",
+      "waiver": ""
+    }
+  ]
+}

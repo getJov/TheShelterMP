@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import 'leaflet/dist/leaflet.css';
 
 /* Dark mode is driven by a class on <html>, not the media query,
    because we ship a manual toggle and default to light. */
@@ -177,22 +176,21 @@
   }
 }
 
-/* Leaflet needs a little help fitting into the brand. */
-.leaflet-container {
-  background: var(--color-surface-2);
+/* Google Maps container — themed to match the app. */
+.shelter-map,
+.gm-style {
   font-family: var(--font-sans);
+}
+.shelter-map {
+  background: var(--color-surface-2);
   outline: none;
 }
-.leaflet-container a {
-  color: var(--color-gold-deep);
-}
-.leaflet-control-attribution {
+.gm-style-cc {
   background: color-mix(in srgb, var(--color-surface) 82%, transparent) !important;
   color: var(--color-muted) !important;
   font-size: 10px !important;
-  border-radius: 4px 0 0 0;
 }
-.dark .leaflet-tile {
+.dark .gm-style img {
   filter: brightness(0.82) saturate(0.85);
 }
 
