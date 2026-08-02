@@ -117,8 +117,8 @@ export function ReassignUplineDialog({
             <span>
               This changes future attribution only. The{' '}
               <strong className="font-medium text-ink">{contracts}</strong> contract
-              {contracts === 1 ? '' : 's'} already signed keep the upline snapshotted
-              onto them, so no past commission entry moves.
+              {contracts === 1 ? '' : 's'} already signed keep their recorded
+              upline, so past commission entries do not move.
             </span>
           </p>
         </div>

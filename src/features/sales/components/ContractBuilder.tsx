@@ -43,7 +43,6 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconDelete,
-  IconInfo,
   IconStar,
 } from '@/components/ui-brand/icons'
 import { useDataset, indexes } from '@/stores/dataset'
@@ -252,8 +251,7 @@ export function ContractBuilder({
         <DialogHeader>
           <DialogTitle className="font-display text-[22px]">New contract</DialogTitle>
           <DialogDescription>
-            Price is snapshotted at signing — a later price change never restates this
-            contract.
+            Price is fixed at signing. Future price changes do not alter this contract.
           </DialogDescription>
         </DialogHeader>
 
@@ -368,12 +366,6 @@ export function ContractBuilder({
                           />
                         ))}
                       </RadioGroup>
-                      {needType === 'at_need' && (
-                        <p className="flex items-start gap-1.5 text-[11.5px] text-muted">
-                          <Icon icon={IconInfo} size={13} className="mt-0.5 shrink-0" />
-                          At-need is spot cash only, so installment is not offered.
-                        </p>
-                      )}
                     </div>
 
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -745,7 +737,7 @@ function ServiceStep({
           </Select>
         </div>
         <p className="flex items-center gap-1.5 pb-2 text-[11.5px] text-muted">
-          Catalog amounts are placeholders
+          Service amounts are assumed
           <AssumedChip why={ASSUMPTIONS.serviceFees.why} />
         </p>
       </div>
@@ -753,7 +745,7 @@ function ServiceStep({
       {lines.length === 0 ? (
         <div className="rounded-[var(--radius-card)] border border-dashed border-line px-4 py-8 text-center text-[13px] text-muted">
           <Icon icon={IconAdd} size={18} className="mx-auto mb-2 opacity-60" />
-          No services on this contract yet. The lot price alone is fine.
+          No services added. The lot price is enough to continue.
         </div>
       ) : (
         <div className="rounded-[var(--radius-card)] border border-line bg-surface">

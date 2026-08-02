@@ -445,7 +445,7 @@ function ContractDetail({ task }: { task: ApprovalTask }) {
               <Row label="Total" value={formatPeso(commissionTotal)} strong />
             </div>
             <p className="mt-2 flex items-center gap-1.5 text-[11.5px] leading-relaxed text-muted">
-              Earned on collection, never at signing.
+              Commission rates
               <AssumedChip why={ASSUMPTIONS.commissionRates.why} />
             </p>
           </>
@@ -689,7 +689,7 @@ function TransferDetail({ task }: { task: ApprovalTask }) {
         <Row label="Requested" value={fmtDateTime(t.requestedAt)} />
         <Row label="Transfer fee" value={formatPeso(t.feeCentavos)} strong />
         <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-muted">
-          Heard once, never confirmed.
+          Assumed fee
           <AssumedChip why={ASSUMPTIONS.ownershipTransferFee.why} />
         </p>
         <p className="mt-2 border-t border-line pt-2 text-[12.5px] leading-relaxed text-muted">

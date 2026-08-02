@@ -76,7 +76,7 @@ export function AgentCommissionsByRun({ agentId }: { agentId: AgentId }) {
           <EmptyState
             icon={IconCommission}
             title="No commission yet"
-            body="Commission is earned when a payment is collected, never at signing — the first entry appears with the first payment."
+            body="Posted payments will appear here."
             compact
           />
         </div>

@@ -186,8 +186,8 @@ export function AgentFormDialog({
           <DialogTitle>{mode === 'create' ? 'New agent' : 'Edit agent'}</DialogTitle>
           <DialogDescription>
             {mode === 'create'
-              ? 'Creating an agent also creates their login — a person who cannot sign in is not an agent.'
-              : 'Changing the upline affects future contracts only. Past commission is never restated.'}
+              ? 'Creates the agent profile and login.'
+              : 'Future contracts use the updated upline. Past commissions are unchanged.'}
           </DialogDescription>
         </DialogHeader>
 

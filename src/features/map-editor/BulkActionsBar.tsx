@@ -532,8 +532,7 @@ export function BulkActionsBar() {
                 </>
               ) : (
                 <>
-                  This removes {selection.size} lots from the draft. Publish is what makes it real,
-                  and undo will bring them back until then.
+                  This removes {selection.size} lots from the draft. Undo is available until publish.
                 </>
               )}
             </AlertDialogDescription>

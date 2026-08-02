@@ -1,0 +1,89 @@
+{
+  "plan": "plans/07312026-app-copy-cleanup",
+  "generatedAt": "2026-07-31",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Prioritized route-header intro paragraphs removed",
+      "surface": "ui",
+      "precondition": "Source files are checked in the app-copy-cleanup worktree.",
+      "steps": [
+        "1. Inspect /burials, /agents, /agents/rules, /approvals, /pricing, and /audit route headers.",
+        "2. Confirm each prioritized wide muted intro paragraph was removed entirely.",
+        "3. Confirm surrounding headings, tabs, filters, actions, and counts still provide route context."
+      ],
+      "expected": "The six route headers no longer include the redundant intro paragraphs called out in the spec.",
+      "status": "pass",
+      "evidence": "rg route-header class-pattern check returned no matches in the six targeted files.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Prototype and implementation-language copy removed",
+      "surface": "cli",
+      "precondition": "Source files are checked in the app-copy-cleanup worktree.",
+      "steps": [
+        "1. Run rg -n \"prototype|later phase|without leaving the page|same action|not advised|what makes it real|No real authentication\" src/features src/components.",
+        "2. Run the continuation search for pricing/helper phrases: At-need is spot cash only, Resolved for pre-need, Additive, commission basis, Commission is earned on collection, never at signing, and trust-fund deduction variants.",
+        "3. Run the second-pass search for pricing resolver internals, placeholder language, verbose dialog/map-editor phrases, and dramatic audit/approval phrases.",
+        "4. Review dialogs, sheets, toasts, empty states, and popovers included in the changed files."
+      ],
+      "expected": "No visible-copy matches remain for the forbidden implementation/prototype or second-pass redundant phrases.",
+      "status": "pass",
+      "evidence": "The broad rg command returned only two restored non-visible source comments in lot-detail/model.ts and sales/lib.ts. Manual review and browser acceptance confirmed no visible-copy matches. The pricing continuation and second-pass phrase-family searches returned no matches.",
+      "notes": "The two comment matches were restored during finalization reconciliation because the approved scope permits visible-copy edits only.",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Smaller helper copy tightened case by case",
+      "surface": "ui",
+      "precondition": "Source diff is available for review.",
+      "steps": [
+        "1. Review the copy-only diff across pricing, agents, sales, lot detail, burials, and map editor surfaces.",
+        "2. Confirm labels, headings, navigation, errors, placeholders, status text, assumption chips, and destructive warnings remain.",
+        "3. Confirm helper text was not deleted solely because it used a muted text class."
+      ],
+      "expected": "Helper copy is shorter without removing workflow-critical guidance or protected labels.",
+      "status": "pass",
+      "evidence": "Against reconciled origin/main, git diff --stat shows 38 app files with 83 insertions and 210 deletions. Changes are visible text plus the IconInfo import, PriceCell asOf prop, and TrustFundNote compact prop made unused by copy deletion.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Role and route rendering remains healthy",
+      "surface": "ui",
+      "precondition": "Vite dev server running at http://127.0.0.1:5173 using this worktree.",
+      "steps": [
+        "1. Launch the temporary browser runner against the local dev server.",
+        "2. Check login, owner routes, admin routes, manager routes, and agent routes.",
+        "3. Confirm each route renders text, avoids the error boundary, has no page/console errors, and does not show removed copy phrases.",
+        "4. Run the current map-editor alignment test and guided browser smoke after origin/main reconciliation."
+      ],
+      "expected": "The checked roles can reach their expected routes and no removed copy appears in rendered page text.",
+      "status": "pass",
+      "evidence": "After reconciliation, node /tmp/app-copy-cleanup-acceptance.mjs returned ALL PASSED across owner, admin, manager, and agent routes. npx vite-node qa/map-editor-alignment.ts returned map-editor-alignment-ok. qa/map-editor-layered-smoke.mjs returned map-editor-guided-smoke-ok.",
+      "notes": "The repository qa:smoke script is hard-coded to a macOS Chrome path; the temporary role runner used local Playwright Chromium. The alignment test was rerun with worktree write permission after its first sandbox-only EROFS failure.",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Repository verification gates pass",
+      "surface": "cli",
+      "precondition": "Dependencies installed from package-lock in the linked worktree.",
+      "steps": [
+        "1. Run npm run lint.",
+        "2. Run npx tsc --noEmit -p tsconfig.app.json.",
+        "3. Run npm run build."
+      ],
+      "expected": "TypeScript and production build complete with exit code 0.",
+      "status": "pass",
+      "evidence": "npm run lint, npx tsc --noEmit -p tsconfig.app.json, and npm run build exited successfully after origin/main reconciliation.",
+      "notes": "Lint reports existing warnings but exits 0. npm previously reported 2 high severity audit findings; dependency files were not changed by this plan.",
+      "waiver": ""
+    }
+  ]
+}
