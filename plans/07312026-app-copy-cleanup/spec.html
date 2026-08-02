@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App Copy Cleanup Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; background: var(--soft); }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 840px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>App copy cleanup</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/07312026-app-copy-cleanup</dd></div>
+        <div><dt>Size</dt><dd>Large</dd></div>
+        <div><dt>Risk</dt><dd>Level 2</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The app has grown through many feature passes, and visible copy now mixes product labels, workflow guidance, implementation rationale, prototype disclaimers, later-phase notes, and repeated explanatory text. That makes operational pages harder to scan.</p>
+      <p>The goal is not to make the interface vague. It is to remove redundant or unnecessary text while keeping the words that help users complete work: labels, status text, validation, destructive-action warnings, access notices, empty states, and short form guidance.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Perform a copy-only cleanup across the React app. Edit existing visible text in place, keeping behavior, routing, permissions, data calculations, component structure, class names, styling, and visual design unchanged. Removing an entire redundant text paragraph is allowed when the paragraph itself is the copy problem; do not add layout/style changes to compensate. An import or prop may be removed only when deleting approved visible copy makes it unused.</p>
+      <p><strong>Execution priority:</strong> first remove redundant route-header intro paragraphs, then remove prototype/later-phase and implementation-facing visible copy, then review smaller muted helper copy case by case.</p>
+      <p><strong>User decisions recorded on 2026-07-31:</strong> redundant intro paragraphs should be removed entirely, not shortened; prototype/later-phase visible copy should be removed; dialogs and sheets are in scope.</p>
+      <p><strong>Assumption:</strong> this pass targets English product copy only. Domain constants and client-stated labels remain unchanged unless a label is visibly redundant in context.</p>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <ul>
+        <li><strong>2026-07-31:</strong> tightened after context-building. Scope now prioritizes the six identified route-header intro paragraphs, records that redundant copy should be removed entirely, includes dialogs/sheets, and narrows small muted helper copy to case-by-case review instead of class-based deletion.</li>
+        <li><strong>2026-07-31:</strong> executed copy cleanup. Removed the six prioritized route-header intro paragraphs, removed visible prototype/later-phase implementation copy, tightened high-confidence helper copy in dialogs/sheets/toasts/empty states, and verified with grep, typecheck, build, and browser route/role spot checks.</li>
+        <li><strong>2026-07-31:</strong> continued pricing cleanup. Removed the remaining pricing calculator helper paragraphs for payment-mode explanation, page-date resolution, trust-fund deduction, and commission timing, then removed closely similar helper copy from related agent, approval, lot-detail, and sales cards.</li>
+        <li><strong>2026-07-31:</strong> completed the second-pass helper cleanup. Removed pricing resolver and append-only implementation rationale, removed the redundant service-catalog placeholder notice, shortened assumption wording and dialog descriptions, compressed map-editor tutorial prose while retaining shortcuts and sold-lot protections, and made audit/approval wording concise and operational.</li>
+      </ul>
+      <article class="revision-entry">
+        <h3>Rev 1 - 2026-07-31</h3>
+        <p><strong>Change:</strong> Fast-forwarded <code>codex/app-copy-cleanup</code> from <code>bc2f60c</code> to <code>origin/main</code> at <code>87e804e</code>, reapplied the cleanup, and reconciled the two overlapping copy conflicts without changing current map-editor behavior.</p>
+        <p><strong>Reason:</strong> Execution deviation: finalization required current <code>origin/main</code>. Copy removal also made a small number of imports or props unused; unrelated comment-only edits were restored.</p>
+        <p><strong>Updated Done criteria:</strong> The copy-only boundary permits removal of an import or prop only when approved visible-copy deletion makes it unused. No other non-visible source edits are allowed.</p>
+        <p><strong>Verification:</strong> Targeted copy searches, diff checks, lint, TypeScript, production build, map-editor alignment and guided smoke tests, and owner/admin/manager/agent browser acceptance passed after reconciliation.</p>
+      </article>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+      <h3>Worktree</h3>
+      <ul>
+        <li><strong>Source request:</strong> create a new branch from <code>main</code> named <code>codex/app-copy-cleanup</code>.</li>
+        <li><strong>Planning worktree:</strong> <code>/home/jovanie_getalla/projects/shelter-worktrees/app-copy-cleanup</code>.</li>
+        <li><strong>Branch:</strong> <code>codex/app-copy-cleanup</code>.</li>
+        <li><strong>Base branch and commit:</strong> local <code>main</code> at <code>bc2f60c116820773968fb3f9be6c7934e6dfcfa5</code>.</li>
+        <li><strong>Source checkout note:</strong> the original checkout was <code>jovanie/map-editor-improvements</code>, ahead by 2 commits with untracked <code>AGENTS.md:Zone.Identifier</code>. Those uncommitted/source-branch changes are not included in this plan worktree.</li>
+        <li><strong>Template note:</strong> <code>~/.claude/templates/spec.html</code> was not present in this environment. This spec reused the repo-local self-contained HTML analog at <code>plans/07302026-fix-lot-click-flyto-desync/spec.html</code>.</li>
+      </ul>
+
+      <h3>Routes To Review</h3>
+      <ul>
+        <li><code>/login</code>, <code>/map</code>, <code>/dashboard</code>, <code>/sales/*</code>, <code>/burials/*</code>, <code>/agents/*</code>, <code>/approvals</code>, <code>/pricing/*</code>, <code>/map-editor</code>, and <code>/audit</code>.</li>
+      </ul>
+
+      <h3>Copy Surfaces Found</h3>
+      <ul>
+        <li>Shell and shared UI: <code>src/components/shell/AppShell.tsx</code>, <code>src/components/shell/CommandPalette.tsx</code>, <code>src/components/shell/ErrorBoundary.tsx</code>, <code>src/components/shell/nav-items.ts</code>, <code>src/components/ui-brand/EmptyState.tsx</code>, <code>src/components/ui-brand/DataTable.tsx</code>, <code>src/components/ui-brand/SectionHeading.tsx</code>, <code>src/components/ui-brand/StatCard.tsx</code>.</li>
+        <li>Feature pages and dense workflow components under <code>src/features/auth</code>, <code>src/features/map</code>, <code>src/features/dashboard</code>, <code>src/features/sales</code>, <code>src/features/lot-detail</code>, <code>src/features/approvals</code>, <code>src/features/audit</code>, <code>src/features/pricing</code>, <code>src/features/agents</code>, <code>src/features/burials</code>, and <code>src/features/map-editor</code>.</li>
+        <li>Visible labels and appearance text in <code>src/domain/appearance.ts</code>, <code>src/domain/burial.ts</code>, <code>src/domain/commission.ts</code>, <code>src/domain/pricing.ts</code>, <code>src/domain/sales.ts</code>, <code>src/domain/system.ts</code>, and <code>src/domain/tier.ts</code> are protected by default because they act as canonical labels.</li>
+      </ul>
+
+      <h3>Examples Discovered</h3>
+      <ul>
+        <li><strong>Primary route-header targets:</strong> <code>src/features/burials/BurialsPage.tsx</code>, <code>src/features/agents/AgentsPage.tsx</code>, <code>src/features/agents/CommissionRulesPage.tsx</code>, <code>src/features/approvals/ApprovalsPage.tsx</code>, <code>src/features/pricing/PricingPage.tsx</code>, and <code>src/features/audit/AuditPage.tsx</code>.</li>
+        <li><strong>Exact paragraph pattern called out:</strong> wide muted intro paragraphs such as <code>max-w-[78ch] text-[13px] leading-relaxed text-muted</code>, <code>max-w-[72ch] text-[13px] text-muted</code>, <code>max-w-[74ch] text-[13.5px] text-muted</code>, <code>max-w-[76ch] text-[13px] leading-relaxed text-muted</code>, <code>max-w-[72ch] text-[13.5px] leading-relaxed text-muted</code>, and <code>max-w-[80ch] text-[13px] leading-relaxed text-muted</code>.</li>
+        <li><strong>Prototype/later-phase targets:</strong> visible strings containing <code>prototype</code>, <code>later phase</code>, <code>without leaving the page</code>, <code>same action</code>, <code>not advised</code>, and <code>what makes it real</code>.</li>
+        <li><code>src/features/sales/SalesPage.tsx</code> and sales dialogs/sheets include later-phase delivery/upload notes, call-sheet explanations, and repeated empty-state sentences.</li>
+        <li><code>src/features/map-editor/Sidebar.tsx</code>, <code>src/features/map-editor/MapEditorPage.tsx</code>, and related editor panels include tutorial-like keyboard and workflow prose that should be shortened but not removed if it prevents destructive mistakes.</li>
+      </ul>
+
+      <h3>Constitution References Loaded</h3>
+      <ul>
+        <li><code>DISC-1.1</code> and <code>DISC-1.3</code>: local instructions and repository verification commands are authoritative.</li>
+        <li><code>CORE-2.4</code>: follow local analogs; edit copy in existing components rather than inventing a new content system.</li>
+        <li><code>CORE-6.1</code>, <code>VER-1.1</code>, <code>VER-3.2</code>, and <code>VER-3.3</code>: changed UI behavior/copy needs repository verification and observable acceptance.</li>
+        <li><code>FE-3.1</code>: loading, empty, and error states must remain intentional.</li>
+        <li><code>STACK-TSJS-1.1</code> and <code>STACK-TSJS-3.2</code>: keep existing TypeScript/React module and component patterns.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Must</h3>
+          <ul>
+            <li>Read and preserve <code>CONVENTIONS.md</code> and <code>DEVIATIONS.md</code> constraints during execution.</li>
+            <li>Start with the six route-header intro paragraphs named in Context. Remove each entirely when the header, tabs, counts, filters, or actions already communicate the same information.</li>
+            <li>Remove visible prototype/later-phase/implementation-facing copy, including inside dialogs and sheets, unless the user would otherwise misunderstand a disabled or non-delivery workflow.</li>
+            <li>Review smaller muted helper copy case by case. A muted style class is not by itself proof that the text is redundant.</li>
+            <li>Preserve navigation labels, form labels, placeholders that prevent mistakes, error text, status labels, accessibility names, and destructive-action confirmations.</li>
+            <li>Keep every displayed <code>ASSUMPTIONS</code> value paired with <code>&lt;AssumedChip /&gt;</code>.</li>
+            <li>Keep money/date wording consistent with <code>formatPeso</code>, date helpers, and domain label maps.</li>
+            <li>Keep copy professional, concise, and operational. Avoid marketing filler and implementation rationales in product screens.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Must Not</h3>
+          <ul>
+            <li>No route changes, permission changes, data model changes, store changes, or new dependencies.</li>
+            <li>No redesign, component replacement, color/theme changes, layout refactors, or icon-library changes.</li>
+            <li>Do not bulk-delete text based on classes such as <code>text-muted</code>, <code>text-[11.5px]</code>, or <code>leading-relaxed</code>.</li>
+            <li>Do not modify className values, spacing utilities, grid/flex structure, or UI primitives for this cleanup. Remove an import or prop only when approved visible-copy deletion makes it unused.</li>
+            <li>No removal of audit, finance, approval, role-scope, or safety warnings if the user needs them to make a decision.</li>
+            <li>No native form controls; existing shadcn primitives stay in place.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Out Of Scope</h3>
+      <ul>
+        <li>New copywriting system, localization/i18n, CMS extraction, or content constants refactor.</li>
+        <li>Accessibility audit beyond preserving existing labels and names touched by the copy pass.</li>
+        <li>Visual redesign, density changes, feature behavior changes, new empty/loading states, or new routes.</li>
+        <li>Database migrations, backend work, and deployment configuration.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk</h2>
+      <p><strong>Level:</strong> 2 - Concern (broad UI copy blast radius, low technical complexity).</p>
+      <h3>Risks Identified</h3>
+      <ul>
+        <li>Class-based deletion would remove real metadata and safety copy. <strong>Mitigation:</strong> route-header paragraphs are targeted first; small muted helper copy is reviewed by meaning, not class name.</li>
+        <li>Deleting necessary workflow guidance while removing filler. <strong>Mitigation:</strong> protect form guidance, destructive warnings, validation errors, role/access explanations, financial/audit decision context, and assumption disclosures.</li>
+        <li>Changing canonical domain wording accidentally. <strong>Mitigation:</strong> treat domain label maps as protected and prefer page-level copy edits.</li>
+        <li>Breaking accessibility names by shortening <code>aria-label</code> or screen-reader-only titles. <strong>Mitigation:</strong> only edit accessibility names when they become clearer and still identify the control or dialog target.</li>
+        <li>Large diff review fatigue. <strong>Mitigation:</strong> execute by feature group and keep copy changes small, with no unrelated formatting churn.</li>
+        <li>Role-specific pages may hide copy from a single demo role. <strong>Mitigation:</strong> acceptance must include owner/admin/manager/agent spot checks, not just one session.</li>
+      </ul>
+      <p><strong>Blast radius:</strong> every route listed above, shared shell chrome, shared empty/table/card primitives, dashboard cards, approval cards, sales dialogs/sheets, lot drawer sections, pricing dialogs/tabs, agent commission screens, burial scheduling sheets, map editor panels, toast descriptions, placeholders, and domain label consumers.</p>
+      <h3>Pushback</h3>
+      <ul>
+        <li>A copy cleanup across all pages is not a quickfix. Recommended path is this spec-first branch, then a controlled <code>-x</code> implementation grouped by feature area.</li>
+        <li>Do not remove every muted sentence. Some text is an operational control, especially around payments, approvals, audit history, cancellation, unpublished map edits, and assumed business rules.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+      <article class="task-card">
+        <h3>T0: Final copy triage pass</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Before editing, run a final search for visible strings, classify each candidate as remove, shorten, preserve, or protected. Do not create a new content architecture.</dd></div>
+          <div><dt>Files</dt><dd>Read-only sweep across <code>src/features/**/*.{ts,tsx}</code>, <code>src/components/shell/*.tsx</code>, <code>src/components/ui-brand/*.tsx</code>, and visible domain label maps.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Parallel</dt><dd>No. This establishes the protected-copy boundary for the feature groups.</dd></div>
+          <div><dt>Verify</dt><dd>Candidate list covers every route and shared copy surface.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T1: Route-header intro cleanup</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Remove the redundant wide muted route-intro paragraphs first. Remove entirely when the surrounding title, tabs, counters, filters, or actions already provide the purpose. Shorten only when the sentence contains unique operational context that belongs above the fold.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/burials/BurialsPage.tsx</code>, <code>src/features/agents/AgentsPage.tsx</code>, <code>src/features/agents/CommissionRulesPage.tsx</code>, <code>src/features/approvals/ApprovalsPage.tsx</code>, <code>src/features/pricing/PricingPage.tsx</code>, <code>src/features/audit/AuditPage.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T0</dd></div>
+          <div><dt>Parallel</dt><dd>No. This is the first edit pass and establishes the cleanup standard.</dd></div>
+          <div><dt>Verify</dt><dd>The six identified route headers still read cleanly with no redundant paragraph below the title.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Prototype, later-phase, and implementation-language sweep</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Remove visible product copy that talks like an implementation note: prototype disclaimers, later-phase caveats, "same action" explanations, and publish/process rationale. If removing it would make a non-delivery control misleading, replace with a shorter current-state phrase.</dd></div>
+          <div><dt>Files</dt><dd>Search and edit visible strings across <code>src/features/**/*.{ts,tsx}</code> and <code>src/components/**/*.tsx</code>, including dialogs, sheets, toasts, empty states, and popovers.</dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Parallel</dt><dd>No. Run after route headers so obvious product-wide cleanup is consistent.</dd></div>
+          <div><dt>Verify</dt><dd>No visible UI string still contains <code>prototype</code>, <code>later phase</code>, <code>without leaving the page</code>, <code>same action</code>, <code>not advised</code>, or <code>what makes it real</code>, unless execution notes document why a shorter replacement was not safe.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3: Shell, login, map, and dashboard helper copy</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Review smaller muted helper copy case by case in app chrome, login/demo, command palette, map empty/filter states, dashboard panel text, dashboard page header, and card-level subtitles/footers.</dd></div>
+          <div><dt>Files</dt><dd><code>src/components/shell/*</code>, <code>src/components/ui-brand/*</code> only when shared fallback copy changes, <code>src/features/auth/LoginPage.tsx</code>, <code>src/features/map/*</code> visible chrome, <code>src/features/dashboard/**/*</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run in parallel with T4-T7 after T2, but this task owns shared shell/UI-brand files.</dd></div>
+          <div><dt>Verify</dt><dd>Login, map, dashboard docked/full states, no-layout map state, and no-filter-results state still explain the next action.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Sales and lot-detail helper copy</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Review smaller muted helper copy case by case in transaction tables, empty states, sheets, hold/contract/payment dialogs, invoice, transfer, client sheet, contract sheet, and lot drawer prose while preserving financial meaning and destructive warnings.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/SalesPage.tsx</code>, <code>src/features/sales/components/*.tsx</code>, <code>src/features/sales/lib.ts</code> if visible helper output changes, <code>src/features/lot-detail/*.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run in parallel with T3, T5, T6, and T7 if no shared files are touched.</dd></div>
+          <div><dt>Verify</dt><dd>Contracts, payments, receivables, clients, contract builder, post payment, void payment, hold request, transfer, invoice, client sheet, contract sheet, and lot drawer states remain understandable.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T5: Approvals and audit helper copy</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Review smaller muted helper copy case by case in approval cards/details, bulk actions, notification text, rejection dialog, decided history, audit filters, audit empty states, and expanded audit rows without weakening accountability context.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/approvals/*.tsx</code>, <code>src/features/approvals/*.ts</code> only for visible generated messages, <code>src/features/audit/AuditPage.tsx</code>, <code>src/lib/audit.ts</code> only if visible descriptions require cleanup.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run in parallel with T3, T4, T6, and T7.</dd></div>
+          <div><dt>Verify</dt><dd>Approve/reject, undo, decided history, empty queue, unauthorized audit, filtered audit, and expanded audit-row states still carry decision context.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T6: Pricing and agents helper copy</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Review smaller muted helper copy case by case in price book/tier/service dialogs, contrast warnings, agent roster, commission, payout, leaderboard, archive/reassign dialogs, and commission rule controls.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/pricing/**/*</code>, <code>src/features/agents/**/*</code>, visible helper text in related feature files only if needed.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run in parallel with T3, T4, T5, and T7.</dd></div>
+          <div><dt>Verify</dt><dd>Read-only price list, admin pricing management, agent earnings, manager roster, commission rules, payout run, payout sheet, archive/reassign dialogs, and clawback states remain clear.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T7: Burials and map-editor helper copy</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Review smaller muted helper copy case by case in burial calendar/interment/job workflows and map editor tutorial/protection copy while preserving schedule limits, requirements, unpublished-change warnings, sold/occupied-lot protections, and publish/discard meaning.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/burials/**/*</code>, <code>src/features/map-editor/**/*</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>Can run in parallel with T3-T6 if map-editor and burials remain isolated.</dd></div>
+          <div><dt>Verify</dt><dd>Burial calendar/interments/jobs, interment sheet, schedule dialog, requirements checklist, editor empty state, side panels, bulk actions, overlay flow, publish, discard, and navigation-blocker dialogs remain actionable.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T8: Verification and acceptance artifacts</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Run the repo gates, perform route/role spot checks, and generate/update <code>test-results.json</code> plus <code>test.html</code> after execution.</dd></div>
+          <div><dt>Files</dt><dd><code>plans/07312026-app-copy-cleanup/test-results.json</code> and <code>plans/07312026-app-copy-cleanup/test.html</code> after <code>-x</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T3, T4, T5, T6, T7</dd></div>
+          <div><dt>Parallel</dt><dd>No. This is the sequential closeout gate.</dd></div>
+          <div><dt>Verify</dt><dd><code>npx tsc --noEmit -p tsconfig.app.json</code>, <code>npm run build</code>, and focused browser/manual acceptance across roles. Run <code>npm run qa:smoke</code> if the local browser dependency is available.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="acceptance">
+      <h2>Acceptance Plan</h2>
+      <ul>
+        <li>Owner/admin/manager/agent can reach their allowed routes with no confusing empty text or missing next action.</li>
+        <li>Login still explains demo account behavior enough to enter the app.</li>
+        <li>The redundant route-header intro paragraphs in <code>/burials</code>, <code>/agents</code>, <code>/agents/rules</code>, <code>/approvals</code>, <code>/pricing</code>, and <code>/audit</code> are removed entirely unless the executor documents a unique operational reason to keep a shortened sentence.</li>
+        <li>Dialogs and sheets are included in the copy cleanup and no visible prototype/later-phase implementation prose remains.</li>
+        <li>Map, dashboard, sales, burials, agents, approvals, pricing, map editor, and audit pages have no redundant intro paragraphs or unnecessary implementation prose unless explicitly retained for user decision-making.</li>
+        <li>Every destructive or irreversible action still names the consequence before confirmation.</li>
+        <li>Every error, empty, loading, filter-empty, read-only, and permission-denied state remains understandable.</li>
+        <li><code>rg -n "prototype|later phase|without leaving|same action|not advised|what makes it real" src/features src/components</code> has no visible-copy matches unless each retained match is documented in execution notes.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" checked disabled> The six identified route-header intro paragraphs were removed entirely when redundant, before secondary helper-copy cleanup.</li>
+        <li><input type="checkbox" checked disabled> Copy-bearing files across every registered route, including dialogs and sheets, have been reviewed and edited where redundant or unnecessary.</li>
+        <li><input type="checkbox" checked disabled> Smaller muted helper copy was reviewed case by case; no text was removed purely because of a <code>text-muted</code> or <code>text-[11.5px]</code> class.</li>
+        <li><input type="checkbox" checked disabled> No behavior, route, permission, data, dependency, or design-system changes were introduced.</li>
+        <li><input type="checkbox" checked disabled> Labels, headings, navigation, status text, placeholders, validation errors, accessibility names, and critical workflow guidance are preserved or made clearer.</li>
+        <li><input type="checkbox" checked disabled> All assumption disclosures that show assumed business values still render <code>&lt;AssumedChip /&gt;</code>.</li>
+        <li><input type="checkbox" checked disabled> Typecheck passes: <code>npx tsc --noEmit -p tsconfig.app.json</code>.</li>
+        <li><input type="checkbox" checked disabled> Build passes: <code>npm run build</code>.</li>
+        <li><input type="checkbox" checked disabled> Post-execution acceptance files exist and are updated: <code>test-results.json</code> and <code>test.html</code>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

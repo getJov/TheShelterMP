@@ -299,10 +299,9 @@ export function TierDialog({
 
             <p className="flex items-start gap-2 text-[11.5px] leading-relaxed text-muted">
               <Icon icon={IconInfo} size={14} className="mt-0.5 shrink-0" />
-              Tier dimensions are the source of truth for lot footprints. Existing lots can be
-              synced in the map editor draft, where overlaps and outside-block conflicts block
-              Publish until fixed. Existing lots keep their capacity snapshot so recorded burials
-              stay valid.
+              Sync dimension changes to existing lots in the map editor. Resolve overlaps or
+              outside-block conflicts before publishing. Existing lots keep their recorded
+              capacity.
             </p>
           </div>
 

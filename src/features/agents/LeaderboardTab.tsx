@@ -94,7 +94,7 @@ export function Leaderboard({ compact }: { compact?: boolean }) {
         <EmptyState
           icon={IconLeaderboard}
           title="Nothing collected in this period"
-          body="The board fills in as payments are posted — commission is earned on collection, not at signing."
+          body="Payments posted in this period will appear here."
         />
       </div>
     )

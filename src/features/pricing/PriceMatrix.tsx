@@ -125,7 +125,6 @@ export function PriceMatrix({
                         tier={tier}
                         needType={c.needType}
                         paymentMode={c.paymentMode}
-                        asOf={asOf}
                         canManage={canManage}
                         onOpenHistory={onOpenHistory}
                         onEditPrice={onEditPrice}
@@ -168,9 +167,7 @@ function ContactForPricing({ tier }: { tier: Tier }) {
         </span>
       </TooltipTrigger>
       <TooltipContent className="max-w-[300px] text-[12.5px] leading-relaxed">
-        {tier.name} carries no amount in the price book. Rather than substitute
-        a neighbouring tier or another payment mode, the resolver returns
-        nothing — a wrong price on a contract is worse than no price.
+        {tier.name} has no price for this combination.
       </TooltipContent>
     </Tooltip>
   )
@@ -181,7 +178,6 @@ function PriceCell({
   tier,
   needType,
   paymentMode,
-  asOf,
   canManage,
   onOpenHistory,
   onEditPrice,
@@ -190,7 +186,6 @@ function PriceCell({
   tier: Tier
   needType: NeedType
   paymentMode: PaymentMode
-  asOf: ISODate
   canManage: boolean
   onOpenHistory: (t: HistoryTarget) => void
   onEditPrice: (p: SetPricePrefill) => void
@@ -304,9 +299,6 @@ function PriceCell({
               {r.entry.note}
             </p>
           )}
-          <p className="mt-1.5 text-[11px] text-muted">
-            Resolved for {fmtDate(asOf)}
-          </p>
         </HoverCardContent>
       </HoverCard>
 

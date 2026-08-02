@@ -33,11 +33,6 @@ export default function PricingPage() {
             <h1 className="font-display text-[30px] font-semibold leading-tight text-ink">
               Pricing &amp; lot types
             </h1>
-            <p className="mt-1 max-w-[72ch] text-[13.5px] leading-relaxed text-muted">
-              An append-only, effective-dated price book. Changing a price never
-              rewrites a row — it closes the old window and appends a new one,
-              so every contract keeps resolving to what it was actually sold at.
-            </p>
           </div>
           <AsOfControl value={asOf} onChange={setAsOf} />
         </header>

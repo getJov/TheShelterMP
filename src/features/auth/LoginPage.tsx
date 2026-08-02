@@ -115,7 +115,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Any value works in this prototype"
+                placeholder="Enter any password"
                 autoComplete="current-password"
               />
             </div>
@@ -195,8 +195,7 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-8 text-[11.5px] leading-relaxed text-muted">
-            Prototype — no real authentication. Any password signs you in as the
-            selected demo account.
+            Select an account and enter any password to sign in.
           </p>
         </motion.div>
       </div>

@@ -120,7 +120,7 @@ export function ContractBody({ model }: { model: LotModel }) {
         </div>
         <p className="mt-2 text-[11px] leading-snug text-muted">
           Priced from entry <span className="font-mono">{c.priceBookEntryId}</span>, effective{' '}
-          {fmtDate(c.signedAt)}. A later price change never restates this contract.
+          {fmtDate(c.signedAt)}. Future price changes do not alter this contract.
         </p>
       </Panel>
 
@@ -343,10 +343,6 @@ export function CommissionBody({ model }: { model: LotModel }) {
         </div>
       </div>
 
-      <p className="text-[11.5px] leading-snug text-muted">
-        Earned as payments are collected, never at signing. The basis is the full payment —
-        the trust-fund accrual is not deducted from it.
-      </p>
     </div>
   )
 }
@@ -490,7 +486,7 @@ export function DocumentsBody({ model }: { model: LotModel }) {
       </ul>
       <p className="flex items-center gap-1.5 text-[11px] text-muted">
         <Icon icon={IconDocument} size={13} />
-        Document checklist — file storage in a later phase.
+        Files are tracked in the office checklist.
       </p>
     </div>
   )

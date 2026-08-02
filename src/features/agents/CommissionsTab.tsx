@@ -287,7 +287,7 @@ export function CommissionsTab() {
         emptyIcon={IconCommission}
         empty={{
           title: 'No commission entries in this period',
-          body: 'Entries are created only when a payment is posted — never at signing.',
+          body: 'Posted payments in this period will appear here.',
         }}
         footer={
           <div className="space-y-1.5">
@@ -306,9 +306,8 @@ export function CommissionsTab() {
               ))}
             </div>
             <p className="text-[11.5px] text-muted">
-              This is the client&rsquo;s commission computation sheet — except it
-              reconciles by construction: every row is one posted payment × one
-              level of that contract&rsquo;s snapshotted upline.
+              Rows are based on posted payments and the contract upline recorded
+              at signing.
             </p>
           </div>
         }

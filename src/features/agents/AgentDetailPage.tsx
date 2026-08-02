@@ -562,17 +562,10 @@ export function IncentivesSection() {
         className="px-4 py-5"
       >
         <p className="text-[14px] text-muted">No incentive rules defined yet.</p>
-        <p className="mt-2 max-w-[70ch] text-[12.5px] leading-relaxed text-muted">
-          Mentioned in the discovery call, never specified:
-        </p>
         <ul className="mt-1.5 space-y-1 text-[12.5px] text-muted">
-          <li>· A rice allowance (<em>bugas</em>) — cadence, quantity and who qualifies unknown.</li>
+          <li>· Rice allowance (<em>bugas</em>) — cadence, quantity and eligibility unknown.</li>
           <li>· Annual incentives — basis, threshold and amount unknown.</li>
         </ul>
-        <p className="mt-3 max-w-[70ch] text-[12.5px] leading-relaxed text-muted">
-          Deliberately left blank rather than guessed at. It is a live question for
-          the meeting; the section exists so it is not quietly dropped.
-        </p>
       </motion.div>
     </section>
   )

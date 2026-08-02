@@ -147,11 +147,6 @@ export function PayoutSheet({
           </div>
         </div>
 
-        <p className="mt-8 text-[11.5px] leading-relaxed text-muted">
-          Commission is earned on collection, never at signing. Each line is the
-          sum of one agent&rsquo;s entries for this window; the basis of every
-          entry is the full posted payment, with no trust-fund deduction.
-        </p>
       </div>
     </div>,
     document.body,

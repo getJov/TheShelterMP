@@ -167,12 +167,6 @@ export default function ApprovalsPage() {
           }
         />
 
-        <p className="max-w-[76ch] text-[13px] leading-relaxed text-muted">
-          Only what you can decide, at your location, oldest first. Everything here is
-          decidable without leaving the page — approving calls the same action the
-          feature screen would.
-        </p>
-
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
             <TabsList>

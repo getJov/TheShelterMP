@@ -131,7 +131,7 @@ export function MyEarningsPage() {
           size="hero"
           hint={
             <span className="inline-flex items-center gap-1.5">
-              Earned on collection, not at signing <RatesAssumed />
+              Commission rates <RatesAssumed />
             </span>
           }
         />
@@ -214,7 +214,7 @@ export function MyEarningsPage() {
           emptyIcon={IconLot}
           empty={{
             title: 'No sales yet',
-            body: 'Your first contract starts here. Commission arrives with the first payment, not at signing.',
+            body: 'Your first contract starts here.',
             action: (
               <Button asChild size="sm">
                 <Link to="/map">Browse available lots</Link>

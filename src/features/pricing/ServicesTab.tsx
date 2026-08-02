@@ -167,8 +167,7 @@ export function ServicesTab() {
               onClick={() => {
                 archiveService(s.id)
                 toast.success(`${s.name} archived`, {
-                  description:
-                    'Service lines already on contracts keep their own snapshotted amounts.',
+                  description: 'Signed contracts keep their service amounts.',
                 })
               }}
             >
@@ -200,12 +199,6 @@ export function ServicesTab() {
           ) : undefined
         }
       />
-
-      <p className="rounded-[var(--radius-card)] border border-gold/45 bg-gold/8 px-3 py-2 text-[12.5px] leading-relaxed text-ink">
-        Every amount in this catalog is a placeholder. Opening &amp; closing,
-        memorial care and environmental fees were never quoted by the client —
-        each one carries an <b>Assumed</b> chip until it is.
-      </p>
 
       <DataTable
         rows={services}
@@ -289,8 +282,8 @@ function ServiceDialog({
         <DialogHeader>
           <DialogTitle>{service ? `Edit ${service.name}` : 'New service'}</DialogTitle>
           <DialogDescription>
-            Archiving a service keeps every historical service line intact — the
-            amounts on signed contracts were snapshotted at the time.
+            Archiving a service keeps historical service lines and signed contract
+            amounts intact.
           </DialogDescription>
         </DialogHeader>
 
