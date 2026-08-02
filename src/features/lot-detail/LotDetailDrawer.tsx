@@ -42,8 +42,19 @@ export function LotDetailDrawer({
   const [searchParams, setSearchParams] = useSearchParams()
   const expanded = useLotDetailUi((s) => s.expanded)
   const setExpanded = useLotDetailUi((s) => s.setExpanded)
+  const listReturnFocus = useRef<HTMLElement | null>(null)
 
   const narrow = useMediaQuery('(max-width: 899px)')
+
+  function closeAndRestoreListFocus() {
+    const returnTarget = listReturnFocus.current
+    onClose()
+    if (!returnTarget) return
+    window.requestAnimationFrame(() => {
+      if (returnTarget.isConnected) returnTarget.focus()
+      listReturnFocus.current = null
+    })
+  }
 
   const lot = useMemo(() => {
     void version
@@ -119,7 +130,7 @@ export function LotDetailDrawer({
           lot={lot}
           variant={expanded ? 'dialog' : 'drawer'}
           focusSection={focusSection}
-          onClose={onClose}
+          onClose={closeAndRestoreListFocus}
           onToggleExpand={narrow ? undefined : () => setExpanded(!expanded)}
         />
       </motion.div>
@@ -131,7 +142,7 @@ export function LotDetailDrawer({
       <SheetPrimitive.Root
         open={open && !expanded}
         onOpenChange={(v) => {
-          if (!v) onClose()
+          if (!v) closeAndRestoreListFocus()
         }}
         modal={false}
       >
@@ -143,7 +154,20 @@ export function LotDetailDrawer({
               aria-describedby={undefined}
               // The map must keep taking clicks — an outside pointer down is
               // the user picking the NEXT lot, never a request to close.
-              onOpenAutoFocus={(e) => e.preventDefault()}
+              onOpenAutoFocus={(event) => {
+                const active = document.activeElement
+                if (active instanceof HTMLElement && active.dataset.lotListAction === 'true') {
+                  listReturnFocus.current = active
+                  return
+                }
+                event.preventDefault()
+              }}
+              onCloseAutoFocus={(event) => {
+                if (!listReturnFocus.current) return
+                event.preventDefault()
+                if (listReturnFocus.current.isConnected) listReturnFocus.current.focus()
+                listReturnFocus.current = null
+              }}
               onPointerDownOutside={(e) => e.preventDefault()}
               onInteractOutside={(e) => e.preventDefault()}
               onFocusOutside={(e) => e.preventDefault()}

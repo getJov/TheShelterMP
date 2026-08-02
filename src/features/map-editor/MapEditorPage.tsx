@@ -205,21 +205,21 @@ export default function MapEditorPage() {
       <Sidebar canvas={canvas} />
 
       <div className="relative min-w-0 flex-1">
-        <header className="absolute inset-x-0 top-0 z-[640] flex items-center justify-between gap-3 border-b border-line bg-surface/92 px-4 py-2.5 backdrop-blur">
+        <header className="absolute inset-x-0 top-0 z-[640] flex flex-wrap items-start justify-between gap-3 border-b border-line bg-surface/92 px-4 py-2.5 backdrop-blur">
           <div className="min-w-0">
             <p className="eyebrow text-gold-deep dark:text-gold">Map editor</p>
-            <h1 className="truncate font-display text-[19px] font-semibold leading-tight text-ink">
+            <h1 className="break-words font-display text-small-title font-semibold leading-tight text-ink">
               {location?.name ?? 'All locations'} · Blocks &amp; lots
             </h1>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5">
+          <div className="flex w-full flex-wrap items-center justify-end gap-1.5 xl:w-auto">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-8"
+                  className="size-10"
                   disabled={undoDepth === 0}
                   onClick={undo}
                   aria-label="Undo"
@@ -234,7 +234,7 @@ export default function MapEditorPage() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-8"
+                  className="size-10"
                   disabled={redoDepth === 0}
                   onClick={redo}
                   aria-label="Redo"
@@ -248,7 +248,7 @@ export default function MapEditorPage() {
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 text-[12.5px]"
+              className="text-caption"
               disabled={!dirty}
               onClick={() => setDiscardOpen(true)}
             >
@@ -256,7 +256,7 @@ export default function MapEditorPage() {
             </Button>
             <Button
               size="sm"
-              className="h-8 gap-1.5 text-[12.5px]"
+              className="gap-1.5 text-caption"
               disabled={report.total === 0}
               onClick={() => setPublishOpen(true)}
             >
@@ -272,7 +272,7 @@ export default function MapEditorPage() {
           </div>
         </header>
 
-        <div className="absolute inset-0 top-[57px]">
+        <div className="absolute inset-0 top-[120px] xl:top-[65px]">
           <EditorCanvas onReady={onReady} />
 
           {/* Slim, out-of-the-way hint — gone the moment a tool is armed or a
@@ -280,10 +280,10 @@ export default function MapEditorPage() {
           {empty && tool === 'select' && !pendingBlock && (
             <div className="pointer-events-none absolute inset-x-0 top-3 z-[630] flex justify-center">
               <div className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-line bg-surface/95 py-1.5 pl-4 pr-1.5 shadow-lg backdrop-blur">
-                <p className="text-[12.5px] text-muted">No layout yet</p>
+                <p className="text-caption text-muted">No layout yet</p>
                 <Button
                   size="sm"
-                  className="h-7 gap-1.5 rounded-full text-[12px]"
+                  className="gap-1.5 rounded-full text-caption"
                   onClick={() => setTool('block')}
                 >
                   <Icon icon={IconDrawBlock} size={13} />

@@ -42,7 +42,7 @@ export function PriceBookTab({ asOf }: { asOf: ISODate }) {
         />
 
         {asOf !== TODAY && (
-          <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-[12.5px] leading-relaxed text-muted">
+          <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2 text-caption leading-relaxed text-muted">
             <Icon icon={IconInfo} size={15} className="mt-0.5 shrink-0" />
             <span>
               Showing prices for <b>{fmtDate(asOf)}</b>.

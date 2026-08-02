@@ -142,7 +142,7 @@ export function TierCard({
                     onClick={() => setPreviewStatus(s)}
                     aria-label={`Preview ${STATUS_APPEARANCE[s].label} badge`}
                     className={cn(
-                      'rounded-full p-0.5 transition-opacity',
+                      'grid size-10 place-items-center rounded-full transition-opacity',
                       previewStatus === s
                         ? 'opacity-100 ring-1 ring-gold'
                         : 'opacity-45 hover:opacity-80',
@@ -160,18 +160,18 @@ export function TierCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="font-display text-[19px] font-semibold leading-tight text-ink">
+              <h3 className="font-display text-small-title font-semibold leading-tight text-ink">
                 {tier.name}
               </h3>
               <p className="mt-0.5 flex items-center gap-2">
-                <span className="font-mono text-[11px] uppercase tracking-wide text-muted">
+                <span className="font-mono text-micro uppercase tracking-wide text-muted">
                   {tier.code}
                 </span>
-                <Badge variant="outline" className="text-[10.5px] capitalize">
+                <Badge variant="outline" className="text-micro capitalize">
                   {tier.category.replace('_', ' ')}
                 </Badge>
                 {!tier.active && (
-                  <Badge variant="outline" className="text-[10.5px] text-muted">
+                  <Badge variant="outline" className="text-micro text-muted">
                     Archived
                   </Badge>
                 )}
@@ -185,7 +185,7 @@ export function TierCard({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="size-7 text-muted"
+                        className="size-10 text-muted"
                         onClick={onEdit}
                         aria-label="Edit tier"
                       >
@@ -203,7 +203,7 @@ export function TierCard({
               )}
             </div>
           </div>
-          <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">
+          <p className="mt-1.5 text-caption leading-relaxed text-muted">
             {tier.description}
           </p>
         </div>
@@ -220,13 +220,13 @@ export function TierCard({
             <AssumedChip why={ASSUMPTIONS.mausoleumDimensions.why} />
           )}
         </p>
-        <dl className="grid grid-cols-4 gap-2 text-[12.5px]">
+        <dl className="grid grid-cols-4 gap-2 text-caption">
           <Cell label="Width" value={`${tier.widthM.toFixed(2)} m`} />
           <Cell label="Length" value={`${tier.lengthM.toFixed(2)} m`} />
           <Cell label="Area" value={`${areaSqm.toFixed(2)} m²`} />
           <Cell label="Capacity" value={`${tier.capacity}`} />
         </dl>
-        <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
+        <p className="mt-2 text-caption leading-relaxed text-muted">
           Changing dimensions affects newly generated lots only. Existing lots
           keep their recorded capacity.
         </p>
@@ -241,7 +241,7 @@ export function TierCard({
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 gap-1 px-1.5 text-[12px] text-gold-deep dark:text-gold"
+            className="gap-1 px-1.5 text-control text-gold-deep dark:text-gold"
             onClick={onViewPrices}
           >
             Price book
@@ -254,20 +254,20 @@ export function TierCard({
               key={p.key}
               className="rounded-md border border-line bg-surface-2 px-2 py-1.5"
             >
-              <dt className="text-[10.5px] leading-tight text-muted">
+              <dt className="text-micro leading-tight text-muted">
                 {p.group}
                 <br />
                 {p.label}
               </dt>
               <dd className="mt-0.5">
                 {p.resolved.amountCentavos === null ? (
-                  <span className="text-[11.5px] italic text-muted">Contact</span>
+                  <span className="text-caption italic text-muted">Contact</span>
                 ) : (
                   <MoneyText
                     centavos={p.resolved.amountCentavos}
                     compact
                     className={cn(
-                      'text-[14.5px] font-medium',
+                      'text-caption font-medium',
                       p.resolved.isPromo && 'text-gold-deep dark:text-gold',
                     )}
                   />
@@ -287,7 +287,7 @@ export function TierCard({
           Inventory · {formatCount(inventory.total)} lots
         </p>
         {inventory.total === 0 ? (
-          <p className="text-[12.5px] text-muted">No lots use this tier yet.</p>
+          <p className="text-caption text-muted">No lots use this tier yet.</p>
         ) : (
           <>
             <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-2">
@@ -311,7 +311,7 @@ export function TierCard({
                 )
               })}
             </div>
-            <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11.5px] text-muted">
+            <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-caption text-muted">
               {LOT_STATUSES.filter((s) => inventory.byStatus[s] > 0).map((s) => (
                 <li key={s} className="flex items-center gap-1.5">
                   <StatusDot status={s} size={11} withLetter={false} />
@@ -339,7 +339,7 @@ export function TierCard({
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 px-1.5 text-[12px]"
+              className="px-1.5 text-control"
               onClick={() => {
                 setDraft(tier.appearance)
                 setEditingAppearance(true)
@@ -351,7 +351,7 @@ export function TierCard({
         </div>
 
         {!editingAppearance ? (
-          <dl className="grid grid-cols-4 gap-2 text-[12.5px]">
+          <dl className="grid grid-cols-4 gap-2 text-caption">
             <Cell label="Fill" value={tier.appearance.fillColor} mono />
             <Cell label="Stroke" value={tier.appearance.strokeColor} mono />
             <Cell label="Pattern" value={tier.appearance.pattern} />
@@ -449,7 +449,7 @@ export function TierCard({
           <Separator />
           <footer className="px-4 py-3">
             {inventory.total > 0 ? (
-              <p className="flex items-start gap-2 text-[12px] leading-relaxed text-muted">
+              <p className="flex items-start gap-2 text-caption leading-relaxed text-muted">
                 <Icon icon={IconArchive} size={14} className="mt-0.5 shrink-0" />
                 <span>
                   Cannot be archived —{' '}
@@ -484,7 +484,7 @@ export function ContrastGuard({
   return (
     <div className="mt-3 flex gap-2 rounded-md border border-danger/50 bg-danger/8 p-2.5">
       <Icon icon={IconWarning} size={15} className="mt-0.5 shrink-0 text-danger" />
-      <div className="text-[12px] leading-relaxed">
+      <div className="text-caption leading-relaxed">
         <p className="font-medium text-ink">
           This fill hides {warnings.length === 1 ? 'a status badge' : 'status badges'}
         </p>
@@ -515,11 +515,11 @@ function Cell({
 }) {
   return (
     <div className="rounded-md border border-line bg-surface-2 px-2 py-1.5">
-      <dt className="text-[10.5px] text-muted">{label}</dt>
+      <dt className="text-micro text-muted">{label}</dt>
       <dd
         className={cn(
-          'mt-0.5 text-[12.5px] capitalize text-ink',
-          mono && 'font-mono text-[11.5px] normal-case',
+          'mt-0.5 text-caption capitalize text-ink',
+          mono && 'font-mono text-caption normal-case',
         )}
       >
         {value}
@@ -550,7 +550,7 @@ function ColorRow({
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-28 font-mono text-[12px]"
+          className="w-28 font-mono text-caption"
           spellCheck={false}
         />
         <div className="flex flex-wrap gap-1">
@@ -561,7 +561,7 @@ function ColorRow({
               onClick={() => onChange(c)}
               aria-label={`Use ${c}`}
               className={cn(
-                'size-5 rounded border transition-transform hover:scale-110',
+                'size-10 rounded border transition-transform hover:scale-105',
                 value.toLowerCase() === c.toLowerCase()
                   ? 'border-gold ring-1 ring-gold'
                   : 'border-line',

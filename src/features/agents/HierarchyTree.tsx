@@ -105,7 +105,7 @@ export function HierarchyTree({ rows }: { rows: RosterRow[] }) {
           Distributor → Team leader → Associate
         </p>
         <RatesAssumed className="ml-1" />
-        <p className="ml-auto text-[12px] text-muted">
+        <p className="ml-auto text-caption text-muted">
           Each edge is labelled with the rate that level earns on every payment
           collected beneath it.
         </p>
@@ -138,7 +138,7 @@ function TreeRow({ node, depth }: { node: Node; depth: number }) {
           disabled={!hasKids}
           aria-label={open ? 'Collapse' : 'Expand'}
           className={cn(
-            'grid size-5 shrink-0 place-items-center rounded text-muted',
+            'grid size-10 shrink-0 place-items-center rounded text-muted',
             hasKids ? 'hover:bg-line-soft hover:text-ink' : 'opacity-0',
           )}
         >
@@ -207,7 +207,7 @@ function EdgeLabel({
   const rate = rateOf(parent.agent.level)
   return (
     <p
-      className="py-1 text-[11px] text-muted"
+      className="py-1 text-micro text-muted"
       style={{ paddingLeft: 16 + (depth + 1) * 26 + 26 }}
     >
       <span className="opacity-60">└─</span>{' '}
@@ -242,17 +242,17 @@ function Metric({
 }) {
   return (
     <div className="min-w-[104px]">
-      <p className="text-[10.5px] uppercase tracking-[0.07em] text-muted">{label}</p>
+      <p className="text-micro uppercase tracking-[0.07em] text-muted">{label}</p>
       <MoneyText
         centavos={value}
         decimals={false}
         className={cn(
-          'block text-[13.5px]',
+          'block text-caption',
           tone === 'gold' && 'text-gold-deep dark:text-gold',
           strong && 'font-semibold',
         )}
       />
-      {sub && <p className="text-[11px] text-muted">{sub}</p>}
+      {sub && <p className="text-micro text-muted">{sub}</p>}
     </div>
   )
 }

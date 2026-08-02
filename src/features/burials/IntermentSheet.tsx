@@ -19,6 +19,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -134,10 +135,10 @@ function Body({
           <IntermentStatusChip status={i.status} />
           <IntermentTypeBadge type={i.type} />
         </div>
-        <SheetTitle className="font-display text-[25px] font-semibold leading-tight">
+        <SheetTitle className="text-section-title font-display font-semibold leading-tight">
           {deceasedFullName(i)}
         </SheetTitle>
-        <SheetDescription className="text-[13px]">
+        <SheetDescription className="text-body">
           {i.dateOfBirth ? `${fmtDate(i.dateOfBirth)} — ` : 'Died '}
           {fmtDate(i.dateOfDeath)}
           {i.dateOfBirth ? '' : ''}
@@ -153,19 +154,21 @@ function Body({
               <div className="min-w-0 flex-1 space-y-1.5">
                 <div className="flex items-center gap-2">
                   <Icon icon={IconLot} size={15} className="text-muted" />
-                  <span className="font-mono text-[14px] font-medium text-ink">
+                  <span className="text-body font-mono font-medium text-ink">
                     {lotCodeFor(lot)}
                   </span>
                   <StatusChip status={lot.status} className="ml-auto" />
                 </div>
-                <Row label="Block" value={block?.name ?? block?.code ?? '—'} />
-                <Row label="Tier" value={tierName(lot)} />
-                <Row label="Owner" value={ownerName(lot)} />
+                <dl className="space-y-1.5">
+                  <Row label="Block" value={block?.name ?? block?.code ?? '—'} />
+                  <Row label="Tier" value={tierName(lot)} />
+                  <Row label="Owner" value={ownerName(lot)} />
+                </dl>
                 <CapacityMeter used={lot.intermentCount} capacity={lot.capacity} />
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="-ml-2 h-7 gap-1.5 text-[12px] text-gold-deep dark:text-gold"
+                  className="-ml-2 gap-1.5 text-gold-deep dark:text-gold"
                   onClick={() => navigate(`/map?lot=${lot.id}`)}
                 >
                   <Icon icon={IconMap} size={14} />
@@ -174,25 +177,25 @@ function Body({
               </div>
             </div>
           ) : (
-            <p className="text-[13px] text-muted">Lot not found.</p>
+            <p className="text-body text-muted">Lot not found.</p>
           )}
         </Section>
 
         {/* ── schedule ────────────────────────────────────────── */}
         <Section title="Schedule">
           <div className="rounded-lg border border-line bg-surface p-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="font-display text-[17px] text-ink">
+                <p className="text-small-title font-display text-ink">
                   {fmtDateLong(i.scheduledDate)}
                 </p>
-                <p className="mt-0.5 flex items-center gap-1.5 text-[12.5px] text-muted">
+                <p className="text-caption mt-0.5 flex items-center gap-1.5 text-muted">
                   <SlotIcon slot={i.slot} />
                   {SLOT_LABEL[i.slot]}
                 </p>
               </div>
               {canSchedule && i.status !== 'completed' && i.status !== 'cancelled' && (
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   <Button
                     variant="outline"
                     size="sm"
@@ -213,7 +216,7 @@ function Body({
             </div>
 
             {outside && (
-              <p className="mt-2 flex items-start gap-1.5 rounded border border-gold/45 bg-gold/8 px-2 py-1.5 text-[11.5px] text-gold-deep dark:text-gold">
+              <p className="text-caption mt-2 flex items-start gap-1.5 rounded border border-gold/45 bg-gold/8 px-2 py-2 text-gold-deep dark:text-gold" role="status">
                 <Icon icon={IconWarning} size={14} className="mt-px" />
                 Scheduled beyond the 15-day window, which closed{' '}
                 {fmtDate(windowEnd(i.dateOfDeath))}.
@@ -227,11 +230,18 @@ function Body({
                 transition={{ duration: 0.28, ease: EASE }}
                 className="mt-3 space-y-2.5 overflow-hidden border-t border-line-soft pt-3"
               >
-                <DatePickerButton value={newDate} onChange={setNewDate} />
+                <Label htmlFor={`reschedule-date-${i.id}`}>New date</Label>
+                <DatePickerButton
+                  id={`reschedule-date-${i.id}`}
+                  value={newDate}
+                  onChange={setNewDate}
+                  ariaLabel="New interment date"
+                />
                 <RadioGroup
                   value={newSlot}
                   onValueChange={(v) => setNewSlot(v as BurialSlot)}
                   className="gap-1.5"
+                  aria-label="New burial slot"
                 >
                   {(['morning', 'afternoon'] as BurialSlot[]).map((s) => {
                     const taken = !freeForMove.includes(s)
@@ -239,7 +249,7 @@ function Body({
                       <label
                         key={s}
                         className={cn(
-                          'flex items-center gap-2.5 rounded-lg border px-2.5 py-1.5 text-[13px]',
+                          'text-control flex min-h-11 items-center gap-2.5 rounded-lg border px-2.5 py-2',
                           taken
                             ? 'cursor-not-allowed border-line bg-surface-2 text-muted'
                             : 'cursor-pointer border-line hover:border-gold/45',
@@ -248,7 +258,7 @@ function Body({
                         <RadioGroupItem value={s} disabled={taken} />
                         <SlotIcon slot={s} />
                         <span className="flex-1">{SLOT_LABEL[s]}</span>
-                        {taken && <span className="text-[11.5px]">Booked</span>}
+                        {taken && <span className="text-caption">Booked</span>}
                       </label>
                     )
                   })}
@@ -287,15 +297,19 @@ function Body({
                 transition={{ duration: 0.28, ease: EASE }}
                 className="mt-3 space-y-2.5 overflow-hidden border-t border-line-soft pt-3"
               >
-                <p className="text-[12.5px] text-muted">
+                <p className="text-body text-muted" id={`cancel-help-${i.id}`}>
                   Cancelling frees the slot and decrements the lot's count. If this
                   is the only interment, the lot reverts to sold.
                 </p>
+                <Label htmlFor={`cancel-reason-${i.id}`}>Reason for cancellation</Label>
                 <Textarea
+                  id={`cancel-reason-${i.id}`}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Reason for cancellation (required)"
-                  className="min-h-[62px] text-[13px]"
+                  className="min-h-20"
+                  required
+                  aria-describedby={`cancel-help-${i.id}`}
                 />
                 <div className="flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setMode('view')}>
@@ -328,7 +342,7 @@ function Body({
         {i.status === 'requested' && canApprove && (
           <Section title="Approval">
             <div className="rounded-lg border border-gold/50 bg-gold/8 p-3">
-              <p className="text-[12.5px] text-gold-deep dark:text-gold">
+              <p className="text-body text-gold-deep dark:text-gold">
                 Requested by {indexes().usersById.get(i.requestedByUserId)?.fullName ?? '—'}.
                 Approving confirms the slot and raises the grounds job.
               </p>
@@ -373,13 +387,13 @@ function Body({
         <Section title="Fees">
           <div className="rounded-lg border border-line bg-surface p-3">
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-muted">Opening &amp; closing fee</span>
+              <span className="text-body text-muted">Opening &amp; closing fee</span>
               <MoneyText
                 centavos={i.openingClosingFeeCentavos}
-                className="text-[14px] font-medium"
+                className="text-body font-medium"
               />
             </div>
-            <p className="mt-1 flex items-center gap-1.5 text-[11.5px] text-muted">
+            <p className="text-caption mt-1 flex flex-wrap items-center gap-1.5 text-muted">
               {contract
                 ? `Service line on ${contract.contractNo}.`
                 : 'No contract on file for this lot.'}
@@ -393,7 +407,7 @@ function Body({
           {job ? (
             <div className="rounded-lg border border-line bg-surface p-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 text-[13px] text-ink">
+                <span className="text-body flex items-center gap-2 text-ink">
                   <Icon icon={IconGroundsJob} size={15} className="text-muted" />
                   {job.assignedToUserId
                     ? (indexes().usersById.get(job.assignedToUserId)?.fullName ?? '—')
@@ -407,7 +421,7 @@ function Body({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 text-[12px] text-gold-deep dark:text-gold"
+                    className="text-gold-deep dark:text-gold"
                     onClick={onOpenJobs}
                   >
                     Open jobs board
@@ -416,7 +430,7 @@ function Body({
               </div>
             </div>
           ) : (
-            <p className="rounded-lg border border-dashed border-line px-3 py-3 text-[12.5px] text-muted">
+            <p className="text-body rounded-lg border border-dashed border-line px-3 py-3 text-muted">
               {i.status === 'requested'
                 ? 'The grounds job is raised when the request is approved.'
                 : 'No grounds job on this interment.'}
@@ -426,7 +440,7 @@ function Body({
 
         {i.notes && (
           <Section title="Notes">
-            <p className="rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-[12.5px] leading-relaxed text-muted">
+            <p className="text-body rounded-lg border border-line bg-surface-2 px-3 py-2.5 leading-relaxed text-muted">
               {i.notes}
             </p>
           </Section>
@@ -435,17 +449,17 @@ function Body({
         {/* ── history ─────────────────────────────────────────── */}
         <Section title="History">
           {history.length === 0 ? (
-            <p className="text-[12.5px] text-muted">No recorded events yet.</p>
+            <p className="text-body text-muted">No recorded events yet.</p>
           ) : (
             <ul className="space-y-2">
               {history.map((e) => (
                 <li key={e.id} className="flex gap-2.5">
                   <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
                   <span className="min-w-0">
-                    <span className="block font-mono text-[11.5px] text-ink">
+                    <span className="text-caption block break-words font-mono text-ink">
                       {e.action}
                     </span>
-                    <span className="block text-[11.5px] text-muted">
+                    <span className="text-caption block text-muted">
                       {indexes().usersById.get(e.actorUserId)?.fullName ?? '—'} ·{' '}
                       {fmtDateTime(e.at)}
                     </span>
@@ -460,11 +474,11 @@ function Body({
       {/* ── footer ────────────────────────────────────────────── */}
       <div className="sticky bottom-0 border-t border-line bg-surface px-5 py-3.5">
         {i.status === 'completed' ? (
-          <p className="text-center text-[13px] text-green">
+          <p className="text-body text-center text-green" role="status">
             Interment completed {fmtDate(i.scheduledDate)}.
           </p>
         ) : i.status === 'cancelled' ? (
-          <p className="text-center text-[13px] text-danger">This interment was cancelled.</p>
+          <p className="text-body text-center text-danger" role="status">This interment was cancelled.</p>
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -486,7 +500,7 @@ function Body({
                 </Button>
               </span>
             </TooltipTrigger>
-            <TooltipContent className="max-w-[280px] text-[12.5px]">
+            <TooltipContent className="max-w-[280px]">
               {!canComplete
                 ? 'Your role cannot complete an interment.'
                 : i.status === 'requested'
@@ -498,7 +512,7 @@ function Body({
           </Tooltip>
         )}
         {blocked.length > 0 && i.status === 'scheduled' && (
-          <p className="mt-2 text-center text-[11.5px] text-danger">
+          <p className="text-caption mt-2 text-center text-danger" role="alert">
             Outstanding: {blocked.join(', ')}
           </p>
         )}
@@ -510,7 +524,7 @@ function Body({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <p className="eyebrow mb-2 text-gold-deep dark:text-gold">{title}</p>
+      <h3 className="text-caption mb-2 font-semibold uppercase text-gold-deep dark:text-gold">{title}</h3>
       {children}
     </section>
   )
@@ -518,9 +532,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <p className="flex items-baseline gap-2 text-[12.5px]">
-      <span className="w-[52px] shrink-0 text-muted">{label}</span>
-      <span className="min-w-0 truncate text-ink">{value}</span>
-    </p>
+    <div className="text-caption grid grid-cols-[auto_1fr] items-baseline gap-2">
+      <dt className="min-w-14 text-muted">{label}</dt>
+      <dd className="min-w-0 break-words text-ink">{value}</dd>
+    </div>
   )
 }

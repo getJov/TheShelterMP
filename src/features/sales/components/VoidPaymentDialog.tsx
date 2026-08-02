@@ -51,7 +51,7 @@ export function VoidPaymentDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="sm:max-w-[520px]">
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-display text-[21px]">
+          <AlertDialogTitle className="font-display text-section-title">
             Void {payment?.orNo}?
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -64,7 +64,7 @@ export function VoidPaymentDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <ul className="space-y-1.5 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-[12.5px] leading-snug text-muted">
+        <ul className="space-y-1.5 rounded-[var(--radius-card)] border border-line bg-surface-2 p-3.5 text-body text-muted">
           <li>The schedule is rebuilt from the payments that remain posted.</li>
           <li>
             The trust-fund entry of{' '}
@@ -85,7 +85,7 @@ export function VoidPaymentDialog({
         </ul>
 
         <div className="space-y-1.5">
-          <Label htmlFor="vp-reason" className="text-[12.5px] text-muted">
+          <Label htmlFor="vp-reason" className="text-caption text-muted">
             Reason (required)
           </Label>
           <Textarea
@@ -94,7 +94,13 @@ export function VoidPaymentDialog({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Duplicate posting — corrected receipt issued."
+            required
+            aria-invalid={reason.length > 0 && reason.trim().length < 4}
+            aria-describedby="vp-reason-help"
           />
+          <p id="vp-reason-help" className="text-caption text-muted">
+            Enter at least four characters. This reason stays with the voided payment.
+          </p>
         </div>
 
         <AlertDialogFooter>

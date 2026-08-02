@@ -104,9 +104,9 @@ export function Leaderboard({ compact }: { compact?: boolean }) {
     <div className="space-y-4">
       {!compact && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[12.5px] text-muted">Rank by</span>
+          <span className="text-caption text-muted">Rank by</span>
           <Select value={rankBy} onValueChange={(v) => setRankBy(v as RankBy)}>
-            <SelectTrigger size="sm" className="w-[190px]">
+            <SelectTrigger size="sm" className="w-full sm:w-[190px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -120,7 +120,7 @@ export function Leaderboard({ compact }: { compact?: boolean }) {
 
           {canPickLocation && (
             <Select value={locationId} onValueChange={setLocationId}>
-              <SelectTrigger size="sm" className="w-[170px]">
+              <SelectTrigger size="sm" className="w-full sm:w-[170px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -134,7 +134,7 @@ export function Leaderboard({ compact }: { compact?: boolean }) {
             </Select>
           )}
 
-          <span className="ml-auto text-[12px] text-muted">
+          <span className="ml-auto text-caption text-muted">
             Movement compared with {period.prev.label}
           </span>
         </div>
@@ -169,7 +169,7 @@ export function Leaderboard({ compact }: { compact?: boolean }) {
           <>
             <div className="flex items-center gap-3 px-1 py-1">
               <span className="h-px flex-1 bg-line" />
-              <span className="text-[11px] uppercase tracking-[0.08em] text-muted">
+              <span className="text-micro uppercase tracking-[0.08em] text-muted">
                 Your position
               </span>
               <span className="h-px flex-1 bg-line" />
@@ -238,7 +238,7 @@ function BoardRow({
       <span
         className={cn(
           'relative z-10 grid shrink-0 place-items-center rounded-full font-display font-semibold tabular',
-          first ? 'size-11 text-[21px]' : 'size-9 text-[16px]',
+          first ? 'size-11 text-section-title' : 'size-9 text-body',
           top
             ? 'border border-gold/60 bg-gold/15 text-gold-deep dark:text-gold'
             : 'border border-line bg-surface-2 text-muted',
@@ -255,22 +255,22 @@ function BoardRow({
             to={`/agents/${row.agentId}`}
             className={cn(
               'font-display font-semibold text-ink hover:underline',
-              first ? 'text-[19px]' : 'text-[16.5px]',
+              first ? 'text-small-title' : 'text-small-title',
             )}
           >
             {agentName(row.agentId)}
           </Link>
-          <span className="font-mono text-[11px] text-muted">{agent.agentCode}</span>
+          <span className="font-mono text-micro text-muted">{agent.agentCode}</span>
           <LevelBadge level={agent.level} />
           {isMe && (
-            <span className="rounded-full border border-gold/55 bg-gold/15 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-gold-deep dark:text-gold">
+            <span className="rounded-full border border-gold/55 bg-gold/15 px-2 py-0.5 text-micro font-bold uppercase tracking-[0.08em] text-gold-deep dark:text-gold">
               You
             </span>
           )}
           <ArchivedChip agent={agent} />
         </div>
 
-        <p className="mt-0.5 text-[13px] text-muted">
+        <p className="mt-0.5 text-caption text-muted">
           <span className={cn(rankBy === 'collected' && 'font-medium text-ink')}>
             {formatPeso(row.collectedCentavos, { decimals: false })} collected
           </span>
@@ -283,7 +283,7 @@ function BoardRow({
 
         <div className="mt-1.5 flex items-center gap-2.5">
           {pct === null ? (
-            <span className="text-[12px] text-muted">No target set</span>
+            <span className="text-caption text-muted">No target set</span>
           ) : (
             <>
               <span className="h-1.5 w-40 overflow-hidden rounded-full bg-line-soft">
@@ -297,7 +297,7 @@ function BoardRow({
                   )}
                 />
               </span>
-              <span className="tabular text-[12px] text-muted">
+              <span className="tabular text-caption text-muted">
                 {pct}% of {formatPeso(row.targetCentavos, { compact: true })} target
               </span>
             </>
@@ -307,13 +307,13 @@ function BoardRow({
 
       <div className="relative z-10 flex items-center gap-5">
         <div className="text-right">
-          <p className="text-[10.5px] uppercase tracking-[0.07em] text-muted">
+          <p className="text-micro uppercase tracking-[0.07em] text-muted">
             Commission <RatesAssumed className="ml-1" />
           </p>
           <p
             className={cn(
               'font-display font-semibold tabular text-gold-deep dark:text-gold',
-              first ? 'text-[22px]' : 'text-[18px]',
+              first ? 'text-section-title' : 'text-small-title',
             )}
           >
             {formatPeso(row.commissionCentavos, { decimals: false })}

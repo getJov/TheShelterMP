@@ -63,7 +63,7 @@ export function RequirementsChecklist({
         const done = requirements[key]
         const id = `${idPrefix}-${key}`
         return (
-          <li key={key} className="flex items-start gap-3 px-3 py-2.5">
+          <li key={key} className="flex min-h-11 items-start gap-3 px-3 py-2.5">
             <Checkbox
               id={id}
               checked={done}
@@ -75,21 +75,21 @@ export function RequirementsChecklist({
               <Label
                 htmlFor={id}
                 className={cn(
-                  'text-[13px] font-medium',
+                  'text-body font-medium',
                   done ? 'text-ink' : 'text-ink',
                   !editable && 'cursor-default',
                 )}
               >
                 {meta.label}
                 {meta.blocking ? (
-                  <span className="eyebrow ml-2 rounded border border-danger/40 bg-danger/8 px-1 py-px text-[9px] text-danger">
+                  <span className="text-micro ml-2 inline-block rounded border border-danger/40 bg-danger/8 px-1 py-px font-semibold text-danger">
                     Blocks completion
                   </span>
                 ) : (
-                  <span className="eyebrow ml-2 text-[9px] text-muted">Warning only</span>
+                  <span className="text-micro ml-2 inline-block font-semibold text-muted">Warning only</span>
                 )}
               </Label>
-              <p className="mt-0.5 text-[11.5px] leading-snug text-muted">{meta.hint}</p>
+              <p className="text-caption mt-0.5 leading-snug text-muted">{meta.hint}</p>
             </div>
           </li>
         )

@@ -86,11 +86,11 @@ function RestrictedPanel({ lot, onClose }: { lot: Lot; onClose: () => void }) {
       <header className="shrink-0 border-b border-line px-5 pt-4 pb-3.5">
         <div className="flex items-start gap-2">
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-[26px] font-semibold leading-none text-ink">
+            <h2 className="break-words font-display text-page-title font-semibold leading-none text-ink">
               {shell.code}
             </h2>
-            <p className="mt-2 text-[13px] text-ink">{shell.tierName}</p>
-            <p className="mt-1 truncate text-[12px] text-muted">
+            <p className="mt-2 text-body text-ink">{shell.tierName}</p>
+            <p className="mt-1 break-words text-caption text-muted">
               {shell.blockLabel} · {shell.footprint}
             </p>
           </div>
@@ -115,8 +115,8 @@ function RestrictedPanel({ lot, onClose }: { lot: Lot; onClose: () => void }) {
         <span className="grid size-12 place-items-center rounded-full border border-line bg-surface-2 text-muted">
           <Icon icon={IconUnavailable} size={22} />
         </span>
-        <p className="mt-4 font-display text-[20px] text-ink">Unavailable</p>
-        <p className="mt-1.5 max-w-[34ch] text-[13px] leading-relaxed text-muted">
+        <p className="mt-4 font-display text-section-title text-ink">Unavailable</p>
+        <p className="mt-1.5 max-w-[34ch] text-body leading-relaxed text-muted">
           This lot is not available for sale. Contact your manager for details.
         </p>
       </motion.div>

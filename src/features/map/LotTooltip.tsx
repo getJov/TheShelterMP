@@ -141,20 +141,20 @@ export function LotTooltip({ target }: { target: TooltipTarget | null }) {
             shown.lot.lot.status === 'available' ? (
               <StatusDot status={shown.lot.lot.status} size={15} />
             ) : null}
-            <span className="font-mono text-[12.5px] font-medium text-ink">
+            <span className="font-mono text-body font-medium text-ink">
               {shown.lot.code}
             </span>
-            <span className="text-[11px] text-muted">
+            <span className="text-caption text-muted">
               {shown.lot.tier?.name ?? '—'}
             </span>
           </div>
           {(shown.lot.visibility === 'full' ||
             shown.lot.lot.status === 'available') && (
-            <p className="mt-0.5 text-[11px] text-muted">
+            <p className="mt-0.5 text-caption text-muted">
               {STATUS_APPEARANCE[shown.lot.lot.status].label}
             </p>
           )}
-          <p className="mt-1 text-[12.5px] leading-snug text-ink">{lines}</p>
+          <p className="mt-1 text-body leading-snug text-ink">{lines}</p>
         </motion.div>
       )}
     </AnimatePresence>

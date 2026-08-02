@@ -88,13 +88,13 @@ function TabShell({ active, children }: { active: string; children: ReactNode })
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-line bg-surface px-6 pt-5">
+      <div className="shrink-0 border-b border-line bg-surface px-4 pt-5 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="eyebrow text-gold-deep dark:text-gold">
               {user.role === 'agent' ? 'My earnings' : 'Sales force'}
             </p>
-            <h2 className="font-display text-[27px] font-semibold text-ink">
+            <h2 className="font-display text-page-title font-semibold text-ink">
               Agents &amp; Commissions
             </h2>
           </div>
@@ -103,7 +103,7 @@ function TabShell({ active, children }: { active: string; children: ReactNode })
           </div>
         </div>
 
-        <nav className="-mb-px mt-4 flex gap-1">
+        <nav className="-mb-px mt-4 flex flex-wrap gap-1">
           {tabs
             .filter((t) => t.show)
             .map((t) => (
@@ -112,7 +112,7 @@ function TabShell({ active, children }: { active: string; children: ReactNode })
                 to={t.to}
                 end={t.to === '/agents'}
                 className={cn(
-                  'relative rounded-t-md px-3.5 py-2 text-[13.5px] transition-colors',
+                  'relative rounded-t-md px-3.5 py-2 text-caption transition-colors',
                   active === t.to
                     ? 'font-medium text-ink'
                     : 'text-muted hover:text-ink',
@@ -127,7 +127,7 @@ function TabShell({ active, children }: { active: string; children: ReactNode })
         </nav>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6">{children}</div>
     </div>
   )
 }

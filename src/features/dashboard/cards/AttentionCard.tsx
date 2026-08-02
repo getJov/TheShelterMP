@@ -44,17 +44,17 @@ export function AttentionCard(props: CardProps) {
                   e.stopPropagation()
                   navigate(r.href)
                 }}
-                className="group/row flex w-full items-center gap-2.5 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-surface-2"
+                className="group/row flex min-h-10 w-full items-center gap-2.5 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-surface-2"
               >
                 <span
                   className={cn(
-                    'grid h-5 min-w-5 shrink-0 place-items-center rounded px-1 text-[11px] font-semibold tabular',
+                    'grid h-5 min-w-5 shrink-0 place-items-center rounded px-1 text-micro font-semibold tabular',
                     TONE[r.tone],
                   )}
                 >
                   {r.count}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-[12.5px] text-ink">
+                <span className="min-w-0 flex-1 break-words text-caption text-ink">
                   {r.label}
                 </span>
                 <Icon

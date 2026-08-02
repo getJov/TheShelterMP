@@ -23,10 +23,16 @@ export function LotCombobox({
   value,
   onChange,
   id,
+  required = false,
+  describedBy,
+  invalid,
 }: {
   value: LotId | null
   onChange: (v: LotId) => void
   id?: string
+  required?: boolean
+  describedBy?: string
+  invalid?: boolean
 }) {
   const version = useDataset((s) => s.version)
   const lots = useDataset((s) => s.data.lots)
@@ -66,15 +72,18 @@ export function LotCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-required={required || undefined}
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
           className="w-full justify-between font-normal"
         >
           <span className={cn('flex min-w-0 items-center gap-2', !selected && 'text-muted')}>
             {selected && <StatusDot status={selected.status} size={15} />}
-            <span className="truncate font-mono text-[13px]">
+            <span className="font-mono text-body">
               {selected ? lotCodeOf(selected) : 'Select a lot'}
             </span>
             {selected && (
-              <span className="truncate font-sans text-[12px] text-muted">
+              <span className="whitespace-normal break-words font-sans text-caption text-muted">
                 {indexes().tiersById.get(selected.tierId)?.name}
               </span>
             )}
@@ -85,7 +94,7 @@ export function LotCombobox({
 
       <PopoverContent
         align="start"
-        className="w-[var(--radix-popover-trigger-width)] min-w-[320px] p-0"
+        className="w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-2rem)] min-w-[min(320px,calc(100vw-2rem))] p-0"
       >
         <Command shouldFilter={false}>
           <CommandInput
@@ -109,10 +118,10 @@ export function LotCombobox({
                   >
                     <StatusDot status={r.lot.status} size={15} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-mono text-[12.5px] text-ink">
+                      <span className="block font-mono text-body text-ink">
                         {r.code}
                       </span>
-                      <span className="block truncate text-[11.5px] text-muted">
+                      <span className="block whitespace-normal break-words text-caption text-muted">
                         {r.tier}
                       </span>
                     </span>

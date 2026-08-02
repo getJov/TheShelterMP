@@ -78,9 +78,9 @@ export function InventoryCard(props: CardProps) {
                 e.stopPropagation()
                 drillTo({ mode: 'tier', tierId: t.id as TierId })
               }}
-              className="flex items-baseline gap-2 rounded px-1 py-[3px] text-left text-[12px] transition-colors hover:bg-surface-2"
+              className="flex min-h-10 items-baseline gap-2 rounded px-1 py-[3px] text-left text-caption transition-colors hover:bg-surface-2"
             >
-              <span className="min-w-0 flex-1 truncate text-muted">{t.name}</span>
+              <span className="min-w-0 flex-1 break-words text-muted">{t.name}</span>
               <span className="shrink-0 tabular text-ink">{formatCount(t.available)}</span>
               <span className="shrink-0 tabular text-muted">/ {formatCount(t.total)}</span>
             </button>

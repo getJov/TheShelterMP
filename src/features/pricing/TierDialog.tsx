@@ -201,7 +201,7 @@ export function TierDialog({
                   value={draft.code}
                   onChange={(e) => set('code', e.target.value.toUpperCase())}
                   placeholder="LAWN_PREM"
-                  className="font-mono text-[12px]"
+                  className="font-mono text-caption"
                 />
               </Field>
             </div>
@@ -297,7 +297,7 @@ export function TierDialog({
               </Field>
             </div>
 
-            <p className="flex items-start gap-2 text-[11.5px] leading-relaxed text-muted">
+            <p className="flex items-start gap-2 text-caption leading-relaxed text-muted">
               <Icon icon={IconInfo} size={14} className="mt-0.5 shrink-0" />
               Sync dimension changes to existing lots in the map editor. Resolve overlaps or
               outside-block conflicts before publishing. Existing lots keep their recorded
@@ -316,7 +316,7 @@ export function TierDialog({
               <Input
                 value={draft.appearance.fillColor}
                 onChange={(e) => setApp('fillColor', e.target.value)}
-                className="w-[132px] font-mono text-[12px]"
+                className="w-[132px] font-mono text-caption"
                 spellCheck={false}
               />
             </Field>
@@ -324,7 +324,7 @@ export function TierDialog({
               <Input
                 value={draft.appearance.strokeColor}
                 onChange={(e) => setApp('strokeColor', e.target.value)}
-                className="w-[132px] font-mono text-[12px]"
+                className="w-[132px] font-mono text-caption"
                 spellCheck={false}
               />
             </Field>
@@ -348,7 +348,7 @@ export function TierDialog({
                 className="w-[132px] flex-wrap"
               >
                 {PATTERNS.map((p) => (
-                  <ToggleGroupItem key={p} value={p} className="text-[11px] capitalize">
+                  <ToggleGroupItem key={p} value={p} className="text-micro capitalize">
                     {p}
                   </ToggleGroupItem>
                 ))}

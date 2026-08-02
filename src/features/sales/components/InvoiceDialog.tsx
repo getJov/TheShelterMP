@@ -58,7 +58,7 @@ export function InvoiceDialog({
         <style>{PRINT_CSS}</style>
 
         <DialogHeader className="no-print">
-          <DialogTitle className="font-display text-[22px]">Statement preview</DialogTitle>
+          <DialogTitle className="font-display text-section-title">Statement preview</DialogTitle>
           <DialogDescription>
             Prints an A4 statement with the contract reference.
           </DialogDescription>
@@ -68,17 +68,17 @@ export function InvoiceDialog({
           {contract && model && (
             <div
               id="invoice-sheet"
-              className="mx-auto w-full max-w-[720px] bg-surface p-8 text-ink"
+              className="mx-auto w-full max-w-[720px] bg-surface p-4 text-ink sm:p-8 print:p-0"
             >
               {/* brand header */}
-              <header className="flex items-start justify-between gap-6 border-b border-line pb-5">
+              <header className="flex flex-wrap items-start justify-between gap-6 border-b border-line pb-5">
                 <div className="flex items-start gap-3">
                   <LogoMark size={40} className="text-gold-deep dark:text-gold" />
                   <div>
-                    <p className="font-display text-[20px] font-semibold leading-tight">
+                    <p className="font-display text-small-title font-semibold print:text-[20px] print:leading-tight">
                       {PARK_FACTS.corporateName}
                     </p>
-                    <p className="mt-0.5 text-[11.5px] leading-snug text-muted">
+                    <p className="mt-0.5 text-caption text-muted print:text-[11.5px] print:leading-snug">
                       {PARK_FACTS.officeAddress}
                       <br />
                       {PARK_FACTS.phone} · {PARK_FACTS.email}
@@ -89,8 +89,8 @@ export function InvoiceDialog({
                   <p className="eyebrow text-gold-deep dark:text-gold">
                     Statement of account
                   </p>
-                  <p className="mt-1 font-mono text-[15px]">{contract.contractNo}</p>
-                  <p className="mt-0.5 text-[11.5px] text-muted">
+                  <p className="mt-1 font-mono text-body print:text-[15px]">{contract.contractNo}</p>
+                  <p className="mt-0.5 text-caption text-muted print:text-[11.5px]">
                     Issued {fmtDate(TODAY)}
                   </p>
                 </div>
@@ -100,11 +100,11 @@ export function InvoiceDialog({
               <section className="grid gap-6 py-5 sm:grid-cols-2">
                 <div>
                   <p className="eyebrow mb-1.5 text-muted">Billed to</p>
-                  <p className="text-[14px] font-medium">
+                  <p className="text-body font-medium print:text-[14px]">
                     {model.client ? clientFullName(model.client) : '—'}
                   </p>
                   {model.client && (
-                    <p className="mt-0.5 text-[12px] leading-snug text-muted">
+                    <p className="mt-0.5 text-caption text-muted print:text-[12px] print:leading-snug">
                       {model.client.address}
                       <br />
                       {model.client.city}, {model.client.province}
@@ -119,8 +119,8 @@ export function InvoiceDialog({
                 </div>
                 <div>
                   <p className="eyebrow mb-1.5 text-muted">Property</p>
-                  <p className="font-mono text-[14px]">{lotCodeById(contract.lotId)}</p>
-                  <p className="mt-0.5 text-[12px] leading-snug text-muted">
+                  <p className="font-mono text-body print:text-[14px]">{lotCodeById(contract.lotId)}</p>
+                  <p className="mt-0.5 text-caption text-muted print:text-[12px] print:leading-snug">
                     {tierNameOf(contract.lotId)}
                     <br />
                     Signed {fmtDate(contract.signedAt)}
@@ -133,7 +133,7 @@ export function InvoiceDialog({
               </section>
 
               {/* totals */}
-              <section className="grid grid-cols-3 gap-px overflow-hidden rounded border border-line bg-line">
+              <section className="grid grid-cols-1 gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-3 print:grid-cols-3">
                 <Box label="Contract price" value={formatPeso(model.balance.totalCentavos)} />
                 <Box label="Paid to date" value={formatPeso(model.balance.paidCentavos)} />
                 <Box
@@ -145,11 +145,11 @@ export function InvoiceDialog({
 
               {/* schedule */}
               {model.schedule.length > 0 ? (
-                <section className="mt-6">
+                <section className="mt-6 overflow-x-auto">
                   <p className="eyebrow mb-2 text-gold-deep dark:text-gold">
                     Amortization schedule
                   </p>
-                  <table className="w-full border-collapse text-[12px]">
+                  <table className="w-full min-w-[620px] border-collapse text-body print:min-w-0 print:text-[12px]">
                     <thead>
                       <tr className="border-b border-line text-left text-muted">
                         <th className="py-1.5 pr-2 font-semibold">#</th>
@@ -162,7 +162,7 @@ export function InvoiceDialog({
                     <tbody>
                       {model.schedule.map((i) => (
                         <tr key={i.installmentNo} className="border-b border-line-soft">
-                          <td className="py-1 pr-2 font-mono text-[11px] text-muted">
+                          <td className="py-1 pr-2 font-mono text-caption text-muted print:text-[11px]">
                             {String(i.installmentNo).padStart(2, '0')}
                           </td>
                           <td className="py-1 pr-2 tabular">{fmtDate(i.dueDate)}</td>
@@ -183,7 +183,7 @@ export function InvoiceDialog({
                   </table>
                 </section>
               ) : (
-                <section className="mt-6 text-[12.5px] text-muted">
+                <section className="mt-6 text-body text-muted print:text-[12.5px]">
                   Spot-cash contract — settled in a single payment, no schedule.
                 </section>
               )}
@@ -192,7 +192,7 @@ export function InvoiceDialog({
               <section className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded border border-line bg-surface-2 px-4 py-3">
                 <div>
                   <p className="eyebrow text-muted">Next amount due</p>
-                  <p className="mt-0.5 text-[12px] text-muted">
+                  <p className="mt-0.5 text-caption text-muted print:text-[12px]">
                     {model.due
                       ? `Installment ${model.due.installmentNo} · ${fmtDate(model.due.dueDate)}`
                       : model.balance.outstandingCentavos > 0
@@ -200,7 +200,7 @@ export function InvoiceDialog({
                         : 'Nothing further is due'}
                   </p>
                 </div>
-                <p className="font-display text-[24px] font-semibold tabular">
+                <p className="font-display text-section-title font-semibold tabular print:text-[24px]">
                   {formatPeso(
                     model.due
                       ? model.due.amountDueCentavos - model.due.amountPaidCentavos
@@ -210,7 +210,7 @@ export function InvoiceDialog({
               </section>
 
               {/* instructions */}
-              <footer className="mt-6 border-t border-line pt-4 text-[11.5px] leading-relaxed text-muted">
+              <footer className="mt-6 border-t border-line pt-4 text-caption text-muted print:text-[11.5px] print:leading-relaxed">
                 <p className="font-medium text-ink">Payment instructions</p>
                 <p className="mt-1">
                   Quote reference{' '}
@@ -228,7 +228,7 @@ export function InvoiceDialog({
         </ScrollArea>
 
         <DialogFooter className="no-print border-t border-line pt-3 sm:justify-between">
-          <span className="flex items-center gap-1.5 text-[12px] text-muted">
+          <span className="flex flex-wrap items-center gap-1.5 text-caption text-muted">
             <Icon icon={IconMail} size={14} />
             {model?.client?.email ? (
               <>
@@ -264,8 +264,8 @@ function Box({
       <p
         className={
           strong
-            ? 'mt-0.5 font-display text-[19px] font-semibold tabular'
-            : 'mt-0.5 text-[15px] tabular'
+            ? 'mt-0.5 font-display text-small-title font-semibold tabular print:text-[19px]'
+            : 'mt-0.5 text-body tabular print:text-[15px]'
         }
       >
         {value}

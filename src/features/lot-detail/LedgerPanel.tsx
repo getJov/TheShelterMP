@@ -40,7 +40,7 @@ export function LedgerPanel({ model }: { model: LotModel }) {
     return (
       <Panel className="py-3">
         <Caption>No contract</Caption>
-        <p className="mt-1 text-[12.5px] text-muted">
+        <p className="mt-1 text-body text-muted">
           This lot has never been sold, so there is no ledger or schedule to show.
         </p>
       </Panel>
@@ -55,23 +55,23 @@ export function LedgerPanel({ model }: { model: LotModel }) {
       cell: (p) => (
         <span className="block">
           <span
-            className={cn('font-mono text-[12px]', p.status === 'void' && 'line-through')}
+            className={cn('font-mono text-caption', p.status === 'void' && 'line-through')}
           >
             {p.orNo}
           </span>
           {p.referenceNo && (
-            <span className="block font-mono text-[10.5px] text-muted">
+            <span className="block font-mono text-micro text-muted">
               {p.referenceNo}
             </span>
           )}
           {p.status === 'void' && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="block cursor-help text-[10.5px] font-medium text-danger">
+                <span className="block cursor-help text-micro font-medium text-danger">
                   Voided
                 </span>
               </TooltipTrigger>
-              <TooltipContent className="max-w-[260px] text-[12.5px]">
+              <TooltipContent className="max-w-[260px] text-body">
                 {p.voidReason ?? 'No reason recorded.'}
               </TooltipContent>
             </Tooltip>
@@ -106,7 +106,7 @@ export function LedgerPanel({ model }: { model: LotModel }) {
             <Icon icon={METHOD_ICON[p.method]} size={14} className="text-muted" />
             {PAYMENT_METHOD_LABEL[p.method]}
           </span>
-          <span className="block text-[10.5px] text-muted">
+          <span className="block text-micro text-muted">
             {shortName(indexes().usersById.get(p.receivedByUserId)?.fullName)}
           </span>
         </span>
@@ -126,7 +126,7 @@ export function LedgerPanel({ model }: { model: LotModel }) {
       <Panel className="py-3">
         <div className="flex items-baseline justify-between gap-3 pb-2">
           <Caption>Collected on {c.contractNo}</Caption>
-          <span className="text-[12.5px] text-muted">
+          <span className="text-body text-muted">
             <MoneyText centavos={bal.paidCentavos} className="text-ink" /> of{' '}
             <MoneyText centavos={bal.totalCentavos} />
           </span>
@@ -163,7 +163,7 @@ export function LedgerPanel({ model }: { model: LotModel }) {
             <ScheduleTable schedule={model.schedule} maxHeight={460} />
           ) : (
             <Panel className="py-3">
-              <p className="text-[12.5px] text-muted">
+              <p className="text-body text-muted">
                 Spot-cash contract — one settled line, no schedule.
               </p>
             </Panel>

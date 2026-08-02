@@ -72,14 +72,14 @@ export function MyEarningsPage() {
       key: 'no',
       header: 'Contract',
       sortBy: (c) => c.contractNo,
-      cell: (c) => <span className="font-mono text-[11.5px]">{c.contractNo}</span>,
+      cell: (c) => <span className="font-mono text-caption">{c.contractNo}</span>,
     },
     {
       key: 'signed',
       header: 'Signed',
       sortBy: (c) => c.signedAt,
       cell: (c) => (
-        <span className="whitespace-nowrap text-[12.5px] text-muted">
+        <span className="whitespace-nowrap text-caption text-muted">
           {fmtDate(c.signedAt)}
         </span>
       ),
@@ -89,7 +89,7 @@ export function MyEarningsPage() {
       header: 'Status',
       sortBy: (c) => c.status,
       cell: (c) => (
-        <span className="text-[12.5px]">{CONTRACT_STATUS_LABEL[c.status]}</span>
+        <span className="text-caption">{CONTRACT_STATUS_LABEL[c.status]}</span>
       ),
     },
     {
@@ -159,10 +159,10 @@ export function MyEarningsPage() {
           />
           <div className="min-w-0">
             <p className="eyebrow text-muted">Target progress</p>
-            <p className="mt-1 font-display text-[24px] font-semibold tabular text-ink">
+            <p className="mt-1 font-display text-section-title font-semibold tabular text-ink">
               {formatPeso(data.col.centavos, { decimals: false })}
             </p>
-            <p className="text-[12.5px] text-muted">
+            <p className="text-caption text-muted">
               collected {period.label}
               {me.monthlyTargetCentavos
                 ? ` of ${formatPeso(me.monthlyTargetCentavos, { decimals: false })}`
@@ -170,25 +170,25 @@ export function MyEarningsPage() {
             </p>
             <p className="mt-2 flex items-center gap-2">
               <LevelBadge level={me.level} withRate />
-              <span className="font-mono text-[11.5px] text-muted">{me.agentCode}</span>
+              <span className="font-mono text-caption text-muted">{me.agentCode}</span>
             </p>
           </div>
         </section>
 
         <section className="flex items-center gap-5 rounded-[var(--radius-card)] border border-line bg-surface p-5">
           <span className="grid size-[84px] shrink-0 place-items-center rounded-full border border-gold/55 bg-gold/12">
-            <span className="font-display text-[30px] font-semibold tabular text-gold-deep dark:text-gold">
+            <span className="font-display text-page-title font-semibold tabular text-gold-deep dark:text-gold">
               {data.myRow ? data.myRow.rank : '—'}
             </span>
           </span>
           <div className="min-w-0">
             <p className="eyebrow text-muted">Leaderboard position</p>
-            <p className="mt-1 text-[13.5px] text-ink">
+            <p className="mt-1 text-caption text-ink">
               {data.myRow
                 ? `Rank ${data.myRow.rank} of ${data.board.length} at your location`
                 : 'Not ranked in this period yet'}
             </p>
-            <p className="mt-0.5 text-[12.5px] text-muted">
+            <p className="mt-0.5 text-caption text-muted">
               {data.myRow?.contractCount ?? 0} contract
               {data.myRow?.contractCount === 1 ? '' : 's'} paid into ·{' '}
               {formatPeso(data.inPeriod.total, { decimals: false })} commission

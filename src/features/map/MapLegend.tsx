@@ -54,7 +54,7 @@ export function MapLegend({ data, dark }: { data: MapData; dark: boolean }) {
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.24, ease: EASE }}
             onClick={() => setCollapsed(false)}
-            className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-3 py-1.5 text-[12.5px] text-muted shadow-md backdrop-blur hover:text-ink"
+            className="pointer-events-auto flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface/90 px-3 py-2 text-body text-muted shadow-md backdrop-blur hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <Icon icon={IconLayers} size={14} />
             Legend
@@ -66,14 +66,14 @@ export function MapLegend({ data, dark }: { data: MapData; dark: boolean }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.28, ease: EASE }}
-            className="pointer-events-auto w-[196px] rounded-xl border border-line bg-surface/88 shadow-lg backdrop-blur-md"
+            className="pointer-events-auto w-[min(250px,calc(100vw-32px))] rounded-xl border border-line bg-surface/88 shadow-lg backdrop-blur-md"
           >
             <div className="flex items-center justify-between border-b border-line-soft px-3 py-2">
               <p className="eyebrow text-muted">Legend</p>
               <button
                 onClick={() => setCollapsed(true)}
                 aria-label="Collapse legend"
-                className="text-muted hover:text-ink"
+                className="grid size-10 place-items-center rounded-md text-muted hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <Icon icon={IconChevronDown} size={15} />
               </button>
@@ -159,14 +159,14 @@ function Row({
     <Tag
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-[12.5px] transition-colors',
+        'flex min-h-10 w-full items-center gap-2 rounded-md px-1.5 py-1.5 text-left text-body transition-colors',
         onClick && 'hover:bg-surface-2',
         active && 'bg-gold/15 font-medium',
       )}
     >
       {swatch}
-      <span className="min-w-0 flex-1 truncate text-ink">{label}</span>
-      <span className="tabular text-[11.5px] text-muted">{formatCount(count)}</span>
+      <span className="min-w-0 flex-1 break-words text-ink">{label}</span>
+      <span className="tabular text-caption text-muted">{formatCount(count)}</span>
     </Tag>
   )
 }
@@ -243,7 +243,7 @@ function AgentSection({ data }: { data: MapData }) {
   if (rows.length === 0) {
     return (
       <Section title="Agent">
-        <p className="px-1.5 py-1 text-[12px] text-muted">No sold lots in view.</p>
+        <p className="px-1.5 py-1 text-caption text-muted">No sold lots in view.</p>
       </Section>
     )
   }

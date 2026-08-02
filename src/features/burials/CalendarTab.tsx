@@ -129,8 +129,7 @@ export function CalendarTab({
           <Button
             variant="ghost"
             size="icon"
-            className="size-8"
-            aria-label="Previous"
+            aria-label={`Previous ${view}`}
             onClick={() => step(-1)}
           >
             <Icon icon={IconChevronLeft} size={17} />
@@ -138,20 +137,21 @@ export function CalendarTab({
           <Button
             variant="ghost"
             size="icon"
-            className="size-8"
-            aria-label="Next"
+            aria-label={`Next ${view}`}
             onClick={() => step(1)}
           >
             <Icon icon={IconChevronRight} size={17} />
           </Button>
         </div>
 
-        <h3 className="font-display text-[21px] font-semibold text-ink">{title}</h3>
+        <h3 className="text-section-title font-display font-semibold text-ink" aria-live="polite">
+          {title}
+        </h3>
 
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 text-[12px] text-muted"
+          className="text-muted"
           onClick={() => {
             setDirection(anchor < TODAY ? 1 : -1)
             setAnchor(TODAY)
@@ -160,21 +160,22 @@ export function CalendarTab({
           Today
         </Button>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
           <ToggleGroup
             type="single"
             variant="outline"
             size="sm"
             value={view}
             onValueChange={(v) => v && setView(v as View)}
+            aria-label="Calendar view"
           >
-            <ToggleGroupItem value="month" className="text-[12.5px]">
+            <ToggleGroupItem value="month">
               Month
             </ToggleGroupItem>
-            <ToggleGroupItem value="week" className="text-[12.5px]">
+            <ToggleGroupItem value="week">
               Week
             </ToggleGroupItem>
-            <ToggleGroupItem value="day" className="text-[12.5px]">
+            <ToggleGroupItem value="day">
               Day
             </ToggleGroupItem>
           </ToggleGroup>
@@ -189,7 +190,7 @@ export function CalendarTab({
       </div>
 
       {/* ── legend + next available ─────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-line bg-surface-2 px-3 py-2 text-[11.5px] text-muted">
+      <div className="text-caption flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-line bg-surface-2 px-3 py-2 text-muted">
         <span className="inline-flex items-center gap-1.5">
           <SlotDots morning afternoon />
           Booked
@@ -206,7 +207,7 @@ export function CalendarTab({
           <span className="inline-block h-3 w-5 rounded-sm ring-2 ring-inset ring-gold" />
           Today
         </span>
-        <span className="ml-auto">
+        <span className="w-full sm:ml-auto sm:w-auto">
           Maximum {MAX_BURIALS_PER_DAY} services a day — one morning, one afternoon.
           {next && (
             <>
@@ -220,21 +221,21 @@ export function CalendarTab({
 
       {/* ── empty-state notices ─────────────────────────────── */}
       {beforeFirstInterment ? (
-        <p className="rounded-lg border border-line bg-surface px-3.5 py-2.5 text-[12.5px] text-muted">
+        <p className="text-body rounded-lg border border-line bg-surface px-3.5 py-2.5 text-muted" role="status">
           The park's first interment was{' '}
           <span className="font-medium text-ink">{fmtDate(FIRST_INTERMENT)}</span>. There is
           nothing before it.
         </p>
       ) : bookedInView === 0 ? (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-3.5 py-2.5">
-          <p className="text-[12.5px] text-muted">
+          <p className="text-body text-muted" role="status">
             No services scheduled {view === 'month' ? 'this month' : view === 'week' ? 'this week' : 'this day'}.
           </p>
           {canSchedule && (
             <Button
               variant="outline"
               size="sm"
-              className="ml-auto h-7 text-[12px]"
+              className="ml-auto"
               onClick={() => onSchedule(view === 'day' ? anchor : null, null)}
             >
               Schedule a burial

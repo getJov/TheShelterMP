@@ -24,7 +24,7 @@ export function HealthChip({
     <span
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap',
-        dense ? 'px-1.5 py-px text-[11px]' : 'px-2 py-0.5 text-[12px]',
+        dense ? 'px-1.5 py-px text-micro' : 'px-2 py-0.5 text-caption',
         className,
       )}
       style={{
@@ -57,7 +57,7 @@ export function ContractStatusChip({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-[12px] font-medium whitespace-nowrap',
+        'inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-medium whitespace-nowrap',
         STATUS_TONE[status],
         className,
       )}
@@ -78,8 +78,8 @@ export function FieldRow({
 }) {
   return (
     <div className={cn('flex items-baseline justify-between gap-4 py-1', className)}>
-      <span className="text-[12.5px] text-muted">{label}</span>
-      <span className="text-right text-[13px] text-ink">{children}</span>
+      <span className="text-caption text-muted">{label}</span>
+      <span className="text-right text-body text-ink">{children}</span>
     </div>
   )
 }

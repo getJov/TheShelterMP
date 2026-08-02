@@ -27,7 +27,7 @@ export function PeriodSelector({
         <ToggleGroupItem
           key={p.id}
           value={p.id}
-          className="h-7 px-2.5 text-[12px] data-[state=on]:bg-gold/14 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
+          className="px-2.5 text-caption data-[state=on]:bg-gold/14 data-[state=on]:text-gold-deep dark:data-[state=on]:text-gold"
         >
           {compact ? p.short : p.label}
         </ToggleGroupItem>

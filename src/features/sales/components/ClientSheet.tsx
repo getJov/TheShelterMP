@@ -55,10 +55,10 @@ export function ClientSheet({
         {model ? (
           <>
             <SheetHeader className="gap-1 border-b border-line px-5 py-4">
-              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-[22px]">
+              <SheetTitle className="flex flex-wrap items-center gap-2 font-display text-section-title">
                 {clientFullName(model.client)}
                 {model.client.seniorCitizen && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-gold/45 bg-gold/12 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold-deep dark:text-gold">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-gold/45 bg-gold/12 px-2 py-0.5 text-micro font-semibold uppercase tracking-wide text-gold-deep dark:text-gold">
                     <Icon icon={IconStar} size={12} />
                     Senior
                   </span>
@@ -120,7 +120,7 @@ export function ClientSheet({
                     Contracts & lots
                   </h3>
                   {model.rows.length === 0 ? (
-                    <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-[12.5px] text-muted">
+                    <p className="rounded-[var(--radius-card)] border border-line bg-surface px-3.5 py-3 text-body text-muted">
                       No contracts on record.
                     </p>
                   ) : (
@@ -130,24 +130,24 @@ export function ClientSheet({
                           <button
                             type="button"
                             onClick={() => onOpenContract?.(r.contract.id)}
-                            className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-3.5 py-2.5 text-left transition-colors hover:bg-surface-2"
+                            className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-sm px-3.5 py-2.5 text-left outline-none transition-colors hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            <span className="font-mono text-[12.5px] text-ink">
+                            <span className="font-mono text-body text-ink">
                               {r.contractNo}
                             </span>
-                            <span className="font-mono text-[12px] text-muted">
+                            <span className="font-mono text-caption text-muted">
                               {r.lotCode}
                             </span>
-                            <span className="text-[12px] text-muted">{r.tier}</span>
+                            <span className="text-caption text-muted">{r.tier}</span>
                             <span className="ml-auto flex items-center gap-2">
                               <ContractStatusChip status={r.contract.status} />
                               <HealthChip health={r.health} dense />
                               <MoneyText
                                 centavos={r.outstandingCentavos}
-                                className="w-24 text-right text-[13px] text-ink"
+                                className="w-28 text-right text-body text-ink"
                               />
                             </span>
-                            <span className="w-full text-[11.5px] text-muted">
+                            <span className="w-full text-caption text-muted">
                               Signed {fmtDate(r.contract.signedAt)} · sold by {r.agent}
                             </span>
                           </button>
@@ -160,7 +160,7 @@ export function ClientSheet({
             </ScrollArea>
           </>
         ) : (
-          <div className="p-6 text-[13px] text-muted">No client selected.</div>
+          <div className="p-6 text-body text-muted">No client selected.</div>
         )}
       </SheetContent>
     </Sheet>
@@ -182,10 +182,10 @@ function Tile({
       {centavos !== undefined ? (
         <MoneyText
           centavos={centavos}
-          className="mt-0.5 block font-display text-[19px] font-semibold leading-none text-ink"
+          className="mt-0.5 block font-display text-small-title font-semibold text-ink"
         />
       ) : (
-        <p className="mt-0.5 font-display text-[19px] font-semibold leading-none tabular text-ink">
+        <p className="mt-0.5 font-display text-small-title font-semibold tabular text-ink">
           {value}
         </p>
       )}

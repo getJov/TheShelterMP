@@ -98,11 +98,11 @@ function PromoRow({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-2 text-[14.5px] font-semibold text-ink">
+          <p className="flex items-center gap-2 text-caption font-semibold text-ink">
             <Icon icon={IconFlag} size={15} className="text-gold-deep dark:text-gold" />
             {first.label ?? 'Promotion'}
           </p>
-          <p className="tabular mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-muted">
+          <p className="tabular mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-muted">
             <span>
               {fmtDate(first.effectiveFrom)} →{' '}
               {first.effectiveTo ? fmtDate(first.effectiveTo) : 'open-ended'}
@@ -116,7 +116,7 @@ function PromoRow({
               </span>
             )}
           </p>
-          <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px]">
+          <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-caption">
             {entries.map((e) => {
               const tier = tiersById.get(e.tierId)
               return (
@@ -132,7 +132,7 @@ function PromoRow({
             })}
           </ul>
           {first.note && (
-            <p className="mt-1.5 text-[12px] text-muted">{first.note}</p>
+            <p className="mt-1.5 text-caption text-muted">{first.note}</p>
           )}
         </div>
 

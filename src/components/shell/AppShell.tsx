@@ -4,11 +4,21 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { LogoLockup, LogoMark } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
+import { DisplaySettings } from './DisplaySettings'
+import { RouteAccessibility, routeTitleFor } from './RouteAccessibility'
 import { navItems, type NavItem } from './nav-items'
 import { Icon } from '@/components/ui-brand/Icon'
-import { IconSidebar } from '@/components/ui-brand/icons'
+import { IconMenu, IconSidebar } from '@/components/ui-brand/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { useCanAny } from '@/lib/permissions'
 import { canAny, type Permission } from '@/domain'
@@ -31,14 +41,25 @@ export function AppShell() {
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-bg">
+      <a
+        href="#main-content"
+        className="fixed left-3 top-3 z-[100] -translate-y-24 rounded-md bg-ink px-4 py-3 text-control font-semibold text-bg shadow-lg transition-transform focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <Rail open={railOpen} onToggle={() => setRailOpen((v) => !v)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="relative min-h-0 flex-1 overflow-hidden">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative min-h-0 flex-1 overflow-hidden outline-none"
+        >
           <Outlet />
         </main>
       </div>
       <CommandPalette />
+      <RouteAccessibility />
     </div>
   )
 }
@@ -54,7 +75,7 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
       initial={false}
       animate={{ width: open ? 232 : 68 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="z-30 flex shrink-0 flex-col border-r border-line bg-surface"
+      className="z-30 hidden shrink-0 flex-col border-r border-line bg-surface lg:flex"
     >
       <div
         className={cn(
@@ -76,12 +97,14 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
 
       <div className="border-t border-line p-2.5">
         {user && <UserMenu compact={!open} />}
-        <button
+        <Button
+          type="button"
+          variant="ghost"
           onClick={onToggle}
           aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
           className={cn(
-            'mt-1.5 flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px]',
-            'text-muted transition-colors hover:bg-surface-2 hover:text-ink',
+            'mt-1.5 w-full gap-2.5 px-2.5 text-control text-muted',
+            'hover:bg-surface-2 hover:text-ink',
             !open && 'justify-center',
           )}
         >
@@ -99,7 +122,7 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
               </motion.span>
             )}
           </AnimatePresence>
-        </button>
+        </Button>
       </div>
     </motion.aside>
   )
@@ -110,7 +133,15 @@ function Rail({ open, onToggle }: { open: boolean; onToggle: () => void }) {
  * exactly what an agent sees. A "Manage" heading over an empty list reads
  * as a broken screen.
  */
-function ManageSection({ items, open }: { items: NavItem[]; open: boolean }) {
+function ManageSection({
+  items,
+  open,
+  onNavigate,
+}: {
+  items: NavItem[]
+  open: boolean
+  onNavigate?: () => void
+}) {
   const user = useSession((s) => s.currentUser())
   if (!user) return null
 
@@ -124,22 +155,38 @@ function ManageSection({ items, open }: { items: NavItem[]; open: boolean }) {
     <>
       <div className="my-3 border-t border-line-soft" />
       {open && <p className="eyebrow px-2.5 pb-1.5 text-muted">Manage</p>}
-      <NavList items={items} open={open} />
+      <NavList items={items} open={open} onNavigate={onNavigate} />
     </>
   )
 }
 
-function NavList({ items, open }: { items: NavItem[]; open: boolean }) {
+function NavList({
+  items,
+  open,
+  onNavigate,
+}: {
+  items: NavItem[]
+  open: boolean
+  onNavigate?: () => void
+}) {
   return (
     <ul className="space-y-0.5">
       {items.map((item) => (
-        <NavRow key={item.to} item={item} open={open} />
+        <NavRow key={item.to} item={item} open={open} onNavigate={onNavigate} />
       ))}
     </ul>
   )
 }
 
-function NavRow({ item, open }: { item: NavItem; open: boolean }) {
+function NavRow({
+  item,
+  open,
+  onNavigate,
+}: {
+  item: NavItem
+  open: boolean
+  onNavigate?: () => void
+}) {
   const perms = (Array.isArray(item.permission) ? item.permission : [item.permission]) as never[]
   const allowed = useCanAny(...perms)
   const user = useSession((s) => s.currentUser())
@@ -163,9 +210,10 @@ function NavRow({ item, open }: { item: NavItem; open: boolean }) {
   const link = (
     <NavLink
       to={item.to}
+      onClick={onNavigate}
       className={({ isActive }) =>
         cn(
-          'group relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] transition-colors',
+          'group relative flex min-h-10 items-center gap-2.5 rounded-md px-2.5 py-2 text-control transition-colors',
           !open && 'justify-center',
           isActive
             ? 'bg-gold/12 font-medium text-gold-deep dark:text-gold'
@@ -205,7 +253,7 @@ function NavRow({ item, open }: { item: NavItem; open: boolean }) {
               initial={{ scale: 0.6 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 520, damping: 18 }}
-              className="grid min-w-[18px] shrink-0 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-[18px] text-black"
+              className="grid min-w-6 shrink-0 place-items-center rounded-full bg-gold px-1 text-micro font-bold leading-6 text-black"
             >
               {badge}
             </motion.span>
@@ -226,31 +274,70 @@ function NavRow({ item, open }: { item: NavItem; open: boolean }) {
   )
 }
 
+function MobileNavigation() {
+  const [open, setOpen] = useState(false)
+  const main = navItems.filter((item) => item.section !== 'manage')
+  const manage = navItems.filter((item) => item.section === 'manage')
+  const close = () => setOpen(false)
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label="Open navigation">
+          <Icon icon={IconMenu} size={20} />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="flex w-[min(90vw,360px)] flex-col p-0">
+        <SheetHeader className="border-b border-line px-4 py-4 text-left">
+          <LogoLockup variant="compact" />
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Open an authorized screen or change account and display settings.
+          </SheetDescription>
+        </SheetHeader>
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Primary navigation">
+          <NavList items={main} open onNavigate={close} />
+          <ManageSection items={manage} open onNavigate={close} />
+        </nav>
+        <div className="space-y-3 border-t border-line p-3">
+          <div className="[&_[data-slot=select-trigger]]:w-full">
+            <LocationSwitcher />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <DisplaySettings trigger="button" />
+            <ThemeToggle />
+          </div>
+          <UserMenu />
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
 function TopBar() {
   const { pathname } = useLocation()
-  // Longest prefix wins — otherwise '/map' shadows '/map-editor'.
-  const current = navItems
-    .filter((i) => pathname === i.to || pathname.startsWith(`${i.to}/`) || pathname.startsWith(i.to))
-    .sort((a, b) => b.to.length - a.to.length)[0]
+  const title = routeTitleFor(pathname)
   const user = useSession((s) => s.currentUser())
 
   return (
-    <header className="z-20 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-surface px-4">
-      <h1 className="font-display text-[19px] font-semibold text-ink">
-        {current?.label ?? 'The Shelter'}
+    <header className="z-20 flex min-h-14 shrink-0 items-center gap-1 border-b border-line bg-surface px-2 sm:gap-2 sm:px-4">
+      <MobileNavigation />
+      <h1 className="min-w-0 flex-1 font-display text-small-title font-semibold text-ink">
+        {title}
       </h1>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
         {user && (
-          <span className="hidden rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[11.5px] text-muted md:inline-flex">
+          <span className="hidden rounded-full border border-line bg-surface-2 px-2.5 py-1 text-caption text-muted xl:inline-flex">
             Viewing as{' '}
             <span className="ml-1 font-medium text-ink">{user.fullName}</span>
           </span>
         )}
-        <LocationSwitcher />
+        <div className="hidden lg:block"><LocationSwitcher /></div>
         <NotificationBell />
-        <ThemeToggle />
-        <UserMenu trigger="avatar" />
+        <div className="hidden lg:block"><DisplaySettings /></div>
+        <div className="hidden lg:block"><ThemeToggle /></div>
+        <div className="hidden sm:block"><UserMenu trigger="avatar" /></div>
       </div>
     </header>
   )

@@ -49,7 +49,7 @@ export function StatusChip({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-[12px] font-medium',
+        'inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-caption font-medium',
         className,
       )}
       style={{

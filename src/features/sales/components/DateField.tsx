@@ -16,6 +16,8 @@ export function DateField({
   min,
   id,
   className,
+  describedBy,
+  invalid,
 }: {
   value: ISODate
   onChange: (v: ISODate) => void
@@ -23,6 +25,8 @@ export function DateField({
   min?: ISODate
   id?: string
   className?: string
+  describedBy?: string
+  invalid?: boolean
 }) {
   const [open, setOpen] = useState(false)
 
@@ -32,6 +36,8 @@ export function DateField({
         <Button
           id={id}
           variant="outline"
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
           className={cn('w-full justify-start gap-2 font-normal', className)}
         >
           <Icon icon={IconBurials} size={15} className="opacity-70" />

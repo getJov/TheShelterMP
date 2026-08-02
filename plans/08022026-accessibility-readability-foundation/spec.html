@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility And Readability Foundation Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; margin-top: 14px; background: var(--soft); }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 840px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; letter-spacing: 0; }
+    h2 { font-size: 1.35rem; letter-spacing: 0; }
+    h3 { font-size: 1rem; letter-spacing: 0; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Accessibility and readability foundation</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/08022026-accessibility-readability-foundation</dd></div>
+        <div><dt>Size</dt><dd>Large</dd></div>
+        <div><dt>Risk</dt><dd>Level 4</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>The primary users include older adults who may have reduced visual acuity, contrast sensitivity, dexterity, concentration, or short-term memory. The current interface uses dense typography that makes routine work harder than necessary.</p>
+      <p>The source contains 982 fixed pixel text-size utilities. Of those, 718 are 12.5px or smaller and 865 are below 14px. The app also contains 74 truncation rules, 130 fixed pixel widths, and 37 hidden-overflow rules.</p>
+      <p>A font-size switch alone would not solve the problem. The approved work repairs the default, adds restrained preferences, improves shared operability, and deeply remediates the three most important workflows.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Build a WCAG 2.2 A/AA-oriented accessibility and readability foundation without claiming formal certification. Preserve the existing brand, domain behavior, routes, role policy, finance calculations, and core workflow intent.</p>
+      <p>The whole application receives readable default typography, semantic type tokens, comfortable shared controls, enhanced contrast, persistent display preferences, responsive shell behavior, and reliable keyboard focus. Deep accessibility work applies to Map and Lot Detail, Sales and Payments, and Burials.</p>
+      <p>The map gains an accessible List presentation. It must use the same scoped lot data, filters, selection, and detail drawer as the canvas map.</p>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+
+      <h3>Worktree</h3>
+      <ul>
+        <li><strong>Source branch:</strong> <code>codex/app-copy-cleanup</code>.</li>
+        <li><strong>Source HEAD:</strong> <code>3e12ad477d3b540d384d18a03f7a8e6a6e7aef61</code>.</li>
+        <li><strong>Planning branch:</strong> <code>codex/accessibility-readability-foundation</code>.</li>
+        <li><strong>Planning worktree:</strong> <code>/home/jovanie_getalla/projects/shelter-worktrees/accessibility-readability-foundation</code>.</li>
+        <li><strong>Source status:</strong> clean and synchronized with <code>origin/codex/app-copy-cleanup</code>.</li>
+        <li><strong>Template note:</strong> <code>~/.claude/templates/spec.html</code> and <code>~/.claude/templates/test.html</code> are missing in this environment. This spec preserves the embedded spec style from <code>plans/07312026-app-copy-cleanup/spec.html</code>. At T8, copy the latest repository-owned <code>test.html</code> viewer analog verbatim and preserve its JSON picker, roll-up, and download behavior.</li>
+      </ul>
+
+      <h3>Execution Branch Contract</h3>
+      <ul>
+        <li>This feature is isolated from committed <code>codex/app-copy-cleanup</code> HEAD <code>3e12ad477d3b540d384d18a03f7a8e6a6e7aef61</code>. Uncommitted changes from any other checkout are not part of the baseline.</li>
+        <li>Execute only on branch <code>codex/accessibility-readability-foundation</code> inside <code>/home/jovanie_getalla/projects/shelter-worktrees/accessibility-readability-foundation</code>.</li>
+        <li>Before the first code edit, verify the absolute worktree path, branch name, current HEAD, and clean-or-understood status. A path or branch mismatch is a hard stop.</li>
+        <li>Keep application code, QA changes, and acceptance artifacts on this feature branch. Do not write implementation into the primary checkout or <code>codex/app-copy-cleanup</code>.</li>
+        <li>Do not create another feature branch or nested worktree for this plan. This existing linked worktree is the isolation boundary.</li>
+        <li>If <code>codex/app-copy-cleanup</code> advances before or during execution, report the divergence. Do not silently merge or rebase; update this spec before adopting a new baseline.</li>
+        <li>Execution does not authorize pushing, merging, deleting the worktree, or deleting either branch.</li>
+      </ul>
+
+      <h3>Approved Product Decisions</h3>
+      <ul>
+        <li>Repair readability by default for every user.</li>
+        <li>Provide Standard, Large at 112.5%, and Extra Large at 125%.</li>
+        <li>Include Enhanced Contrast in the first delivery.</li>
+        <li>Keep comfortable control sizing as the default. Do not add a density preference.</li>
+        <li>Let users choose Follow Device or Reduced motion.</li>
+        <li>Persist accessibility preferences through logout and <code>?demo=1</code>.</li>
+        <li>Keep localization out of scope. Keep English copy plain, direct, and consistent.</li>
+        <li>Support desktop, small laptop, iPad, and Android tablet in portrait and landscape.</li>
+        <li>Deeply remediate Find and Inspect a Lot, Complete a Sale or Payment, and Schedule or Manage an Interment.</li>
+        <li>Provide a permission-safe List alternative to the map canvas.</li>
+      </ul>
+
+      <h3>Existing Strengths To Preserve</h3>
+      <ul>
+        <li><code>src/App.tsx</code> already uses Framer Motion user reduction.</li>
+        <li><code>src/styles/globals.css</code> already disables CSS motion for <code>prefers-reduced-motion</code>.</li>
+        <li>The shell already exposes <code>main</code>, <code>nav</code>, and <code>header</code> landmarks.</li>
+        <li>Shared shadcn and Radix primitives provide a strong native semantic base.</li>
+        <li>Main light and dark text token pairs meet ordinary text contrast in the measured baseline.</li>
+        <li>Map data already applies <code>lotVisibility()</code> before presentation.</li>
+      </ul>
+
+      <h3>Known Gaps</h3>
+      <ul>
+        <li>No skip link, route focus management, or route announcement exists.</li>
+        <li><code>DataTable</code> uses pointer-driven sortable headers and optional clickable rows.</li>
+        <li>The canvas map does not expose individual lots to assistive technology.</li>
+        <li>The permanent rail, crowded top bar, fixed panels, truncation, and hidden overflow create reflow risk.</li>
+        <li>Standard interactive boundaries use low-contrast line tokens even when ordinary text contrast passes.</li>
+        <li>Current QA targets desktop Chrome with hard-coded local runtime assumptions.</li>
+      </ul>
+
+      <h3>Constitution References Loaded</h3>
+      <ul>
+        <li><code>DISC-1.1</code>, <code>DISC-1.2</code>, and <code>DISC-1.3</code>: local instructions, stack evidence, and repository commands are authoritative.</li>
+        <li><code>CORE-2.1</code>, <code>CORE-2.3</code>, and <code>CORE-2.4</code>: keep preference, presentation, feature, and domain responsibilities separate and follow local analogs.</li>
+        <li><code>CORE-5.2</code>: use existing Zustand, Radix, shadcn, Puppeteer, and CSS capabilities. Add no dependency.</li>
+        <li><code>CORE-6.1</code> and <code>CORE-6.2</code>: changed behavior and meaningful failure paths require proof.</li>
+        <li><code>FE-1.3</code> and <code>STACK-TSJS-3.2</code>: keep large interaction logic in focused stores, helpers, and components.</li>
+        <li><code>FE-2.2</code>: use the existing Zustand persistence pattern rather than a new state system.</li>
+        <li><code>FE-3.1</code>, <code>FE-3.2</code>, and <code>FE-3.3</code>: preserve intentional states, surface errors, and validate forms at the edge.</li>
+        <li><code>STACK-TSJS-1.1</code> and <code>STACK-TSJS-1.2</code>: keep ESM, aliases, and strict TypeScript without new <code>any</code>.</li>
+        <li><code>VER-1.1</code>, <code>VER-2.1</code>, <code>VER-3.2</code>, and <code>VER-3.3</code>: use existing gates, match verification to risk, and keep observable acceptance aligned with this spec.</li>
+      </ul>
+
+      <h3>Reference Analogs For New Files</h3>
+      <ul>
+        <li><code>src/lib/accessibility-preferences.ts</code> follows <code>src/lib/theme.ts</code> for safe browser storage parsing and document-root application.</li>
+        <li><code>src/stores/accessibility-preferences.ts</code> follows <code>src/stores/panel.ts</code> for typed Zustand persistence and explicit merge defaults.</li>
+        <li><code>src/components/shell/DisplaySettings.tsx</code> follows <code>src/components/shell/ThemeToggle.tsx</code> and existing shadcn dialog/radio patterns.</li>
+        <li><code>src/components/shell/RouteAccessibility.tsx</code> follows the route-title resolution already owned by <code>AppShell.tsx</code>.</li>
+        <li><code>src/features/map/LotListView.tsx</code> follows <code>DataTable.tsx</code>, <code>MapControls.tsx</code>, and <code>use-map-data.ts</code>.</li>
+        <li><code>qa/accessibility-smoke.mjs</code> follows <code>qa/smoke.mjs</code> and <code>qa/walkthrough.mjs</code>.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="baseline">
+      <h2>Baseline Source Of Truth</h2>
+      <p>These values govern implementation. Feature files consume semantic type roles and must not invent replacement pixel sizes.</p>
+      <table>
+        <thead><tr><th>Role</th><th>Standard</th><th>Large</th><th>Extra Large</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td>Micro</td><td>13px</td><td>14.625px</td><td>16.25px</td><td>Non-essential badges, short codes, and compact metadata only</td></tr>
+          <tr><td>Caption</td><td>14px</td><td>15.75px</td><td>17.5px</td><td>Supporting labels, table headers, hints, and timestamps</td></tr>
+          <tr><td>Body</td><td>16px</td><td>18px</td><td>20px</td><td>Paragraphs, table cells, dialog content, and primary information</td></tr>
+          <tr><td>Control</td><td>16px</td><td>18px</td><td>20px</td><td>Buttons, inputs, selects, tabs, menu items, and search</td></tr>
+          <tr><td>Small title</td><td>18px</td><td>20.25px</td><td>22.5px</td><td>Cards, drawers, and compact sections</td></tr>
+          <tr><td>Section title</td><td>22px</td><td>24.75px</td><td>27.5px</td><td>Page sections and dialogs</td></tr>
+          <tr><td>Page title</td><td>30px</td><td>33.75px</td><td>37.5px</td><td>Main page headings</td></tr>
+          <tr><td>Display</td><td>38px</td><td>42.75px</td><td>47.5px</td><td>Login and rare hero presentation</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Body and control line height is at least 1.45. Micro and caption line height is at least 1.35.</li>
+        <li>Micro text never carries an error, required instruction, amount due, destructive consequence, or sole control name.</li>
+        <li>Standard ordinary text reaches at least 4.5:1 contrast. Meaningful control and focus boundaries reach at least 3:1.</li>
+        <li>Enhanced Contrast ordinary text targets at least 7:1. Meaningful control and focus boundaries target at least 4.5:1.</li>
+        <li>Primary controls target 44px. Small controls target 40px. Dense exceptions never fall below 24px and require compliant spacing.</li>
+        <li>Typography scales through named tokens. Do not change the root font size, use CSS zoom, transform the app, or override arbitrary class selectors.</li>
+      </ul>
+      <h3>Preference Schema</h3>
+      <ul>
+        <li>Use storage key <code>shelter-accessibility</code> with schema version <code>1</code>.</li>
+        <li>Persist exactly four fields: <code>textSize</code> (<code>standard | large | extra-large</code>), <code>contrast</code> (<code>standard | enhanced</code>), <code>motion</code> (<code>system | reduced</code>), and <code>mapPresentation</code> (<code>map | list</code>).</li>
+        <li>Defaults are <code>standard</code>, <code>standard</code>, <code>system</code>, and <code>map</code>.</li>
+        <li>Parse fields independently. Preserve every valid field and fall back only invalid, missing, or unknown fields to its default.</li>
+        <li>Expose one typed read/apply boundary for pre-render initialization and one persisted Zustand store for in-app changes. Components must not access <code>localStorage</code> directly.</li>
+      </ul>
+      <h3>T0 Execution Baseline And Allowlist</h3>
+      <ul>
+        <li>Recorded on 2026-08-02 from branch <code>codex/accessibility-readability-foundation</code> at <code>3e12ad477d3b540d384d18a03f7a8e6a6e7aef61</code>: 982 fixed pixel text utilities, 718 at 12.5px or smaller, 865 below 14px, 74 truncation rules, 130 fixed pixel widths, 21 fixed pixel heights, and 37 hidden-overflow rules.</li>
+        <li>Canvas drawing font metrics in <code>src/features/map/lot-canvas.ts</code> and <code>src/features/map-editor/chrome-canvas.ts</code> are exempt from DOM type-token replacement. The accessible Lot List remains the map canvas text equivalent.</li>
+        <li>Print-only physical page geometry and print typography in <code>DaySheet.tsx</code>, <code>PayoutSheet.tsx</code>, and <code>InvoiceDialog.tsx</code> may keep print-specific values. Their interactive screen controls and content are not exempt.</li>
+        <li>Leaflet-generated attribution markup is exempt from component migration. Repository CSS must still keep its text legible and preserve the required attribution.</li>
+        <li>Icon glyph drawing values are not semantic text. Every icon control still requires an accessible name and compliant target.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="accessibility-contract">
+      <h2>Accessibility Contract</h2>
+      <h3>Preferences</h3>
+      <ul>
+        <li>Provide Standard, Large, and Extra Large text; Standard and Enhanced contrast; Follow Device and Reduced motion; and Reset.</li>
+        <li>Expose display settings on login, in the authenticated top bar, and from the account menu when constrained.</li>
+        <li>Apply valid stored preferences before the first React render. Invalid or legacy values fall back safely.</li>
+        <li>Keep the preference storage key outside the <code>?demo=1</code> reset list and preserve it through sign-out.</li>
+        <li>Keep dark and light theme behavior intact. Enhanced Contrast overlays both themes.</li>
+      </ul>
+
+      <h3>Responsive And Input Behavior</h3>
+      <ul>
+        <li>Desktop reference: 1440x900. Small laptop: 1366x768. Tablet landscape: 1024x768. Tablet portrait: 768x1024.</li>
+        <li>At viewport or zoom-equivalent widths below 1024 CSS pixels, replace the permanent rail with an accessible sheet menu and simplify top-bar content.</li>
+        <li>Core content remains usable at 200% browser zoom. Non-exempt content reflows at an effective 320 CSS pixel width.</li>
+        <li>Map canvases and genuinely relational tables may retain two-dimensional interaction. Their surrounding controls and equivalent content must reflow.</li>
+        <li>No primary action depends on hover, drag, color, or pointer precision alone.</li>
+        <li>No document-level horizontal scrolling is allowed. Only the map canvas and genuinely relational table regions may scroll in two dimensions.</li>
+      </ul>
+
+      <h3>Map And List</h3>
+      <ul>
+        <li>Provide a named Map/List control on <code>/map</code>. Persist the chosen presentation with accessibility preferences.</li>
+        <li>List results use <code>useMapData()</code>, <code>lotMatches()</code>, and the same active filters.</li>
+        <li>List rows show lot code, block, status text, tier, authorized payment health, and authorized owner information.</li>
+        <li>Each row has an explicit View lot action that sets the existing selection and opens the existing detail drawer.</li>
+        <li>Paginate at 25 results per page. Announce result-count changes without moving focus.</li>
+        <li>Never place 904 canvas lots in the tab order. The List presentation is the non-canvas equivalent.</li>
+      </ul>
+
+      <h3>Keyboard, Focus, Forms, And Assistive Technology</h3>
+      <ul>
+        <li>Add a visible-on-focus skip link, stable main-content target, route focus behavior, and polite route announcement.</li>
+        <li>Use native buttons or links for actions. Do not add click handlers to non-interactive table headers or rows.</li>
+        <li>Maintain visible focus, predictable focus return, dialog containment, Escape behavior, and no hidden focused content.</li>
+        <li>Associate field errors and guidance with their controls. Mark invalid state and announce submit failures without color alone.</li>
+        <li>Prefer native semantics and existing Radix behavior before adding ARIA.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="constraints">
+      <h2>Constraints</h2>
+      <div class="split-grid">
+        <div>
+          <h3>Must</h3>
+          <ul>
+            <li>Preserve <code>CONVENTIONS.md</code> and every intentional <code>DEVIATIONS.md</code> behavior.</li>
+            <li>Keep <code>@/domain</code> frozen and preserve finance, permission, date, money, and map geometry boundaries.</li>
+            <li>Use existing shadcn controls, Radix behavior, Zustand persistence, Hugeicons, and Puppeteer.</li>
+            <li>Use semantic type and control tokens throughout <code>src/components</code> and <code>src/features</code>.</li>
+            <li>Keep role visibility identical across Map and List.</li>
+            <li>Keep display preferences available before authentication.</li>
+            <li>Keep all new TypeScript explicit and free of <code>any</code>.</li>
+            <li>Keep each task within its listed file ownership during parallel execution.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Must Not</h3>
+          <ul>
+            <li>No CSS zoom, whole-app transform, root font-size scaling, or class-substring overrides.</li>
+            <li>No third-party accessibility overlay or new dependency.</li>
+            <li>No new route for lot inventory and no duplicate lot business logic.</li>
+            <li>No edit to route registration or navigation-item definitions; Map/List stays inside the existing <code>/map</code> route.</li>
+            <li>No domain, permission policy, finance, seed-data, database, API, or authentication change.</li>
+            <li>No 904-item tab order and no attempt to make the bitmap canvas itself a screen-reader inventory.</li>
+            <li>No dark-mode replacement, brand redesign, dyslexia-font option, text-to-speech tool, grayscale filter, or cursor replacement.</li>
+            <li>No localization framework or translated copy.</li>
+            <li>No formal WCAG, Section 508, EAA, VPAT, or legal compliance claim.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Out Of Scope</h3>
+      <ul>
+        <li>Backend account synchronization. The storage contract should allow later synchronization.</li>
+        <li>Deep screen-reader remediation of Dashboard, Pricing, Agents, Approvals, Audit, and Map Editor beyond shared fixes.</li>
+        <li>Full phone-first redesign below the required reflow checks.</li>
+        <li>Changes to map geometry, drawing performance, site-plan alignment, or editor behavior.</li>
+        <li>Repository worktree runtime adapter creation for <code>-tw</code>.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="risk">
+      <h2>Risk And Blast Radius</h2>
+      <p><strong>Level:</strong> 4 - Major Impact. This is a cross-cutting presentation and interaction change across more than ten files and every registered route.</p>
+      <h3>Risks</h3>
+      <ul>
+        <li><strong>Shared primitive regression:</strong> 78 files consume <code>Button</code>, 23 consume <code>Input</code>, 24 consume <code>SelectTrigger</code>, and 21 consume <code>DialogContent</code>. <strong>Mitigation:</strong> change shared tokens first, then run route and viewport checks before feature work.</li>
+        <li><strong>Permission leakage:</strong> a second lot presentation could bypass visibility rules. <strong>Mitigation:</strong> derive List data only from <code>useMapData()</code> and never read raw lots directly.</li>
+        <li><strong>Content loss:</strong> larger text can collide with truncation, fixed widths, fixed panels, and hidden overflow. <strong>Mitigation:</strong> replace essential truncation with wrapping or disclosure and test every approved viewport and text size.</li>
+        <li><strong>Focus regression:</strong> route, dialog, drawer, and sheet changes can steal or lose focus. <strong>Mitigation:</strong> document entry and return targets, then verify with keyboard and screen readers.</li>
+        <li><strong>Brand flattening:</strong> stronger boundaries could make decorative surfaces heavy. <strong>Mitigation:</strong> separate interactive-boundary tokens from decorative line tokens.</li>
+        <li><strong>Performance:</strong> rendering all lots in a DOM table would create unnecessary work. <strong>Mitigation:</strong> paginate List results at 25 and keep the canvas path unchanged.</li>
+        <li><strong>False confidence:</strong> automated checks cannot prove assistive-technology usability. <strong>Mitigation:</strong> require manual NVDA, VoiceOver, and TalkBack acceptance evidence.</li>
+        <li><strong>Parallel edit conflicts:</strong> multiple agents could touch shared tokens or shell files. <strong>Mitigation:</strong> T1-T3 stay sequential; T4-T7 have exclusive feature ownership.</li>
+      </ul>
+
+      <h3>Consumers</h3>
+      <ul>
+        <li><strong>Global styles and controls:</strong> every route and every consumer of shared UI primitives.</li>
+        <li><strong>DataTable:</strong> Sales, Burials, Lot Detail, Agents, Approvals, and Pricing.</li>
+        <li><strong>Accessibility preferences:</strong> <code>main.tsx</code>, <code>App.tsx</code>, Login, AppShell, UserMenu, Display Settings, and Map/List presentation.</li>
+        <li><strong>Map data and filters:</strong> MapCanvas, MapControls, MapLegend, Dashboard drill-downs, Lot List, and Lot Detail selection.</li>
+        <li><strong>Core workflows:</strong> 17 Map files, 12 Lot Detail files, 20 Sales files, and 15 Burials files.</li>
+        <li><strong>Secondary readability:</strong> Dashboard, Agents, Approvals, Pricing, Audit, and Map Editor feature trees.</li>
+      </ul>
+
+      <h3>Pushback</h3>
+      <ul>
+        <li>This must not execute as one unreviewed rewrite. Shared foundation, isolated feature tasks, and repeated integration checks are mandatory.</li>
+        <li>This spec is execution-ready only after a separate readiness review finds no blockers. It must never auto-execute from <code>-s</code>.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="execution-loop">
+      <h2>Execution Loop And Dependency Chain</h2>
+      <ol>
+        <li>T0 records the baseline and allowlist. Any material difference updates this same spec and appends its Revision Log before code changes.</li>
+        <li>T1 creates preference ownership.</li>
+        <li>T2 establishes semantic typography, contrast, and shared controls.</li>
+        <li>T3 establishes shell reflow, navigation, and route focus.</li>
+        <li>T4, T5, T6, and T7 run in parallel with exclusive file ownership.</li>
+        <li>T8 integrates the branches of work and runs the full matrix.</li>
+      </ol>
+      <p>Every task uses the same bounded loop: read current files, implement only that task, run its focused checks, fix task-caused failures, and rerun. Advance only when the task gate passes.</p>
+      <p>T8 routes each integration failure back to its owning task, applies the smallest scope-preserving fix, and reruns the failed check followed by the full matrix. If the same Level 3 issue survives two passes, stop and request direction.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+
+      <article class="task-card">
+        <h3>T0: Record baseline and protected exceptions</h3>
+        <dl>
+          <div><dt>Do</dt><dd>First enforce the Execution Branch Contract. Then recount fixed text utilities, target sizes, layout risks, contrast pairs, focus paths, and affected routes before editing. Record an explicit allowlist for non-DOM map drawing, print-only content, and third-party attribution.</dd></div>
+          <div><dt>Files</dt><dd>Read-only inventory across <code>src</code>, <code>qa</code>, <code>CONVENTIONS.md</code>, and <code>DEVIATIONS.md</code>. Update this spec only if the live baseline differs materially.</dd></div>
+          <div><dt>Depends on</dt><dd>none</dd></div>
+          <div><dt>Parallel</dt><dd>No. This freezes the implementation baseline.</dd></div>
+          <div><dt>Loop gate</dt><dd>Recorded preflight evidence matches the required worktree, branch, and baseline. The inventory names every exception and consumer. No unexplained production DOM pixel text remains outside the planned migration.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T1: Build persistent accessibility preferences</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Implement the complete version 1 preference schema, including Map/List presentation, typed fieldwise parsing, document-root application, persisted Zustand ownership, and a shared Display Settings dialog. Apply valid preferences before React renders. Keep <code>shelter-accessibility</code> through logout and demo reset.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>src/lib/accessibility-preferences.ts</code>, <code>src/stores/accessibility-preferences.ts</code>, and <code>src/components/shell/DisplaySettings.tsx</code>. Modify <code>src/main.tsx</code>, <code>src/App.tsx</code>, <code>src/components/shell/AppShell.tsx</code>, <code>src/features/auth/LoginPage.tsx</code>, and <code>src/features/auth/UserMenu.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T0</dd></div>
+          <div><dt>Parallel</dt><dd>No. Every later task consumes this contract.</dd></div>
+          <div><dt>Loop gate</dt><dd>Test defaults, each valid preference, invalid storage, reload, logout, role switch, and <code>?demo=1</code>. Repeat until preference state and document attributes agree.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Establish semantic typography, contrast, and controls</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add the approved semantic type scale and contrast tokens. Migrate shared controls and brand primitives. Make primary targets comfortable while preserving legitimate dense exceptions and print behavior.</dd></div>
+          <div><dt>Files</dt><dd><code>src/styles/globals.css</code>; shared controls under <code>src/components/ui</code> that render text, focus boundaries, selectable state, or interactive targets, including button, input, textarea, select, label, checkbox, radio group, toggle, toggle group, tabs, dropdown menu, command, tooltip, table, dialog, sheet, popover, calendar, pagination, badge, and avatar; shared brand components under <code>src/components/ui-brand</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T1</dd></div>
+          <div><dt>Parallel</dt><dd>No. Shared component consumers must receive one stable contract.</dd></div>
+          <div><dt>Loop gate</dt><dd>Run typecheck, build, static text-size inventory, contrast calculations, and shared component keyboard checks. Repeat until shared gates pass before feature migration.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3: Remediate shell reflow, navigation, and route focus</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add skip navigation, route focus and announcement, sheet navigation below 1024 CSS pixels, and a simplified responsive top bar. Migrate shell and login typography without hiding essential identity, location, or notification state. Render the existing authorized navigation model in the sheet without changing route registration or navigation-item definitions.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>src/components/shell/RouteAccessibility.tsx</code>. Modify <code>src/components/shell/AppShell.tsx</code>, <code>CommandPalette.tsx</code>, <code>ErrorBoundary.tsx</code>, <code>ThemeToggle.tsx</code>, <code>src/features/auth/LoginPage.tsx</code>, <code>LocationSwitcher.tsx</code>, <code>UserMenu.tsx</code>, and <code>src/features/approvals/NotificationBell.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T2</dd></div>
+          <div><dt>Parallel</dt><dd>No. Feature tasks rely on stable shell geometry and focus targets.</dd></div>
+          <div><dt>Loop gate</dt><dd>Verify keyboard entry, skip link, route changes, focus visibility, menu return, and no shell overflow at every approved viewport and text size.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Build accessible Map/List and Lot Detail flow</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add the persistent Map/List control, paginated permission-safe lot list, result announcement, explicit View lot actions, and accessible lot-detail focus behavior. Migrate Map and Lot Detail typography and reflow.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>src/features/map/LotListView.tsx</code>. Modify files only under <code>src/features/map</code> and <code>src/features/lot-detail</code>. Consume the Map/List field already established by T1; do not reopen shared preference ownership in this parallel task.</dd></div>
+          <div><dt>Depends on</dt><dd>T3</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T5-T7. This task exclusively owns Map and Lot Detail files.</dd></div>
+          <div><dt>Loop gate</dt><dd>Verify owner, manager, and agent result visibility; filter parity; 25-result pagination; list selection; drawer focus; map return; tablet touch; and no 904-item tab order.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T5: Remediate Sales and Payments</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Migrate typography and responsive layouts. Repair labels, descriptions, invalid state, error announcements, focus order, dialog containment, return focus, keyboard operation, and touch targets across the approved sales flow.</dd></div>
+          <div><dt>Files</dt><dd><code>src/features/sales/SalesPage.tsx</code> and <code>src/features/sales/components</code>, with priority on <code>RequestHoldDialog.tsx</code>, <code>ContractBuilder.tsx</code>, <code>PostPaymentDialog.tsx</code>, <code>ClientCombobox.tsx</code>, <code>LotCombobox.tsx</code>, <code>DateField.tsx</code>, and payment or contract detail surfaces.</dd></div>
+          <div><dt>Depends on</dt><dd>T3</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T4, T6, and T7. This task exclusively owns Sales files.</dd></div>
+          <div><dt>Loop gate</dt><dd>Verify hold request, client selection, contract steps, invalid discount reason, payment validation, successful payment, destructive dialogs, keyboard-only completion, and tablet reflow.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T6: Remediate Burials</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Migrate typography and responsive layouts. Repair calendar names, slot controls, status communication, requirements, validation, focus, dialog behavior, touch targets, and non-color state cues.</dd></div>
+          <div><dt>Files</dt><dd>Files under <code>src/features/burials</code>, with priority on <code>BurialsPage.tsx</code>, <code>CalendarTab.tsx</code>, <code>MonthCalendar.tsx</code>, <code>WeekView.tsx</code>, <code>ScheduleIntermentDialog.tsx</code>, <code>RequirementsChecklist.tsx</code>, <code>IntermentSheet.tsx</code>, and <code>GroundsJobsTab.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T3</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T4, T5, and T7. This task exclusively owns Burials files.</dd></div>
+          <div><dt>Loop gate</dt><dd>Verify month and week navigation, full-day communication, morning and afternoon slots, blocked requirements, invalid scheduling, successful scheduling, grounds work, keyboard use, and tablet reflow.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T7: Complete whole-app readability migration</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Migrate remaining fixed DOM typography to semantic roles and resolve essential clipping or target-size regressions. Apply shared accessibility improvements without expanding deep workflow scope.</dd></div>
+          <div><dt>Files</dt><dd>Feature trees under <code>src/features/dashboard</code>, <code>agents</code>, <code>approvals</code>, <code>pricing</code>, <code>audit</code>, and <code>map-editor</code>. Do not modify domain, finance, permissions, geometry, or business stores.</dd></div>
+          <div><dt>Depends on</dt><dd>T3</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T4-T6. This task exclusively owns the listed secondary feature trees.</dd></div>
+          <div><dt>Loop gate</dt><dd>Verify every registered route at Standard, Large, and Extra Large. Static inventory has no unexplained fixed pixel text in production DOM components.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T8: Integrate, automate, and run acceptance loops</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Integrate all task groups, add focused browser automation, run repository gates, generate acceptance artifacts, and route failures back to the owning task until the matrix passes or a repeated Level 3 issue stops execution. The new runner must accept <code>BASE_URL</code> and <code>BROWSER_PATH</code>, use port 1616 only as its documented local default, and avoid hard-coded machine-specific browser paths.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>qa/accessibility-smoke.mjs</code>. Modify <code>package.json</code> for a focused script. Generate <code>plans/08022026-accessibility-readability-foundation/test-results.json</code> and <code>test.html</code> after execution.</dd></div>
+          <div><dt>Depends on</dt><dd>T4, T5, T6, T7</dd></div>
+          <div><dt>Parallel</dt><dd>No. This is the integration and closeout gate.</dd></div>
+          <div><dt>Loop gate</dt><dd>Run focused failures first, then the full matrix. Repeat until task-caused failures are zero. Device-only checks may remain pending when hardware is unavailable; that does not block execution completion, but it does block <code>-d</code> unless each pending item is run or explicitly waived in writing.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="verification">
+      <h2>Verification And Acceptance Plan</h2>
+      <h3>Layer 1: Repository And Automated Checks</h3>
+      <ul>
+        <li><code>npx tsc --noEmit -p tsconfig.app.json</code>.</li>
+        <li><code>npm run lint</code>.</li>
+        <li><code>npm run build</code>.</li>
+        <li><code>npm run validate:mock</code>.</li>
+        <li>Run existing smoke and walkthrough coverage when a compatible browser executable and local origin are available.</li>
+        <li>Run the new focused accessibility smoke script across the approved desktop, laptop, and tablet viewport sizes.</li>
+        <li>Check computed text roles, target-size floors, absence of document-level horizontal overflow, contained map/table overflow, preference persistence, Map/List parity, result pagination, skip navigation, route focus, and core form invalid states.</li>
+      </ul>
+
+      <h3>Layer 2: Behavioral Acceptance</h3>
+      <ul>
+        <li>Standard, Large, and Extra Large work in light, dark, and Enhanced Contrast presentations.</li>
+        <li>Preferences persist after reload, logout, role switch, and <code>?demo=1</code>.</li>
+        <li>Keyboard-only users can enter the shell, skip navigation, change routes, operate Map/List, open a lot, complete core forms, and return focus.</li>
+        <li>At 200% zoom, no essential core-flow content or action is clipped, obscured, or unreachable.</li>
+        <li>At effective 320 CSS pixel width, non-exempt core content reflows without two-dimensional page scrolling.</li>
+        <li>NVDA with Chrome checks Map/List and representative Sales and Burials forms.</li>
+        <li>VoiceOver with Safari on iPad checks Map/List, settings, navigation, and representative forms in both orientations.</li>
+        <li>TalkBack with Chrome on Android checks the same representative surfaces in both orientations.</li>
+        <li>Every manual item records platform, browser, text size, contrast mode, result, and evidence.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Done</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" checked disabled> Standard typography uses the approved semantic scale across all production DOM feature and component files.</li>
+        <li><input type="checkbox" checked disabled> Large is exactly 112.5% and Extra Large is exactly 125% of each Standard role.</li>
+        <li><input type="checkbox" checked disabled> Display Settings is usable before and after authentication.</li>
+        <li><input type="checkbox" checked disabled> Valid preferences apply before first React render and invalid storage falls back safely.</li>
+        <li><input type="checkbox" checked disabled> Accessibility preferences survive reload, logout, role switch, and <code>?demo=1</code>.</li>
+        <li><input type="checkbox" checked disabled> Standard and Enhanced Contrast meet their defined text, control, and focus thresholds.</li>
+        <li><input type="checkbox" checked disabled> Follow Device and Reduced motion cover Framer Motion and CSS motion.</li>
+        <li><input type="checkbox" checked disabled> Shared controls meet approved target sizes or documented spacing exceptions.</li>
+        <li><input type="checkbox" checked disabled> Skip navigation, route focus, route announcement, visible focus, and focus return work.</li>
+        <li><input type="checkbox" checked disabled> Narrow layouts use accessible sheet navigation and expose all authorized destinations.</li>
+        <li><input type="checkbox" checked disabled> Map/List uses identical scoped data, filters, selection, and authorization.</li>
+        <li><input type="checkbox" checked disabled> Lot List paginates at 25, announces result changes, and never creates a 904-item tab order.</li>
+        <li><input type="checkbox" disabled> Map and Lot Detail pass the defined keyboard, touch, zoom, and representative screen-reader checks.</li>
+        <li><input type="checkbox" disabled> Sales and Payments pass form labeling, invalid-state, focus, keyboard, touch, zoom, and representative screen-reader checks.</li>
+        <li><input type="checkbox" disabled> Burials passes calendar, slot, requirements, form, focus, keyboard, touch, zoom, and representative screen-reader checks.</li>
+        <li><input type="checkbox" checked disabled> Secondary routes retain behavior while adopting readable semantic typography and responsive essential content.</li>
+        <li><input type="checkbox" checked disabled> No domain, permission, finance, geometry, route, database, API, authentication, or dependency change was introduced.</li>
+        <li><input type="checkbox" checked disabled> Typecheck, lint, build, mock validation, and focused automated accessibility checks pass.</li>
+        <li><input type="checkbox" checked disabled> Git evidence confirms all implementation and acceptance changes were made only on <code>codex/accessibility-readability-foundation</code> in its recorded linked worktree.</li>
+        <li><input type="checkbox" checked disabled> Post-execution <code>test-results.json</code> and <code>test.html</code> exist and match this contract.</li>
+        <li><input type="checkbox" checked disabled> Finalization remains blocked until every acceptance item passes or has a written waiver.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="execution-evidence">
+      <h2>Execution Evidence</h2>
+      <ul>
+        <li>Implemented persistent text-size, contrast, and motion preferences before and after authentication.</li>
+        <li>Added the accessible Lot List alternative with shared filtering, authorization, pagination, announcements, and focus return.</li>
+        <li>Applied semantic typography, responsive navigation, form semantics, and target-size repairs across all planned routes.</li>
+        <li>Typecheck, lint, production build, mock validation, map-editor checks, and diff checks pass.</li>
+        <li>The automated browser suite passes 95 checks across text sizes, routes, viewports, preferences, Map/List, and core form errors.</li>
+        <li><code>test-results.json</code> remains In Progress for keyboard, 200% zoom, theme, NVDA, VoiceOver, and TalkBack checks.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <ul>
+        <li><strong>Rev 1 - 2026-08-02:</strong> Readiness pass tightened the preference schema, responsive breakpoint, horizontal-overflow rule, task ownership, route boundary, configurable QA runner, device-check finalization gate, and missing-template fallback. No product scope changed.</li>
+        <li><strong>Rev 2 - 2026-08-02:</strong> Added the explicit execution-branch contract, hard-stop preflight, divergence rule, mutation boundaries, and branch-specific Done evidence. No feature scope changed.</li>
+        <li><strong>Rev 3 - 2026-08-02:</strong> Execution started. Recorded T0 preflight evidence, corrected the fixed-width count, and froze canvas, print, attribution, and icon exceptions. No feature scope changed.</li>
+        <li><strong>Rev 4 - 2026-08-02:</strong> Execution completed with repository gates and 95 automated browser checks passing. Acceptance remains In Progress for the specified manual keyboard, zoom, theme, and screen-reader checks. No feature scope changed.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

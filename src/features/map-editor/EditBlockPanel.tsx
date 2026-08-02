@@ -33,7 +33,7 @@ export function EditBlockPanel() {
   if (!block) {
     return (
       <PanelSection title="Edit block">
-        <p className="text-[12px] leading-relaxed text-muted">
+        <p className="text-caption leading-relaxed text-muted">
           Choose a block from the block list or click a lot inside a block to show its move,
           resize and rotate handles.
         </p>
@@ -45,7 +45,7 @@ export function EditBlockPanel() {
     return (
       <PanelSection title={`Edit block — ${block.code}`}>
         <div className="space-y-3">
-          <p className="text-[12px] leading-relaxed text-muted">
+          <p className="text-caption leading-relaxed text-muted">
             Start editing to drag the block, reshape its corners, or rotate it with a map handle.
           </p>
           <Button className="w-full gap-1.5" onClick={() => startBlockEdit(block.id)}>
@@ -68,15 +68,15 @@ export function EditBlockPanel() {
           m² · {editing.rotationDeg.toFixed(0)}°
         </Readout>
 
-        <div className="rounded-lg border border-line bg-surface-2 px-3 py-2 text-[11.5px] leading-relaxed text-muted">
+        <div className="rounded-lg border border-line bg-surface-2 px-3 py-2 text-caption leading-relaxed text-muted">
           Drag inside the block to move it. Drag a corner to reshape it. Drag the round handle to
           rotate it. Save commits one undoable draft change; Publish still makes it live.
         </div>
 
         <div className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface px-3 py-2">
-          <Label htmlFor="move-lots-with-block" className="text-[12.5px] font-medium text-ink">
+          <Label htmlFor="move-lots-with-block" className="text-caption font-medium text-ink">
             Move unsold lots with block
-            <span className="mt-0.5 block text-[10.5px] font-normal leading-snug text-muted">
+            <span className="mt-0.5 block text-micro font-normal leading-snug text-muted">
               {unsoldCount.toLocaleString()} unsold lot{unsoldCount === 1 ? '' : 's'} can follow
               this shape.
             </span>

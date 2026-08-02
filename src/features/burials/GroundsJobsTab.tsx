@@ -119,12 +119,12 @@ export function GroundsJobsTab({
               transition={{ duration: 0.32, ease: EASE, delay: Math.min(gi, 12) * 0.04 }}
             >
               <div className="mb-2 flex flex-wrap items-center gap-2.5">
-                <h3 className="font-display text-[18px] font-semibold text-ink">
+                <h3 className="text-small-title font-display font-semibold text-ink">
                   {fmtDateLong(date)}
                 </h3>
                 <span
                   className={cn(
-                    'rounded-full border px-2 py-0.5 text-[11px] font-medium',
+                    'text-micro rounded-full border px-2 py-1 font-medium',
                     date === TODAY
                       ? 'border-gold bg-gold/12 text-gold-deep dark:text-gold'
                       : 'border-line bg-surface-2 text-muted',
@@ -137,7 +137,7 @@ export function GroundsJobsTab({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 gap-1.5 text-[12px] text-muted"
+                  className="gap-1.5 text-muted"
                   onClick={() => setSheetDates([date])}
                 >
                   <Icon icon={IconPrint} size={14} />
@@ -152,7 +152,7 @@ export function GroundsJobsTab({
                     return (
                       <div
                         key={slot}
-                        className="flex items-center gap-2 rounded-[var(--radius-card)] border border-dashed border-line bg-surface px-4 py-5 text-[12.5px] text-muted"
+                        className="text-body flex items-center gap-2 rounded-[var(--radius-card)] border border-dashed border-line bg-surface px-4 py-5 text-muted"
                       >
                         <SlotIcon slot={slot} size={14} />
                         {SLOT_LABEL[slot]} — nothing booked.
@@ -209,7 +209,7 @@ function JobCard({
       )}
     >
       {late && (
-        <p className="flex items-center gap-1.5 rounded-t-[var(--radius-card)] border-b border-gold/40 bg-gold/12 px-3.5 py-1.5 text-[11.5px] font-medium text-gold-deep dark:text-gold">
+        <p className="text-caption flex items-center gap-1.5 rounded-t-[var(--radius-card)] border-b border-gold/40 bg-gold/12 px-3.5 py-2 font-medium text-gold-deep dark:text-gold" role="status">
           <Icon icon={IconFlag} size={13} />
           Unassigned and {diffDays(job.scheduledFor, TODAY) === 0
             ? 'happening today'
@@ -219,7 +219,7 @@ function JobCard({
 
       <div className="flex items-start justify-between gap-3 px-3.5 pb-2.5 pt-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-[12px] text-muted">
+          <p className="text-caption flex items-center gap-1.5 text-muted">
             <SlotIcon slot={job.slot} size={13} />
             {SLOT_LABEL[job.slot]} · {fmtDate(job.scheduledFor)}
           </p>
@@ -227,12 +227,12 @@ function JobCard({
             <button
               type="button"
               onClick={() => onOpenInterment(interment)}
-              className="mt-0.5 truncate text-left font-display text-[17px] font-semibold leading-tight text-ink hover:text-gold-deep dark:hover:text-gold"
+              className="text-small-title mt-0.5 min-h-10 text-left font-display font-semibold leading-tight text-ink hover:text-gold-deep dark:hover:text-gold"
             >
               {deceasedFullName(interment)}
             </button>
           )}
-          <p className="mt-0.5 font-mono text-[12px] text-muted">{lotCode(job.lotId)}</p>
+          <p className="text-caption mt-0.5 font-mono text-muted">{lotCode(job.lotId)}</p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <JobStatusChip status={job.status} />

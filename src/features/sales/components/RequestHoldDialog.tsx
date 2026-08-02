@@ -57,6 +57,7 @@ export function RequestHoldDialog({
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [pickedLotId, setPickedLotId] = useState<LotId | null>(presetLotId)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (open) setPickedLotId(presetLotId)
@@ -87,6 +88,7 @@ export function RequestHoldDialog({
     setNote('')
     setBusy(false)
     setPickedLotId(presetLotId)
+    setSubmitError(null)
   }
 
   function submit() {
@@ -102,6 +104,7 @@ export function RequestHoldDialog({
     setBusy(false)
 
     if ('error' in result) {
+      setSubmitError(result.error)
       toast.error(result.error)
       return
     }
@@ -126,7 +129,7 @@ export function RequestHoldDialog({
     >
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[22px]">Request a hold</DialogTitle>
+          <DialogTitle className="font-display text-section-title">Request a hold</DialogTitle>
           <DialogDescription>
             A hold reserves the lot while the family decides. A manager approves it.
           </DialogDescription>
@@ -135,24 +138,36 @@ export function RequestHoldDialog({
         <div className="space-y-4">
           {!presetLotId && (
             <div className="space-y-1.5">
-              <Label htmlFor="hold-lot" className="text-[12.5px] text-muted">
+              <Label htmlFor="hold-lot" className="text-caption text-muted">
                 Lot
               </Label>
-              <LotCombobox id="hold-lot" value={pickedLotId} onChange={setPickedLotId} />
+              <LotCombobox
+                id="hold-lot"
+                value={pickedLotId}
+                onChange={(id) => {
+                  setPickedLotId(id)
+                  setSubmitError(null)
+                }}
+                required
+                describedBy="hold-lot-help"
+              />
+              <p id="hold-lot-help" className="text-caption text-muted">
+                Only available or held lots in the active location are listed.
+              </p>
             </div>
           )}
         </div>
 
         {!lot ? (
-          <p className="text-[13px] text-muted">
+          <p className="text-body text-muted">
             Pick an available lot to continue.
           </p>
         ) : (
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-4 rounded-[var(--radius-card)] border border-line bg-surface-2 px-3.5 py-3">
               <div className="min-w-0">
-                <p className="font-mono text-[14px] text-ink">{lotCodeOf(lot)}</p>
-                <p className="mt-0.5 text-[12.5px] text-muted">
+                <p className="font-mono text-body text-ink">{lotCodeOf(lot)}</p>
+                <p className="mt-0.5 text-caption text-muted">
                   {tier?.name ?? '—'} · {lot.areaSqm.toFixed(1)} sqm · capacity{' '}
                   {lot.capacity}
                 </p>
@@ -161,7 +176,7 @@ export function RequestHoldDialog({
             </div>
 
             {blocked ? (
-              <div className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-[12.5px] text-ink">
+              <div role="alert" className="flex items-start gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/8 p-3 text-body text-ink">
                 <Icon icon={IconWarning} size={16} className="mt-0.5 text-danger" />
                 <span>
                   This lot is{' '}
@@ -185,14 +200,26 @@ export function RequestHoldDialog({
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="hold-buyer" className="text-[12.5px] text-muted">
+                  <Label htmlFor="hold-buyer" className="text-caption text-muted">
                     Buyer
                   </Label>
-                  <ClientCombobox id="hold-buyer" value={buyer} onChange={setBuyer} />
+                  <ClientCombobox
+                    id="hold-buyer"
+                    value={buyer}
+                    onChange={(id) => {
+                      setBuyer(id)
+                      setSubmitError(null)
+                    }}
+                    required
+                    describedBy="hold-buyer-help"
+                  />
+                  <p id="hold-buyer-help" className="text-caption text-muted">
+                    Select the family member requesting the hold.
+                  </p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="hold-note" className="text-[12.5px] text-muted">
+                  <Label htmlFor="hold-note" className="text-caption text-muted">
                     Note <span className="text-muted/70">(optional)</span>
                   </Label>
                   <Textarea
@@ -204,7 +231,7 @@ export function RequestHoldDialog({
                   />
                 </div>
 
-                <p className="flex items-center gap-1.5 text-[12px] text-muted">
+                <p className="flex flex-wrap items-center gap-1.5 text-caption text-muted">
                   Hold expires in {HOLD_DURATION_DAYS} days —{' '}
                   {fmtDate(addDays(TODAY, HOLD_DURATION_DAYS))}
                   <AssumedChip why={ASSUMPTIONS.holdDurationDays.why} />
@@ -212,6 +239,12 @@ export function RequestHoldDialog({
               </>
             )}
           </div>
+        )}
+
+        {submitError && (
+          <p role="alert" className="rounded-md border border-danger/40 bg-danger/8 p-3 text-body text-danger">
+            {submitError}
+          </p>
         )}
 
         <DialogFooter>

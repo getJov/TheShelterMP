@@ -125,28 +125,28 @@ export function AgentDetailPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1120px] space-y-5 px-6 py-6">
+      <div className="mx-auto max-w-[1120px] space-y-5 px-4 py-6 sm:px-6">
         {/* ── header ─────────────────────────────────────────── */}
         <div>
           <Link
             to="/agents"
-            className="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink"
+            className="inline-flex items-center gap-1.5 text-caption text-muted hover:text-ink"
           >
             <Icon icon={IconChevronLeft} size={14} /> Roster
           </Link>
 
           <div className="mt-2 flex flex-wrap items-start gap-4">
             <AgentAvatar agentId={agent.id} size={58} />
-            <div className="min-w-[240px] flex-1">
+            <div className="min-w-0 flex-[1_1_240px]">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h2 className="font-display text-[29px] font-semibold leading-tight text-ink">
+                <h2 className="font-display text-page-title font-semibold leading-tight text-ink">
                   {agentName(agent.id)}
                 </h2>
                 <LevelBadge level={agent.level} withRate />
                 <RatesAssumed />
                 <ArchivedChip agent={agent} />
               </div>
-              <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-muted">
+              <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-muted">
                 <span className="font-mono">{agent.agentCode}</span>
                 <span>
                   {indexes().locationsById.get(agent.locationId)?.name ?? '—'}
@@ -237,12 +237,12 @@ export function AgentDetailPage() {
             />
             <div className="ml-4">
               <p className="eyebrow text-muted">Target</p>
-              <p className="mt-1 text-[13px] text-ink">
+              <p className="mt-1 text-caption text-ink">
                 {agent.monthlyTargetCentavos
                   ? formatPeso(agent.monthlyTargetCentavos, { decimals: false })
                   : 'Not set'}
               </p>
-              <p className="text-[11.5px] text-muted">monthly</p>
+              <p className="text-caption text-muted">monthly</p>
             </div>
           </div>
         </div>
@@ -267,13 +267,13 @@ export function AgentDetailPage() {
                 />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 11, fill: 'var(--color-muted)' }}
+                  tick={{ fontSize: 'var(--type-caption)', fill: 'var(--color-muted)' }}
                   axisLine={{ stroke: 'var(--color-line)' }}
                   tickLine={false}
                 />
                 <YAxis
                   yAxisId="left"
-                  tick={{ fontSize: 11, fill: 'var(--color-muted)' }}
+                  tick={{ fontSize: 'var(--type-caption)', fill: 'var(--color-muted)' }}
                   axisLine={false}
                   tickLine={false}
                   width={54}
@@ -282,7 +282,7 @@ export function AgentDetailPage() {
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  tick={{ fontSize: 11, fill: 'var(--color-muted)' }}
+                  tick={{ fontSize: 'var(--type-caption)', fill: 'var(--color-muted)' }}
                   axisLine={false}
                   tickLine={false}
                   width={50}
@@ -293,7 +293,7 @@ export function AgentDetailPage() {
                     background: 'var(--color-surface)',
                     border: '1px solid var(--color-line)',
                     borderRadius: 8,
-                    fontSize: 12.5,
+                    fontSize: 'var(--type-caption)',
                   }}
                   formatter={(v: number, name: string) => [
                     formatPeso(v * 100, { decimals: false }),
@@ -372,7 +372,7 @@ function UplineDiagram({
         <Icon icon={IconUpline} size={15} className="text-gold-deep dark:text-gold" />
         <p className="eyebrow text-gold-deep dark:text-gold">Upline &amp; downline</p>
         <RatesAssumed />
-        <p className="ml-auto text-[12px] text-muted">
+        <p className="ml-auto text-caption text-muted">
           Each edge carries the rate that level earns on every payment collected
           below it.
         </p>
@@ -392,7 +392,7 @@ function UplineDiagram({
 
         {downline.length > 0 && (
           <>
-            <p className="pl-2 pt-2 text-[11.5px] text-muted">
+            <p className="pl-2 pt-2 text-caption text-muted">
               {downline.length} reporting to {agent.agentCode} — {agent.agentCode}{' '}
               earns{' '}
               <span className="font-medium text-gold-deep dark:text-gold">
@@ -411,7 +411,7 @@ function UplineDiagram({
         )}
 
         {!dist && !tl && downline.length === 0 && (
-          <p className="text-[13px] text-muted">
+          <p className="text-caption text-muted">
             No upline and no downline — this agent sits alone in the tree, so every
             payment they collect produces a single commission entry.
           </p>
@@ -441,7 +441,7 @@ function Node({
       <AgentIdentity agentId={agent.id} link={!self} />
       <LevelBadge level={agent.level} withRate />
       {self && (
-        <span className="text-[11px] uppercase tracking-[0.08em] text-gold-deep dark:text-gold">
+        <span className="text-micro uppercase tracking-[0.08em] text-gold-deep dark:text-gold">
           This agent
         </span>
       )}
@@ -451,7 +451,7 @@ function Node({
 
 function Edge({ from, rate }: { from: AgentProfile; rate: number }) {
   return (
-    <p className="pl-6 text-[11.5px] text-muted">
+    <p className="pl-6 text-caption text-muted">
       <span className="opacity-60">│</span>{' '}
       <span className="font-medium text-gold-deep dark:text-gold">
         {formatPercent(rate)}
@@ -468,14 +468,14 @@ function ContractsSection({ contracts }: { contracts: Contract[] }) {
       key: 'no',
       header: 'Contract',
       sortBy: (c) => c.contractNo,
-      cell: (c) => <span className="font-mono text-[11.5px]">{c.contractNo}</span>,
+      cell: (c) => <span className="font-mono text-caption">{c.contractNo}</span>,
     },
     {
       key: 'signed',
       header: 'Signed',
       sortBy: (c) => c.signedAt,
       cell: (c) => (
-        <span className="whitespace-nowrap text-[12.5px] text-muted">
+        <span className="whitespace-nowrap text-caption text-muted">
           {fmtDate(c.signedAt)}
         </span>
       ),
@@ -485,7 +485,7 @@ function ContractsSection({ contracts }: { contracts: Contract[] }) {
       header: 'Status',
       sortBy: (c) => c.status,
       cell: (c) => (
-        <span className="text-[12.5px]">{CONTRACT_STATUS_LABEL[c.status]}</span>
+        <span className="text-caption">{CONTRACT_STATUS_LABEL[c.status]}</span>
       ),
     },
     {
@@ -561,8 +561,8 @@ export function IncentivesSection() {
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         className="px-4 py-5"
       >
-        <p className="text-[14px] text-muted">No incentive rules defined yet.</p>
-        <ul className="mt-1.5 space-y-1 text-[12.5px] text-muted">
+        <p className="text-caption text-muted">No incentive rules defined yet.</p>
+        <ul className="mt-1.5 space-y-1 text-caption text-muted">
           <li>· Rice allowance (<em>bugas</em>) — cadence, quantity and eligibility unknown.</li>
           <li>· Annual incentives — basis, threshold and amount unknown.</li>
         </ul>

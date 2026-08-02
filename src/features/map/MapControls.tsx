@@ -73,7 +73,7 @@ export function MapControls({
         <Button
           size="icon"
           variant="secondary"
-          className="pointer-events-auto size-9 border border-line bg-surface/90 shadow-md backdrop-blur"
+          className="pointer-events-auto border border-line bg-surface/90 shadow-md backdrop-blur"
           aria-label={open ? 'Hide map controls' : 'Show map controls'}
           onClick={() => setOpen((v) => !v)}
         >
@@ -87,7 +87,7 @@ export function MapControls({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.32, ease: EASE }}
-            className="pointer-events-auto w-[288px] rounded-xl border border-line bg-surface/88 p-3 shadow-lg backdrop-blur-md"
+            className="pointer-events-auto max-h-[calc(100dvh-96px)] w-[min(340px,calc(100vw-32px))] overflow-y-auto rounded-xl border border-line bg-surface/88 p-3 shadow-lg backdrop-blur-md"
           >
             <Panel data={data} onGoToLot={onGoToLot} />
           </motion.div>
@@ -124,7 +124,7 @@ function Panel({ data, onGoToLot }: { data: MapData; onGoToLot: (id: LotId) => v
         >
           <SelectTrigger
             aria-label="Colour by"
-            className="h-auto min-h-9 w-full bg-surface py-2.5 text-[13px] *:data-[slot=select-value]:line-clamp-none"
+            className="h-auto min-h-10 w-full bg-surface py-2.5 text-control *:data-[slot=select-value]:line-clamp-none"
           >
             <SelectValue />
           </SelectTrigger>
@@ -133,7 +133,7 @@ function Panel({ data, onGoToLot }: { data: MapData; onGoToLot: (id: LotId) => v
               <SelectItem key={m.id} value={m.id}>
                 <span className="flex flex-col items-start">
                   <span>{m.label}</span>
-                  <span className="text-[11px] text-muted">{m.hint}</span>
+                  <span className="text-caption text-muted">{m.hint}</span>
                 </span>
               </SelectItem>
             ))}
@@ -151,11 +151,11 @@ function Panel({ data, onGoToLot }: { data: MapData; onGoToLot: (id: LotId) => v
           variant="outline"
           size="sm"
         >
-          <ToggleGroupItem value="satellite" className="flex-1 gap-1.5 text-[12.5px]">
+          <ToggleGroupItem value="satellite" className="flex-1 gap-1.5 text-body">
             <Icon icon={IconSatellite} size={15} />
             Satellite
           </ToggleGroupItem>
-          <ToggleGroupItem value="plain" className="flex-1 gap-1.5 text-[12.5px]">
+          <ToggleGroupItem value="plain" className="flex-1 gap-1.5 text-body">
             <Icon icon={IconLayers} size={15} />
             Plain
           </ToggleGroupItem>
@@ -191,7 +191,7 @@ function Panel({ data, onGoToLot }: { data: MapData; onGoToLot: (id: LotId) => v
               aria-label="Site plan opacity"
               className="flex-1"
             />
-            <span className="tabular w-9 text-right text-[11.5px] text-muted">
+            <span className="tabular w-9 text-right text-caption text-muted">
               {overlayOpacity}%
             </span>
           </div>
@@ -237,7 +237,7 @@ function Row({
         disabled && 'opacity-55',
       )}
     >
-      <span className="flex items-center gap-1.5 text-[13px] text-ink">
+      <span className="flex items-center gap-1.5 text-body text-ink">
         {icon && <Icon icon={icon} size={15} className="text-muted" />}
         {label}
       </span>
@@ -295,7 +295,7 @@ function SearchBox({
           }}
           placeholder="Find B01-L047 or 47"
           aria-label="Search lots"
-          className="h-9 bg-surface pl-8 text-[13px]"
+          className="bg-surface pl-10 text-control"
         />
       </div>
       {results.length > 0 && (
@@ -305,11 +305,11 @@ function SearchBox({
               <li key={r.lot.id}>
                 <button
                   onClick={() => onGoToLot(r.lot.id)}
-                  className="flex w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-left text-[12.5px] hover:bg-surface-2"
+                  className="flex min-h-10 w-full flex-wrap items-center justify-between gap-2 rounded px-2 py-2 text-left text-body hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <span className="font-mono text-ink">{r.code}</span>
                   <span
-                    className="text-[11px]"
+                    className="text-caption"
                     style={{ color: STATUS_APPEARANCE[r.lot.status].color }}
                   >
                     {STATUS_APPEARANCE[r.lot.status].label}
@@ -324,7 +324,7 @@ function SearchBox({
   )
 }
 
-function FilterPopover({ data }: { data: MapData }) {
+export function FilterPopover({ data }: { data: MapData }) {
   const filters = useMapStore((s) => s.filters)
   const toggleFilter = useMapStore((s) => s.toggleFilter)
   const clearFilters = useMapStore((s) => s.clearFilters)
@@ -336,12 +336,12 @@ function FilterPopover({ data }: { data: MapData }) {
         <Button
           variant="outline"
           size="sm"
-          className="h-9 w-full justify-start gap-2 bg-surface text-[13px]"
+          className="w-full justify-start gap-2 bg-surface text-control"
         >
           <Icon icon={IconFilter} size={15} />
           Filters
           {n > 0 && (
-            <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-[11px]">
+            <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-caption">
               {n}
             </Badge>
           )}
@@ -393,7 +393,7 @@ function FilterPopover({ data }: { data: MapData }) {
           <Button
             variant="ghost"
             size="sm"
-            className="w-full text-[12.5px]"
+            className="w-full text-body"
             onClick={clearFilters}
             disabled={n === 0}
           >
@@ -430,14 +430,14 @@ function Check({
   return (
     <div className="flex items-center gap-2">
       <Checkbox id={id} checked={checked} onCheckedChange={onChange} />
-      <Label htmlFor={id} className="flex flex-1 items-center gap-1.5 text-[12.5px] font-normal">
+      <Label htmlFor={id} className="flex min-h-10 flex-1 items-center gap-1.5 text-body font-normal">
         {swatch && (
           <span
             className="size-2.5 shrink-0 rounded-full border border-line"
             style={{ background: swatch }}
           />
         )}
-        <span className="truncate">{label}</span>
+        <span className="break-words">{label}</span>
       </Label>
     </div>
   )

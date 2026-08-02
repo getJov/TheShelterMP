@@ -152,12 +152,12 @@ function HistoryBody({
                 <XAxis
                   dataKey="date"
                   tickFormatter={(v: string) => v.slice(0, 7)}
-                  tick={{ fontSize: 10, fill: 'var(--color-muted)' }}
+                  tick={{ fontSize: 'var(--type-caption)', fill: 'var(--color-muted)' }}
                   stroke="var(--color-line)"
                   minTickGap={24}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: 'var(--color-muted)' }}
+                  tick={{ fontSize: 'var(--type-caption)', fill: 'var(--color-muted)' }}
                   stroke="var(--color-line)"
                   width={54}
                   tickFormatter={(v: number) => formatPeso(v * 100, { compact: true })}
@@ -167,7 +167,7 @@ function HistoryBody({
                     background: 'var(--color-surface)',
                     border: '1px solid var(--color-line)',
                     borderRadius: 8,
-                    fontSize: 12,
+                    fontSize: 'var(--type-caption)',
                   }}
                   labelFormatter={(v) => fmtDate(String(v))}
                   formatter={(v: number | string) => [
@@ -214,7 +214,7 @@ function HistoryBody({
             />
           ))}
           {entries.length === 0 && (
-            <li className="py-6 text-center text-[13px] text-muted">
+            <li className="py-6 text-center text-caption text-muted">
               No price book entries for this combination.
             </li>
           )}
@@ -251,10 +251,10 @@ function HistoryRow({
           <div className="flex items-center gap-2">
             <MoneyText
               centavos={entry.amountCentavos}
-              className="font-display text-[19px] font-semibold"
+              className="font-display text-small-title font-semibold"
             />
             {entry.amountCentavos === null && (
-              <span className="text-[13px] text-muted">Contact for pricing</span>
+              <span className="text-caption text-muted">Contact for pricing</span>
             )}
             {entry.isPromo && (
               <Badge
@@ -271,29 +271,29 @@ function HistoryRow({
               </Badge>
             )}
           </div>
-          <p className="mt-0.5 text-[13px] text-ink">{entry.label ?? '—'}</p>
-          <p className="tabular mt-1 text-[12px] text-muted">
+          <p className="mt-0.5 text-caption text-ink">{entry.label ?? '—'}</p>
+          <p className="tabular mt-1 text-caption text-muted">
             {fmtDate(entry.effectiveFrom)} →{' '}
             {entry.effectiveTo ? fmtDate(entry.effectiveTo) : 'open'}
           </p>
           {entry.note && (
-            <p className="mt-1 text-[12px] leading-relaxed text-muted">{entry.note}</p>
+            <p className="mt-1 text-caption leading-relaxed text-muted">{entry.note}</p>
           )}
-          <p className="mt-1 text-[11.5px] text-muted">
+          <p className="mt-1 text-caption text-muted">
             Set by {setter?.fullName ?? 'system'} · {fmtDateTime(entry.createdAt)}
           </p>
         </div>
 
         <div className="shrink-0 text-right">
           <p className="eyebrow text-muted">Contracts sold</p>
-          <p className="tabular font-display text-[22px] leading-tight text-ink">
+          <p className="tabular font-display text-section-title leading-tight text-ink">
             {contracts}
           </p>
           {contracts > 0 && (
             <Button
               variant="ghost"
               size="sm"
-              className="mt-0.5 h-7 gap-1 px-1.5 text-[12px] text-gold-deep dark:text-gold"
+              className="mt-0.5 gap-1 px-1.5 text-caption text-gold-deep dark:text-gold"
               onClick={onOpenContracts}
             >
               View in sales

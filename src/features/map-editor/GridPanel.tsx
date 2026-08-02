@@ -150,7 +150,7 @@ export function GridPanel() {
               value={grid.tierId ?? ''}
               onValueChange={(v) => setGrid({ tierId: v as typeof grid.tierId })}
             >
-              <SelectTrigger className="h-8 w-full text-[13px]">
+              <SelectTrigger className="w-full text-caption">
                 <SelectValue placeholder="Choose a tier" />
               </SelectTrigger>
               <SelectContent>
@@ -162,7 +162,7 @@ export function GridPanel() {
                         style={{ background: t.appearance.fillColor }}
                       />
                       {t.name}
-                      <span className="font-mono text-[10.5px] text-muted">
+                      <span className="font-mono text-micro text-muted">
                         {t.widthM} × {t.lengthM} m
                       </span>
                     </span>
@@ -182,7 +182,7 @@ export function GridPanel() {
           </div>
 
           <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="exact-lot-count" className="text-[11.5px] font-medium text-muted">
+            <Label htmlFor="exact-lot-count" className="text-caption font-medium text-muted">
               Use exact lot count
             </Label>
             <Switch
@@ -208,7 +208,7 @@ export function GridPanel() {
             </Field>
           )}
 
-          <Button variant="secondary" className="h-8 w-full gap-1.5 text-[12.5px]" onClick={fitNow}>
+          <Button variant="secondary" className="w-full gap-1.5 text-caption" onClick={fitNow}>
             <Icon icon={IconAutoFit} size={14} />
             Fit to block
           </Button>
@@ -224,7 +224,7 @@ export function GridPanel() {
           </Field>
 
           <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="split-gutters" className="text-[11.5px] font-medium text-muted">
+            <Label htmlFor="split-gutters" className="text-caption font-medium text-muted">
               Different gutter by axis
             </Label>
             <Switch
@@ -278,8 +278,8 @@ export function GridPanel() {
                   <RadioGroupItem value={n.id} className="shrink-0" />
                   <NumberingDiagram scheme={n.id} />
                   <span className="min-w-0">
-                    <span className="block text-[12.5px] font-medium text-ink">{n.label}</span>
-                    <span className="block text-[10.5px] leading-snug text-muted">{n.hint}</span>
+                    <span className="block text-caption font-medium text-ink">{n.label}</span>
+                    <span className="block text-micro leading-snug text-muted">{n.hint}</span>
                   </span>
                 </label>
               ))}
@@ -303,7 +303,7 @@ export function GridPanel() {
               {clipped > 0 && ` · ${clipped} clipped to the boundary`}
             </Readout>
           ) : (
-            <p className="text-[11.5px] text-muted">Choose a tier to see the preview.</p>
+            <p className="text-caption text-muted">Choose a tier to see the preview.</p>
           )}
 
           {cells > LARGE_GENERATION && (
@@ -337,7 +337,7 @@ export function GridPanel() {
           )}
 
           {existing.length > 0 && (
-            <p className="text-[11px] leading-snug text-muted">
+            <p className="text-micro leading-snug text-muted">
               Existing lots: {fmt(existing.length)}
               {soldCount > 0 && ` · ${soldCount} sold or occupied`}. Generate creates or replaces
               records; rearrange keeps the existing records and only moves them.
@@ -387,7 +387,7 @@ export function GridPanel() {
           </RadioGroup>
 
           {soldCount > 0 && mode === 'replace_unsold' && (
-            <p className="flex items-start gap-1.5 text-[12px] leading-snug text-muted">
+            <p className="flex items-start gap-1.5 text-caption leading-snug text-muted">
               <Icon icon={IconWarning} size={13} className="mt-px text-gold-deep dark:text-gold" />
               Sold or occupied lots keep their contract, code, and position.
             </p>
@@ -436,8 +436,8 @@ function ModeOption({
     >
       <RadioGroupItem value={value} disabled={disabled} className="mt-0.5 shrink-0" />
       <span>
-        <span className="block text-[13.5px] font-medium text-ink">{title}</span>
-        <span className="mt-0.5 block text-[12px] leading-snug text-muted">{body}</span>
+        <span className="block text-caption font-medium text-ink">{title}</span>
+        <span className="mt-0.5 block text-caption leading-snug text-muted">{body}</span>
       </span>
     </label>
   )

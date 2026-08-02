@@ -156,14 +156,14 @@ export default function AuditPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1320px] space-y-4 p-6">
+      <div className="mx-auto max-w-[1320px] space-y-4 p-4 sm:p-6">
         <SectionHeading
           eyebrow="Oversight"
           title="Audit Log"
           size="lg"
           action={
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1 text-[12.5px] text-muted">
-              <span className="font-display text-[17px] font-semibold tabular text-ink">
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1 text-caption text-muted">
+              <span className="font-display text-small-title font-semibold tabular text-ink">
                 {filtered.length}
               </span>
               {filtered.length === 1 ? 'event' : 'events'}
@@ -172,7 +172,7 @@ export default function AuditPage() {
         />
 
         <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-card)] border border-line bg-surface p-3">
-          <div className="relative min-w-[220px] flex-1">
+          <div className="relative min-w-0 flex-[1_1_220px]">
             <Icon
               icon={IconSearch}
               size={15}
@@ -182,12 +182,12 @@ export default function AuditPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search descriptions…"
-              className="h-9 pl-8"
+              className="pl-8"
             />
           </div>
 
           <Select value={actor} onValueChange={setActor}>
-            <SelectTrigger size="sm" className="w-[190px]">
+            <SelectTrigger size="sm" className="w-full sm:w-[190px]">
               <SelectValue placeholder="Anyone" />
             </SelectTrigger>
             <SelectContent>
@@ -201,7 +201,7 @@ export default function AuditPage() {
           </Select>
 
           <Select value={action} onValueChange={setAction}>
-            <SelectTrigger size="sm" className="w-[200px]">
+            <SelectTrigger size="sm" className="w-full sm:w-[200px]">
               <SelectValue placeholder="Any action" />
             </SelectTrigger>
             <SelectContent>
@@ -215,7 +215,7 @@ export default function AuditPage() {
           </Select>
 
           <Select value={entity} onValueChange={setEntity}>
-            <SelectTrigger size="sm" className="w-[160px]">
+            <SelectTrigger size="sm" className="w-full sm:w-[160px]">
               <SelectValue placeholder="Any record" />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +233,7 @@ export default function AuditPage() {
             placeholder="From"
             onChange={(v) => setFrom(v)}
           />
-          <span className="text-[12px] text-muted">→</span>
+          <span className="text-caption text-muted">→</span>
           <DateField value={to} placeholder="To" onChange={(v) => setTo(v)} />
 
           {dirty && (
@@ -273,21 +273,17 @@ export default function AuditPage() {
                 {visible.map((r) => {
                   const open = openId === r.event.id
                   return [
-                    <TableRow
-                      key={r.event.id}
-                      onClick={() => setOpenId(open ? null : (r.event.id as string))}
-                      className="cursor-pointer border-line-soft hover:bg-surface-2"
-                    >
-                      <TableCell className="px-3.5 py-2.5 text-[12.5px] tabular text-muted">
+                    <TableRow key={r.event.id} className="border-line-soft hover:bg-surface-2">
+                      <TableCell className="px-3.5 py-2.5 text-caption tabular text-muted">
                         {fmtDateTime(r.event.at)}
                       </TableCell>
                       <TableCell className="px-3.5 py-2.5">
                         <span className="flex items-center gap-2">
                           <ActorAvatar name={r.actor} />
-                          <span className="truncate text-[13px] text-ink">{r.actor}</span>
+                          <span className="break-words text-caption text-ink">{r.actor}</span>
                         </span>
                       </TableCell>
-                      <TableCell className="px-3.5 py-2.5 text-[13.5px] text-ink">
+                      <TableCell className="px-3.5 py-2.5 text-caption text-ink">
                         {r.description}
                       </TableCell>
                       <TableCell className="px-3.5 py-2.5">
@@ -295,24 +291,33 @@ export default function AuditPage() {
                           <Link
                             to={r.href}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1.5 text-[12.5px] text-gold-deep hover:underline dark:text-gold"
+                            className="inline-flex items-center gap-1.5 text-caption text-gold-deep hover:underline dark:text-gold"
                           >
                             <Icon icon={IconLink} size={13} />
                             {r.entityLabel}
                           </Link>
                         ) : (
-                          <span className="text-[12.5px] text-muted">{r.entityLabel}</span>
+                          <span className="text-caption text-muted">{r.entityLabel}</span>
                         )}
                       </TableCell>
                       <TableCell className="px-3.5 py-2.5 text-right">
-                        <Icon
-                          icon={IconChevronDown}
-                          size={15}
-                          className={cn(
-                            'text-muted transition-transform duration-200',
-                            open && 'rotate-180',
-                          )}
-                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`${open ? 'Collapse' : 'Expand'} audit details for ${r.description}`}
+                          aria-expanded={open}
+                          onClick={() => setOpenId(open ? null : (r.event.id as string))}
+                        >
+                          <Icon
+                            icon={IconChevronDown}
+                            size={15}
+                            className={cn(
+                              'text-muted transition-transform duration-200',
+                              open && 'rotate-180',
+                            )}
+                          />
+                        </Button>
                       </TableCell>
                     </TableRow>,
 
@@ -338,7 +343,7 @@ export default function AuditPage() {
               </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between gap-3 border-t border-line bg-surface-2 px-3.5 py-2 text-[12.5px] text-muted">
+            <div className="flex items-center justify-between gap-3 border-t border-line bg-surface-2 px-3.5 py-2 text-caption text-muted">
               <span>
                 Showing {visible.length} of {filtered.length}
               </span>
@@ -384,7 +389,7 @@ function ActorAvatar({ name }: { name: string }) {
   return (
     <span
       aria-hidden
-      className="grid size-6 shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-[9.5px] font-semibold text-muted"
+      className="grid size-6 shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-micro font-semibold text-muted"
     >
       {initials || '—'}
     </span>
@@ -397,7 +402,7 @@ function Diff({ event }: { event: AuditEvent }) {
 
   if (fields.length === 0) {
     return (
-      <p className="px-4 py-4 text-[12.5px] text-muted">
+      <p className="px-4 py-4 text-caption text-muted">
         No field-level detail was recorded for this event.
       </p>
     )
@@ -414,7 +419,7 @@ function Diff({ event }: { event: AuditEvent }) {
           <div key={f.key} className="contents">
             <p
               className={cn(
-                'border-t border-line py-1.5 text-[12.5px]',
+                'border-t border-line py-1.5 text-caption',
                 f.changed ? 'font-medium text-ink' : 'text-muted',
               )}
             >
@@ -422,7 +427,7 @@ function Diff({ event }: { event: AuditEvent }) {
             </p>
             <p
               className={cn(
-                'border-t border-line py-1.5 text-[12.5px] tabular',
+                'border-t border-line py-1.5 text-caption tabular',
                 f.changed ? 'text-danger' : 'text-muted',
               )}
             >
@@ -430,7 +435,7 @@ function Diff({ event }: { event: AuditEvent }) {
             </p>
             <p
               className={cn(
-                'border-t border-line py-1.5 text-[12.5px] tabular',
+                'border-t border-line py-1.5 text-caption tabular',
                 f.changed ? 'font-medium text-green' : 'text-muted',
               )}
             >
@@ -439,7 +444,7 @@ function Diff({ event }: { event: AuditEvent }) {
           </div>
         ))}
       </div>
-      <p className="mt-2.5 border-t border-line pt-2 text-[11.5px] text-muted">
+      <p className="mt-2.5 border-t border-line pt-2 text-caption text-muted">
         Recorded {fmtDateTime(event.at)} · Read-only.
       </p>
     </div>
