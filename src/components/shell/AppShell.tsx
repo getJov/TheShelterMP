@@ -6,6 +6,10 @@ import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
 import { DisplaySettings } from './DisplaySettings'
 import { RouteAccessibility, routeTitleFor } from './RouteAccessibility'
+import {
+  RouteTopBarActionProvider,
+  RouteTopBarActionSlot,
+} from './RouteTopBarAction'
 import { navItems, type NavItem } from './nav-items'
 import { Icon } from '@/components/ui-brand/Icon'
 import { IconMenu, IconSidebar } from '@/components/ui-brand/icons'
@@ -40,27 +44,34 @@ export function AppShell() {
   }, [railOpen])
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-bg">
-      <a
-        href="#main-content"
-        className="fixed left-3 top-3 z-[100] -translate-y-24 rounded-md bg-ink px-4 py-3 text-control font-semibold text-bg shadow-lg transition-transform focus:translate-y-0"
+    <RouteTopBarActionProvider>
+      <div
+        className="shell-frame flex h-dvh w-full overflow-hidden bg-bg"
+        data-shell-frame
       >
-        Skip to main content
-      </a>
-      <Rail open={railOpen} onToggle={() => setRailOpen((v) => !v)} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="relative min-h-0 flex-1 overflow-hidden outline-none"
+        <a
+          href="#main-content"
+          className="shell-skip-link fixed left-3 top-3 z-[100] -translate-y-24 rounded-md bg-ink px-4 py-3 text-control font-semibold text-bg shadow-lg transition-transform focus:translate-y-0"
+          data-shell-skip-link
         >
-          <Outlet />
-        </main>
+          Skip to main content
+        </a>
+        <Rail open={railOpen} onToggle={() => setRailOpen((v) => !v)} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopBar />
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="relative min-h-0 flex-1 overflow-hidden outline-none"
+            data-shell-main
+          >
+            <Outlet />
+          </main>
+        </div>
+        <CommandPalette />
+        <RouteAccessibility />
       </div>
-      <CommandPalette />
-      <RouteAccessibility />
-    </div>
+    </RouteTopBarActionProvider>
   )
 }
 
@@ -287,7 +298,11 @@ function MobileNavigation() {
           <Icon icon={IconMenu} size={20} />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="flex w-[min(90vw,360px)] flex-col p-0">
+      <SheetContent
+        side="left"
+        className="shell-mobile-navigation flex w-[min(90vw,360px)] flex-col p-0"
+        data-shell-mobile-navigation
+      >
         <SheetHeader className="border-b border-line px-4 py-4 text-left">
           <LogoLockup variant="compact" />
           <SheetTitle className="sr-only">Navigation</SheetTitle>
@@ -299,7 +314,10 @@ function MobileNavigation() {
           <NavList items={main} open onNavigate={close} />
           <ManageSection items={manage} open onNavigate={close} />
         </nav>
-        <div className="space-y-3 border-t border-line p-3">
+        <div
+          className="space-y-3 border-t border-line p-3"
+          data-shell-mobile-navigation-footer
+        >
           <div className="[&_[data-slot=select-trigger]]:w-full">
             <LocationSwitcher />
           </div>
@@ -320,9 +338,12 @@ function TopBar() {
   const user = useSession((s) => s.currentUser())
 
   return (
-    <header className="z-20 flex min-h-14 shrink-0 items-center gap-1 border-b border-line bg-surface px-2 sm:gap-2 sm:px-4">
+    <header
+      className="z-20 flex min-h-14 shrink-0 items-center gap-1 border-b border-line bg-surface px-2 sm:gap-2 sm:px-4"
+      data-shell-top-bar
+    >
       <MobileNavigation />
-      <h1 className="min-w-0 flex-1 font-display text-small-title font-semibold text-ink">
+      <h1 className="min-w-0 flex-1 overflow-hidden font-display text-small-title font-semibold text-ink [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:block sm:truncate">
         {title}
       </h1>
 
@@ -334,6 +355,7 @@ function TopBar() {
           </span>
         )}
         <div className="hidden lg:block"><LocationSwitcher /></div>
+        <RouteTopBarActionSlot />
         <NotificationBell />
         <div className="hidden lg:block"><DisplaySettings /></div>
         <div className="hidden lg:block"><ThemeToggle /></div>
