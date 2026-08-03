@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive Shell Foundation Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #080808;
+      --muted: #5f5f5f;
+      --line: #d8d8d8;
+      --soft: #f5f5f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .spec-shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .spec-hero, .spec-card, .task-card { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .spec-hero { border-color: var(--ink); padding: 32px; margin-bottom: 20px; }
+    .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .spec-card { padding: 28px; margin-top: 16px; }
+    .task-card { padding: 20px; margin-top: 14px; background: var(--soft); }
+    .eyebrow, dt { color: var(--muted); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; }
+    .eyebrow { margin: 0; }
+    .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
+    .status-card { border-color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 900px; margin-bottom: 24px; font-size: clamp(2.25rem, 6vw, 5rem); line-height: 0.95; }
+    h2 { font-size: 1.35rem; }
+    h3 { margin-top: 20px; font-size: 1rem; }
+    code { padding: 0.1rem 0.3rem; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: 0.92em; }
+    .meta-grid, .split-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+    .meta-grid { margin: 0; }
+    .meta-grid div, .split-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); }
+    .box { display: inline-grid; width: 18px; height: 18px; flex: 0 0 18px; place-items: center; border: 1px solid var(--ink); margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); }
+    .callout { border-left: 4px solid var(--ink); padding: 12px 14px; background: var(--soft); }
+    @media (max-width: 640px) {
+      .spec-shell { width: min(100% - 20px, 1120px); padding: 24px 0; }
+      .spec-hero, .spec-card { padding: 20px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="spec-shell">
+    <header class="spec-hero">
+      <div class="hero-topline">
+        <p class="eyebrow">TheShelter Plan Spec</p>
+        <span class="status-pill">Completed</span>
+      </div>
+      <h1>Shared responsive shell foundation</h1>
+      <dl class="meta-grid">
+        <div class="status-card"><dt>Status</dt><dd>Completed</dd></div>
+        <div><dt>Plan Folder</dt><dd>plans/08032026-responsive-shell-foundation</dd></div>
+        <div><dt>Size</dt><dd>Medium</dd></div>
+        <div><dt>Risk</dt><dd>Level 3 — cross-route lifecycle</dd></div>
+      </dl>
+    </header>
+
+    <section class="spec-card" id="why">
+      <h2>Why</h2>
+      <p>Route-specific responsive work needs two stable capabilities that the current shell does not provide: a safe place for one compact route action and a single safe-area geometry contract.</p>
+      <p>Putting Map or Dashboard imports directly into <code>AppShell</code> would make the shared shell depend on feature internals. Storing a temporary route action in persisted state would also let stale UI leak between routes and sessions.</p>
+      <p>This foundation adds only the generic ownership boundary. Individual route refinements remain responsible for their content, surfaces, and workflows.</p>
+    </section>
+
+    <section class="spec-card" id="what">
+      <h2>What</h2>
+      <p>Add a typed, route-scoped top-bar action contract with one rendered action, optional attention count, token-safe cleanup, and focus recovery. Add four shared safe-area variables and make the authenticated shell consume them exactly once.</p>
+      <p>Keep the existing desktop rail, compact navigation sheet, route title, location switcher, notification bell, display settings, theme toggle, account controls, skip link, route focus, and route announcement behavior.</p>
+      <div class="callout"><strong>Planning record:</strong> the <code>-s</code> phase created no application code, tests, runtime, acceptance artifacts, dependency change, commit, push, or merge. The current <code>-x</code> execution is limited to the task-owned files below.</div>
+    </section>
+
+    <section class="spec-card" id="context">
+      <h2>Context</h2>
+
+      <h3>Worktree and baseline</h3>
+      <ul>
+        <li><strong>Source checkout:</strong> <code>/home/jovanie_getalla/projects/shelter</code>.</li>
+        <li><strong>Source branch:</strong> <code>jovanie/dashboard-screen-responsiveness</code>.</li>
+        <li><strong>Source HEAD:</strong> <code>0fc8a80ece60872a550894836d9aca8130babd68</code>.</li>
+        <li><strong>Source remote:</strong> fetched <code>origin/main</code> resolves to the same commit with divergence <code>0/0</code>.</li>
+        <li><strong>Planning branch:</strong> <code>jovanie/responsive-shell-foundation</code>.</li>
+        <li><strong>Planning worktree:</strong> <code>/home/jovanie_getalla/projects/shelter-worktrees/responsive-shell-foundation</code>.</li>
+        <li><strong>Source status:</strong> the source checkout had user-owned untracked plan files and <code>AGENTS.md:Zone.Identifier</code>. They were not copied, cleaned, stashed, modified, or included in this worktree.</li>
+        <li><strong>Template fallback:</strong> <code>~/.claude/templates/spec.html</code> is absent. This file follows the repository-owned self-contained black-and-white analog at <code>plans/08022026-accessibility-readability-foundation/spec.html</code>.</li>
+      </ul>
+
+      <h3>Current shell baseline</h3>
+      <ul>
+        <li><code>src/routes.tsx</code> mounts one authenticated <code>AppShell</code> around all registered application routes.</li>
+        <li><code>AppShell</code> owns persisted desktop rail state, one <code>TopBar</code>, <code>#main-content</code>, the command palette, and <code>RouteAccessibility</code>.</li>
+        <li><code>TopBar</code> is private to <code>AppShell.tsx</code>. It has no props, provider, outlet context, action slot, or route registration API.</li>
+        <li>The compact top bar currently presents navigation, a flexible route title, notifications, and selected controls based on breakpoints.</li>
+        <li><code>RouteAccessibility</code> resolves the full route title, updates the document title, focuses <code>#main-content</code>, and announces client-side route changes.</li>
+        <li>The shell root uses <code>h-dvh</code>, but no <code>env(safe-area-inset-*)</code> values or route-consumable safe-area variables exist.</li>
+        <li>The mobile navigation sheet is portaled outside the shell root, so root padding alone cannot protect its close control and footer from device cutouts.</li>
+        <li><strong>Revision 5 reproduction:</strong> at 390x844 on <code>/map</code> with the Dashboard docked, clicking “Open navigation” produces an open sheet with focus correctly contained inside it, but both the sheet and backdrop compute to z-index 50 while <code>#map-dashboard-slot</code> computes to 630. <code>document.elementFromPoint(24, 100)</code> resolves to a Dashboard button, not the visibly expected sheet. This is a confirmed shell layer failure, not a hamburger state or focus failure.</li>
+        <li>Shared <code>Button</code> icon size is already 44 by 44 CSS pixels. <code>NotificationBell</code> is the local analog for a named icon action with a count badge.</li>
+        <li>No route currently supplies top-bar action content. The first production consumers are expected from Dashboard and Map refinements.</li>
+      </ul>
+
+      <h3>Detected stack and Code Constitution</h3>
+      <p><strong>Detected:</strong> React 19, TypeScript 6, React Router 7, Vite 8, Tailwind CSS 4, Radix/shadcn, Framer Motion, Zustand, and Puppeteer. <strong>Confidence:</strong> high.</p>
+      <p><strong>Loaded:</strong> CORE, DISC, frontend client, verification, and TypeScript/JavaScript. Backend, database, Python, and PHP references are excluded because this plan touches no such boundary.</p>
+      <ul>
+        <li><code>DISC-1.1</code>, <code>DISC-1.2</code>, and <code>DISC-1.3</code>: local instructions, manifest evidence, and repository commands are authoritative.</li>
+        <li><code>CORE-2.1</code>, <code>CORE-2.3</code>, and <code>CORE-2.4</code>: keep shell infrastructure, route content, and feature state separate; follow the closest local analog.</li>
+        <li><code>CORE-5.2</code> and <code>FE-2.2</code>: use React context, existing UI primitives, CSS environment variables, and Puppeteer. Add no dependency or persisted state system.</li>
+        <li><code>CORE-6.1</code> and <code>CORE-6.2</code>: changed lifecycle, focus, duplicate-registration, and geometry failure paths require direct proof.</li>
+        <li><code>FE-1.3</code> and <code>STACK-TSJS-3.2</code>: keep action registration logic out of the already-large <code>AppShell.tsx</code>.</li>
+        <li><code>STACK-TSJS-1.1</code> and <code>STACK-TSJS-1.2</code>: preserve ESM, <code>@/</code> aliases, explicit types, and no new <code>any</code>.</li>
+        <li><code>VER-1.1</code>, <code>VER-2.1</code>, <code>VER-3.2</code>, and <code>VER-3.3</code>: use existing gates, match proof to cross-route risk, preserve spec-code parity, and make Done observable.</li>
+      </ul>
+
+      <h3>Repository verification commands</h3>
+      <ul>
+        <li><code>npx tsc --noEmit -p tsconfig.app.json</code>.</li>
+        <li><code>npm run lint</code>.</li>
+        <li><code>npm run build</code>.</li>
+        <li><code>npm run validate:mock</code>.</li>
+        <li><code>npm run qa:accessibility</code>, plus the new focused shell script defined by this plan.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="scope">
+      <h2>Scope</h2>
+      <div class="split-grid">
+        <div>
+          <h3>In scope</h3>
+          <ul>
+            <li>One generic route-scoped top-bar action.</li>
+            <li>A typed action descriptor and unconditional registration hook.</li>
+            <li>Route-key isolation, deterministic replacement, guarded cleanup, and no persistence.</li>
+            <li>One compact native button with a semantic icon and optional attention count.</li>
+            <li>At least a 44 by 44 CSS pixel target.</li>
+            <li>Top-bar title/action priority at constrained widths and large text.</li>
+            <li>Safe-area variables for top, right, bottom, and left.</li>
+            <li>Safe-area application to the authenticated frame, skip link, and portaled mobile navigation.</li>
+            <li>Shell-owned mobile-navigation backdrop and content layers that remain above every route-owned surface.</li>
+            <li>A documented <code>#main-content</code> route-viewport contract.</li>
+            <li>Focused lifecycle and browser QA without a production test route.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Out of scope</h3>
+          <ul>
+            <li>Map layout, Map controls, lot selection, or lot-detail presentation.</li>
+            <li>Dashboard attention calculation, cards, panel states, or constrained Dashboard surface.</li>
+            <li>Sales, Request Hold, buyer picker, or New Client behavior.</li>
+            <li>Internal responsive redesign of any route.</li>
+            <li>Route-specific imports in shell files.</li>
+            <li>More than one visible route action.</li>
+            <li>Global primitive, toast, dialog, popover, or sheet redesign.</li>
+            <li>Changing Map, Dashboard, lot-detail, or other route z-index values or collapsing route state to make navigation visible.</li>
+            <li>Route or navigation registration changes.</li>
+            <li>Authentication, authorization, domain, API, database, or dependency changes.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="api-contract">
+      <h2>Exact route-action API contract</h2>
+      <p>Create <code>src/components/shell/RouteTopBarAction.tsx</code>. It owns the provider, route registration lifecycle, slot renderer, descriptor types, and a focused reducer/state transition boundary.</p>
+
+      <h3>Public descriptor</h3>
+      <ul>
+        <li>Export <code>RouteTopBarActionDescriptor</code> with required <code>id</code>, <code>label</code>, <code>icon</code>, and <code>onActivate</code> fields.</li>
+        <li><code>id</code> is a stable semantic identifier for QA and diagnostics. Lifecycle safety uses an internal mount token, not the public identifier.</li>
+        <li><code>label</code> is the full accessible button name. It must describe the action, such as “Open dashboard”.</li>
+        <li><code>icon</code> uses the repository's existing <code>IconSvgElement</code> type and renders through <code>Icon</code>.</li>
+        <li><code>onActivate</code> is called only by the native button. Registration never invokes it.</li>
+        <li>Optional <code>disabled</code> uses native button semantics.</li>
+        <li>Optional <code>badge</code> contains a numeric <code>count</code> and required accessible <code>label</code>. Counts at or below zero do not render; visible counts above 99 render as <code>99+</code>.</li>
+      </ul>
+
+      <h3>Public registration surface</h3>
+      <ul>
+        <li>Export <code>useRouteTopBarAction(action)</code>, accepting <code>RouteTopBarActionDescriptor | null</code> and returning nothing.</li>
+        <li>Callers invoke the hook unconditionally and pass <code>null</code> when the action is inactive.</li>
+        <li>Export <code>RouteTopBarActionProvider</code> and <code>RouteTopBarActionSlot</code> for <code>AppShell</code> composition and the QA-only contract harness.</li>
+        <li>Calling the hook outside its provider fails immediately with a clear developer error.</li>
+      </ul>
+
+      <h3>Lifecycle invariants</h3>
+      <ul>
+        <li>Each mounted hook owns one stable internal token and the current React Router <code>location.key</code>.</li>
+        <li>The registry stores at most one active registration. A newer registration replaces the previous registration and never allows two buttons.</li>
+        <li>An update or cleanup applies only when its token still owns the active registration. Stale cleanup cannot clear a newer action.</li>
+        <li>Removing the newest action clears the slot; the previously replaced action never resurfaces.</li>
+        <li>The slot renders an action only when its recorded route key equals the current route key. A navigation therefore hides stale content before effect cleanup completes.</li>
+        <li>Registration state is local React context state. It never enters Zustand, <code>localStorage</code>, URL state, route config, or a feature store.</li>
+        <li>Separate stable registration controls from changing slot state so route callers do not subscribe to their own descriptor updates or enter an effect-driven render loop.</li>
+        <li>Descriptor updates refresh labels, badges, disabled state, icons, and activation behavior without remounting the focused button solely because the count changed.</li>
+        <li>Strict Mode mount, cleanup, and remount behavior leaves exactly one correct action or an empty slot.</li>
+      </ul>
+
+      <h3>Downstream ownership</h3>
+      <ul>
+        <li>Dashboard refinement owns the attention count, badge wording, semantic icon, and controlled Dashboard activation behavior.</li>
+        <li>Map refinement obtains that Dashboard-owned descriptor and calls <code>useRouteTopBarAction()</code> only while its constrained Map layout needs the launcher.</li>
+        <li>The shell renders the descriptor consistently but never imports Map, Dashboard, Sales, or route feature modules.</li>
+        <li>Other route refinements may use the same single-action contract later. They must not extend it into a generic toolbar without a new spec.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="layout-contract">
+      <h2>Responsive shell and geometry contract</h2>
+
+      <h3>Safe-area source of truth</h3>
+      <ul>
+        <li>Define exactly four safe-area root variables in <code>src/styles/globals.css</code>: <code>--shell-safe-top</code>, <code>--shell-safe-right</code>, <code>--shell-safe-bottom</code>, and <code>--shell-safe-left</code>.</li>
+        <li>Each variable resolves from its matching <code>env(safe-area-inset-*)</code> value with a zero fallback.</li>
+        <li>The authenticated shell frame applies all four variables once within its existing <code>100dvh</code> border box.</li>
+        <li>The portaled mobile navigation receives its own safe top, bottom, and left boundaries because it is outside the frame. Its close control and footer remain inside those boundaries.</li>
+        <li>The skip link offsets from safe top and left instead of fixed viewport edges.</li>
+        <li>Do not modify global shadcn sheet, dialog, popover, or toast primitives. This plan only adapts the shell's mobile navigation instance.</li>
+      </ul>
+
+      <h3>Route geometry ownership</h3>
+      <ul>
+        <li><code>#main-content</code> is the actual safe-area-adjusted route viewport below the measured TopBar. Route roots use its content box and must not subtract fixed rail or TopBar dimensions.</li>
+        <li>Add stable shell data attributes for QA and measurement: the authenticated frame, TopBar, main content, mobile navigation, and route-action button.</li>
+        <li>Routes rendered inside <code>#main-content</code> do not add the shell safe variables again. That would double inset ordinary route content.</li>
+        <li>A route-owned fixed or portaled surface outside <code>#main-content</code> may consume the four variables. That surface owns proving it does not double inset.</li>
+        <li>Keep <code>h-dvh</code>, <code>min-h-0</code>, and the current persistent shell mount. Do not add a <code>visualViewport</code> listener or a second viewport-height state system.</li>
+        <li>When the visual viewport height changes for a soft keyboard or orientation, TopBar remains visible and main content receives the remaining height without resetting route state.</li>
+      </ul>
+
+      <h3>Shell navigation layer ownership</h3>
+      <ul>
+        <li>When compact navigation is open, its backdrop and sheet are the topmost application-owned modal surface. Route-owned chrome, panels, drawers, maps, tooltips, and notices must paint and receive pointer input below them.</li>
+        <li>Define <code>--shell-layer-mobile-navigation-backdrop: 1000</code> and <code>--shell-layer-mobile-navigation: 1010</code> on <code>:root</code>. The content layer is above the backdrop; both are above the reserved route-owned ceiling of 999 and the current Map controls at 600, Dashboard slot at 630, and Map presentation and lot-detail surfaces at 650.</li>
+        <li>Apply the content layer only through the existing <code>.shell-mobile-navigation</code> marker. Apply the backdrop layer through <code>body:has(&gt; .shell-mobile-navigation[data-state='open']) &gt; [data-slot='sheet-overlay'][data-state='open']</code>, matching the inspected Radix portal shape where both nodes are direct <code>body</code> children.</li>
+        <li>Do not edit <code>src/components/ui/sheet.tsx</code>, raise every global Sheet, lower Map/Dashboard layers, close or collapse Dashboard state, or introduce route-specific imports into the shell.</li>
+        <li>Opening navigation does not unmount or mutate Map, Dashboard panel state, selected lot, filters, zoom, center, or presentation. Closing with Escape, backdrop, close button, or a navigation choice preserves the owning route state.</li>
+        <li>Radix remains responsible for modal focus containment, scroll lock, Escape, backdrop dismissal, and return focus. A navigation choice that changes route preserves <code>RouteAccessibility</code> as the final focus owner for <code>#main-content</code>.</li>
+      </ul>
+
+      <h3>Top-bar hierarchy</h3>
+      <ul>
+        <li>At constrained widths the order is mobile navigation, flexible route title, optional route action, then notifications.</li>
+        <li>Navigation, route action, and notifications retain 44px targets. The title is the only item allowed to yield horizontal space.</li>
+        <li>Below <code>sm</code>, the title may wrap to at most two lines so current route names remain visibly useful. From <code>sm</code> upward it stays on one line. The full text remains in the <code>h1</code>, document title, route announcement, and mobile navigation even if future longer text is visually clipped.</li>
+        <li>The slot returns no wrapper when empty, so routes without actions preserve current spacing.</li>
+        <li>The route action is one compact icon button wrapped in the existing <code>Tooltip</code> with its action label. Its accessible name and optional badge text do not depend on tooltip, color, or animation.</li>
+        <li>Badge updates are not a live region. The current count is available in the button's accessible name when the user reaches it.</li>
+        <li>Preserve the existing breakpoint visibility for “Viewing as”, location, display settings, theme, and account controls.</li>
+        <li>Reduced-motion preferences continue through the existing global CSS and <code>MotionConfig</code>; the new action adds no essential animation.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="accessibility-contract">
+      <h2>Accessibility contract</h2>
+      <ul>
+        <li>Render the route action as the existing native <code>Button</code> and semantic <code>Icon</code>, not a clickable wrapper or ARIA-recreated button.</li>
+        <li>Expose the full action label through <code>aria-label</code>. When a positive badge exists, include its required accessible label in the button name.</li>
+        <li>Keep the icon decorative because the button owns the accessible name. The visible badge supplements but never carries meaning alone.</li>
+        <li>Registration, count changes, and ordinary layout changes do not move focus.</li>
+        <li>If the focused route action unregisters without navigation, restore focus to <code>#main-content</code> after the slot clears.</li>
+        <li>If navigation removes the action, preserve <code>RouteAccessibility</code> as the single route-focus owner. Do not produce a competing focus race.</li>
+        <li>The action owner controls focus when activation opens a dialog, sheet, or other surface. The shell does not guess that surface's focus target.</li>
+        <li>Mobile navigation keeps its existing Radix focus containment, Escape, close control, labels, and focus return.</li>
+        <li>Verify keyboard order, visible focus, 44px targets, 200% zoom, extra-large text, reduced motion, and actual assistive names manually as well as through browser assertions.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="files">
+      <h2>Affected files and existing analogs</h2>
+      <table>
+        <thead><tr><th>File</th><th>Expected change</th><th>Closest existing analog</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Create <code>src/components/shell/RouteTopBarAction.tsx</code></td>
+            <td>Typed descriptor, provider, stable registration controls, route-keyed token lifecycle, hook, slot button, badge semantics, and focus fallback.</td>
+            <td><code>MonthCalendar.tsx</code> for guarded local context; <code>nav-items.ts</code> for typed icons; <code>NotificationBell.tsx</code> for the 44px named badge action.</td>
+          </tr>
+          <tr>
+            <td><code>src/components/shell/AppShell.tsx</code></td>
+            <td>Mount the provider and slot, establish constrained title priority, add shell geometry markers, and apply instance-specific safe-area classes.</td>
+            <td>Current persistent shell composition, <code>RouteAccessibility</code>, and existing mobile navigation sheet.</td>
+          </tr>
+          <tr>
+            <td><code>src/styles/globals.css</code></td>
+            <td>Define the four safe-area variables, shell navigation layer variables, and focused shell frame/mobile-navigation/backdrop utilities without changing global primitives.</td>
+            <td>Existing root accessibility variables, semantic tokens, reduced-motion rules, and scoped Google Map utilities.</td>
+          </tr>
+          <tr>
+            <td>Create <code>qa/fixtures/responsive-shell-action.html</code> and <code>qa/fixtures/responsive-shell-action.tsx</code></td>
+            <td>QA-only Vite harness for real Provider, hook, Router, duplicate, stale cleanup, focus, badge, and Strict Mode behavior. It is not an application route.</td>
+            <td><code>src/main.tsx</code> for React root setup and <code>qa/accessibility-smoke.mjs</code> for browser-driven state assertions.</td>
+          </tr>
+          <tr>
+            <td>Create <code>qa/responsive-shell-smoke.mjs</code></td>
+            <td>Configurable Puppeteer coverage for the harness and authenticated shell across the acceptance matrix, including Map Dashboard and drawer collisions with compact navigation.</td>
+            <td><code>qa/accessibility-smoke.mjs</code> for <code>BASE_URL</code>, <code>BROWSER_PATH</code>, deterministic session seeding, route health, and target measurement.</td>
+          </tr>
+          <tr>
+            <td><code>package.json</code></td>
+            <td>Add one focused <code>qa:shell</code> script using existing Vite/Puppeteer tooling.</td>
+            <td>Existing <code>qa:accessibility</code> and <code>qa:smoke</code> scripts.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Read-only files unless this spec is revised</h3>
+      <ul>
+        <li><code>src/routes.tsx</code> and <code>src/components/shell/nav-items.ts</code>: preserve route registration, permission guards, labels, longest-prefix title behavior, and navigation order.</li>
+        <li><code>src/components/shell/RouteAccessibility.tsx</code>: preserve route focus, document title, and live announcement ownership.</li>
+        <li><code>src/components/ui/button.tsx</code>, <code>sheet.tsx</code>, <code>popover.tsx</code>, and other global primitives: consume their current APIs; no redesign.</li>
+        <li><code>NotificationBell</code>, <code>LocationSwitcher</code>, <code>DisplaySettings</code>, <code>ThemeToggle</code>, <code>UserMenu</code>, and <code>CommandPalette</code>: preserve behavior and placement.</li>
+        <li>Every route feature directory, including Map, Dashboard, and Sales: no implementation edits.</li>
+        <li><code>qa/accessibility-smoke.mjs</code>, <code>qa/smoke.mjs</code>, and <code>qa/walkthrough.mjs</code>: run as regressions; do not broaden them unless a verified changed selector requires a same-spec revision.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="consumers">
+      <h2>Consumers and blast radius</h2>
+      <ul>
+        <li><strong>Direct shell consumer:</strong> <code>src/routes.tsx</code> imports <code>AppShell</code> and <code>RouteFallback</code>.</li>
+        <li><strong>Authenticated descendants:</strong> <code>/map</code>, <code>/dashboard</code>, <code>/sales/*</code>, <code>/burials/*</code>, <code>/agents/*</code>, <code>/approvals</code>, <code>/pricing/*</code>, <code>/map-editor</code>, and <code>/audit</code> all render inside <code>#main-content</code>.</li>
+        <li><strong>Top-bar composition:</strong> route-title resolution, Mobile Navigation, Location Switcher, Notification Bell, Display Settings, Theme Toggle, and User Menu share the changed horizontal layout.</li>
+        <li><strong>Focus contract:</strong> skip-link behavior and <code>RouteAccessibility</code> target <code>#main-content</code>.</li>
+        <li><strong>Persistence:</strong> desktop rail state remains under <code>shelter-rail-open</code>; the new route action has no storage key.</li>
+        <li><strong>Portal boundary:</strong> the mobile navigation sheet renders outside the shell frame and needs explicit safe-area treatment.</li>
+        <li><strong>Layer boundary:</strong> Map uses route-owned layers from 600 through 650, while the current shared Sheet primitive defaults its portal overlay and content to 50. The shell navigation instance must reserve a higher modal layer without changing route feature files or the global Sheet primitive.</li>
+        <li><strong>Global CSS:</strong> safe-area variables exist on every page, while shell utility classes affect only authenticated shell elements.</li>
+        <li><strong>Current QA:</strong> accessibility smoke asserts the main target, skip link, route focus, mobile navigation, 320px reflow, and shared target floors.</li>
+        <li><strong>Future consumers:</strong> Dashboard provides the attention descriptor; Map registers it in constrained mode. Their specs must import only the public shell contract.</li>
+      </ul>
+      <p><strong>Blast-radius conclusion:</strong> the implementation file set is medium, but the visual frame covers every authenticated route. Overall risk remains Level 3 and requires route-wide regression proof.</p>
+    </section>
+
+    <section class="spec-card" id="risks">
+      <h2>Risk, pushback, and mitigations</h2>
+      <table>
+        <thead><tr><th>Risk</th><th>Level and impact</th><th>Required mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Stale route registration</td>
+            <td>Level 3. An action from the previous route can trigger the wrong feature.</td>
+            <td>Route-key visibility, stable mount tokens, guarded update/cleanup, no previous-action resurrection, and direct harness coverage.</td>
+          </tr>
+          <tr>
+            <td>Context render/effect loop</td>
+            <td>Level 3. Descriptor updates could re-render callers and register forever.</td>
+            <td>Separate stable registration controls from changing slot state; callers do not subscribe to the action they publish; test inline descriptor updates.</td>
+          </tr>
+          <tr>
+            <td>Feature coupling in shell</td>
+            <td>Level 3. Shared infrastructure starts importing Dashboard or Map internals.</td>
+            <td>Descriptor-only public API, static import search, read-only route files, and stop execution on any feature import request.</td>
+          </tr>
+          <tr>
+            <td>Safe-area double padding</td>
+            <td>Level 3. Routes become cramped or misaligned on notched devices.</td>
+            <td>Apply variables once to the frame, separately to the portaled mobile sheet, and document <code>#main-content</code> as already inset.</td>
+          </tr>
+          <tr>
+            <td>Focused action disappears</td>
+            <td>Level 2. Keyboard focus falls to the document body.</td>
+            <td>Restore same-route unregister focus to <code>#main-content</code>; preserve Route Accessibility as navigation focus owner.</td>
+          </tr>
+          <tr>
+            <td>Top-bar collision</td>
+            <td>Level 2. Long titles or large text hide primary controls.</td>
+            <td>Keep three 44px controls non-shrinking, let title yield, preserve full semantic title, and test the longest labels at 320px and 200% zoom.</td>
+          </tr>
+          <tr>
+            <td>Desktop rail regression</td>
+            <td>Level 2. Shared frame changes alter persisted desktop navigation.</td>
+            <td>Do not change the storage contract or rail state; compare open/collapsed behavior before and after constrained visits.</td>
+          </tr>
+          <tr>
+            <td>No production action consumer yet</td>
+            <td>Level 2. The public API could ship unproved or dead.</td>
+            <td>Use a QA-only Vite fixture that consumes the real exports; record Map and Dashboard as downstream owners; do not add a fake production route.</td>
+          </tr>
+          <tr>
+            <td>Browser timing flake</td>
+            <td>Level 2. Route effects and responsive checks pass only with sleeps.</td>
+            <td>Wait on route paths, action data attributes, focus targets, and layout frames; use no arbitrary long delay as a pass signal.</td>
+          </tr>
+          <tr>
+            <td>Route surface paints over shell navigation</td>
+            <td>Level 3. The hamburger appears to fail because Map or Dashboard remains visible and clickable above an open, focus-trapping navigation sheet.</td>
+            <td>Reserve shell-owned backdrop/content layers above the route ceiling; target only the open mobile-navigation portal; assert paint hit-testing, pointer blocking, focus containment, dismissal, and preserved Dashboard/Map state.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Rejected alternatives:</strong> persisted Zustand state would outlive the route; route metadata would force route registration edits; feature imports would invert ownership; a production QA route would expand user-facing scope; lowering Map/Dashboard layers or collapsing the Dashboard would couple shell navigation to one route and mutate user state; changing the global Sheet primitive would broaden the blast radius to unrelated feature sheets.</p>
+    </section>
+
+    <section class="spec-card" id="execution-loop">
+      <h2>Execution loop and dependency chain</h2>
+      <ol>
+        <li>Before each task, verify the absolute worktree, branch, HEAD relationship, status, current spec, and task prerequisites.</li>
+        <li>Read every task file and consumer immediately before editing. Update this spec before adopting any material baseline change.</li>
+        <li>Implement only the task-owned files. Run the focused gate, fix task-caused failures, and rerun until it passes.</li>
+        <li>Compare implementation to the API, geometry, accessibility, scope, consumer, and Done contracts after each task.</li>
+        <li>Route integration failures back to the owning task. Apply the smallest scope-preserving correction, then rerun focused and full checks.</li>
+        <li>If the same lifecycle, focus, safe-area, or ownership issue survives two passes, stop. Do not weaken route isolation or broaden shell ownership.</li>
+      </ol>
+      <p><strong>Parallelization:</strong> T1 and T2 may run in parallel after T0 because they own different files. T3–T5 are sequential integration gates.</p>
+    </section>
+
+    <section class="spec-card" id="tasks">
+      <h2>Tasks</h2>
+
+      <article class="task-card">
+        <h3>T0: Confirm the execution baseline</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Verify worktree, branch, HEAD, status, source relationship, current consumers, available primitives, QA commands, and no feature-owned prerequisite change.</dd></div>
+          <div><dt>Files</dt><dd>Read-only inspection; update only this <code>spec.html</code> if the baseline changed.</dd></div>
+          <div><dt>Depends on</dt><dd>None.</dd></div>
+          <div><dt>Parallel</dt><dd>No.</dd></div>
+          <div><dt>Loop gate</dt><dd>Recorded branch/path pass; consumer inventory is current; no Map, Dashboard, Sales, route, nav, primitive, domain, or dependency file enters the write set.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T1: Build the route-action contract</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Create the typed descriptor, provider, split context boundary, route-keyed token registry, unconditional hook, single slot renderer, native action button, badge semantics, and focus fallback.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>src/components/shell/RouteTopBarAction.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T0.</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T2.</dd></div>
+          <div><dt>Loop gate</dt><dd>Focused typecheck passes; static inspection confirms no persistence or feature imports; transition cases match every lifecycle invariant.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T2: Establish safe-area variables</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add the four exact CSS variables and scoped frame/mobile-navigation utilities. Preserve global tokens, reduced motion, print behavior, and unauthenticated layout.</dd></div>
+          <div><dt>Files</dt><dd><code>src/styles/globals.css</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T0.</dd></div>
+          <div><dt>Parallel</dt><dd>Yes, with T1.</dd></div>
+          <div><dt>Loop gate</dt><dd>Static CSS checks find four variables, four matching environment insets, no fixed fake inset, and no global primitive override.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T3: Integrate the responsive shell frame</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Mount the provider and slot, apply safe-area classes and data markers, protect the mobile sheet and skip link, and establish title/action priority without changing existing shell controls.</dd></div>
+          <div><dt>Files</dt><dd><code>src/components/shell/AppShell.tsx</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T1 and T2.</dd></div>
+          <div><dt>Parallel</dt><dd>No.</dd></div>
+          <div><dt>Loop gate</dt><dd>Typecheck passes; no route-specific import exists; empty slot preserves layout; 320px static hierarchy retains three 44px controls and one flexible title.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T4: Add focused shell contract and browser QA</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Create the QA-only Vite fixture and configurable Puppeteer runner. Cover action replacement, stale cleanup, route isolation, badge updates, focus, Strict Mode, safe-area overrides, route sweeps, and desktop persistence.</dd></div>
+          <div><dt>Files</dt><dd>Create <code>qa/fixtures/responsive-shell-action.html</code>, <code>qa/fixtures/responsive-shell-action.tsx</code>, and <code>qa/responsive-shell-smoke.mjs</code>; modify <code>package.json</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T3.</dd></div>
+          <div><dt>Parallel</dt><dd>No.</dd></div>
+          <div><dt>Loop gate</dt><dd>The harness uses actual shell exports, is unreachable from application routing, and all focused lifecycle and responsive assertions pass without uncaught errors.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T5: Run full verification and prepare acceptance</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Run repository gates, focused shell QA, accessibility regression, route smoke, and manual-only checks. Generate <code>test.html</code> and <code>test-results.json</code> only during execution.</dd></div>
+          <div><dt>Files</dt><dd>No application files. During <code>-x</code> only, copy the viewer from <code>plans/08022026-accessibility-readability-foundation/test.html</code> and create shell-specific results beside this spec.</dd></div>
+          <div><dt>Depends on</dt><dd>T4.</dd></div>
+          <div><dt>Parallel</dt><dd>No. Final integration gate.</dd></div>
+          <div><dt>Loop gate</dt><dd>Task-caused failures are zero; every observable Done item maps to automated or explicit manual evidence; acceptance status is recorded honestly.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T6: Reserve the shell mobile-navigation layer</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Add the two exact shell layer variables and scoped content/backdrop selectors. Keep the mobile navigation above route-owned surfaces without changing Map, Dashboard, lot-detail, global Sheet, or persisted panel state.</dd></div>
+          <div><dt>Files</dt><dd><code>src/styles/globals.css</code>.</dd></div>
+          <div><dt>Depends on</dt><dd>T5 and Revision 5 reproduction evidence.</dd></div>
+          <div><dt>Parallel</dt><dd>No.</dd></div>
+          <div><dt>Loop gate</dt><dd>On <code>/map</code> with Dashboard docked, computed backdrop/content layers are 1000/1010; hit testing inside the visible sheet resolves to a sheet descendant, outside resolves to its backdrop; Dashboard and Map state do not change.</dd></div>
+        </dl>
+      </article>
+
+      <article class="task-card">
+        <h3>T7: Regress every Map temporary-surface collision</h3>
+        <dl>
+          <div><dt>Do</dt><dd>Extend focused shell QA for hidden, docked, and full Dashboard states; Map and list presentation; the synthetic route-owned layer-ceiling fixture plus a static lot-detail layer assertion; Escape, backdrop, close-button, and navigation-choice dismissal; focus containment and restoration; state preservation; and non-Map shell regressions. Update acceptance results honestly.</dd></div>
+          <div><dt>Files</dt><dd><code>qa/fixtures/responsive-shell-action.tsx</code>, <code>qa/responsive-shell-smoke.mjs</code>, and <code>plans/08032026-responsive-shell-foundation/test-results.json</code>. Keep <code>test.html</code> unchanged.</dd></div>
+          <div><dt>Depends on</dt><dd>T6.</dd></div>
+          <div><dt>Parallel</dt><dd>No. Final revision gate.</dd></div>
+          <div><dt>Loop gate</dt><dd>Focused browser QA proves the navigation is visible, topmost, pointer-operable, focus-contained, dismissible, and state-preserving in every listed collision state; prior 94 shell checks and repository gates remain green.</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="spec-card" id="verification">
+      <h2>Verification and acceptance strategy</h2>
+
+      <h3>Layer 1 — static and automated</h3>
+      <ul>
+        <li><code>npx tsc --noEmit -p tsconfig.app.json</code>.</li>
+        <li><code>npm run lint</code>.</li>
+        <li><code>npm run build</code>.</li>
+        <li><code>npm run validate:mock</code>.</li>
+        <li><code>npm run qa:shell</code> with configurable <code>BASE_URL</code> and <code>BROWSER_PATH</code>.</li>
+        <li><code>npm run qa:accessibility</code> against the same runtime.</li>
+        <li><code>npm run qa:smoke</code> to protect authenticated routes and role guards.</li>
+        <li>Static import search: shell files contain no imports from <code>features/map</code>, <code>features/dashboard</code>, or <code>features/sales</code>.</li>
+        <li>Static storage search: route-action implementation contains no Zustand, <code>localStorage</code>, session storage, or URL persistence.</li>
+      </ul>
+
+      <h3>Action-contract cases</h3>
+      <ul>
+        <li>No registration renders no slot wrapper and consumes no width.</li>
+        <li>A named registration renders exactly one 44px native button with its semantic icon.</li>
+        <li>A positive count renders one capped visual badge and appends required badge wording to the button name.</li>
+        <li>Zero and negative counts render no badge.</li>
+        <li>Updating the count, label, disabled state, or callback updates the active action without count-driven focus loss.</li>
+        <li>Registration B replaces A; cleanup from A cannot clear B; cleanup from B clears the slot; A never resurfaces.</li>
+        <li>A route-key change hides the prior action before its cleanup runs.</li>
+        <li>Strict Mode effect replay leaves one action and no leaked registration.</li>
+        <li>Focused same-route removal returns focus to main; route navigation uses existing route focus and announcement.</li>
+        <li>Using the hook outside the provider produces the expected developer error in an isolated harness case captured by its test error boundary; it must not become an uncaught page error.</li>
+      </ul>
+
+      <h3>Responsive browser matrix</h3>
+      <ul>
+        <li>320x568: no document horizontal overflow; navigation, title, optional action, and notification remain reachable.</li>
+        <li>360x800, 390x844, and 430x932 portrait: optimized compact hierarchy, sheet navigation, focus return, and action badge.</li>
+        <li>640x960 and 768x1024 portrait; 960x640 and 1024x768 landscape: stable orientation and route state with no top-bar collision.</li>
+        <li>1280x800, 1440x900, 1680x1050, and 2000x1000: desktop rail open/collapsed persistence and all existing top-bar controls.</li>
+        <li>Run standard and extra-large text. Verify the longest route labels, including “Sales &amp; Payments” and “Pricing &amp; Tiers”.</li>
+        <li>Override the four CSS variables with deterministic non-zero test values and assert frame, skip-link, and mobile-sheet boundaries consume them once.</li>
+        <li>Shrink viewport height while the mobile sheet is open to model visual-viewport change; assert header, navigation, and footer remain reachable.</li>
+        <li>Navigate across every registered authenticated route and assert no previous route action, focus leak, error boundary, forbidden screen for the seeded role, or horizontal overflow.</li>
+      </ul>
+
+      <h3>Mobile-navigation collision cases</h3>
+      <ul>
+        <li>At 320x568 and 390x844, open compact navigation on <code>/map</code> with Dashboard <code>hidden</code>, <code>docked</code>, and <code>full</code>. The sheet and backdrop paint above the Dashboard slot and all Map chrome.</li>
+        <li>Repeat with Map and list presentation. Use the QA fixture with a synthetic route-owned blocker at the reserved ceiling of 999 to prove the generic contract; statically assert the current lot-detail layer at 650 remains below that ceiling without requiring unavailable lot seed data.</li>
+        <li>Assert computed layers are backdrop 1000 and content 1010. At a point inside the sheet, <code>document.elementFromPoint()</code> resolves within <code>[data-shell-mobile-navigation]</code>; at a point outside, it resolves to the active sheet overlay, never Map, Dashboard, or lot detail.</li>
+        <li>While open, Tab and Shift+Tab remain within the sheet; underlying Map/Dashboard controls cannot be clicked; body scroll lock remains active.</li>
+        <li>Escape, backdrop click, and close button dismiss and return focus to the hamburger without mutating route state. Choosing a navigation item closes the sheet, changes route once, removes scroll lock, and leaves final focus on <code>#main-content</code> through <code>RouteAccessibility</code>.</li>
+        <li>After close, verify Dashboard state, Map presentation, filters, selection, center, zoom, and route state match their pre-open values whenever that state is available in the current deterministic fixture.</li>
+      </ul>
+
+      <h3>Manual verification</h3>
+      <ul>
+        <li>Actual 200% browser zoom at 320-effective width and representative desktop width.</li>
+        <li>Keyboard-only navigation through skip link, mobile navigation, route action, notifications, and route changes.</li>
+        <li>Screen-reader or accessibility-tree inspection of the full route title and action name with and without a badge.</li>
+        <li>Notched device or simulator in portrait and landscape using real environment safe-area values.</li>
+        <li>Actual soft keyboard with the mobile sheet and a route-owned focused field; no hidden shell navigation or document overflow.</li>
+        <li>Reduced-motion system and in-app preference; no essential state depends on motion.</li>
+      </ul>
+
+      <p><strong>Fixtures:</strong> use deterministic local user IDs and isolated local storage. The action harness uses synthetic labels and counts. It imports production shell modules but no feature data.</p>
+      <p><strong>Flake controls:</strong> wait on data attributes, path changes, focus, and computed rectangles. Do not treat map tiles, animation duration, or arbitrary sleep completion as a pass signal.</p>
+    </section>
+
+    <section class="spec-card" id="execution-evidence">
+      <h2>Execution evidence</h2>
+      <h3>Implemented contract</h3>
+      <ul>
+        <li>Created <code>RouteTopBarAction.tsx</code> with the approved typed descriptor, split contexts, route-keyed token registry, guarded update and cleanup, native 44px slot button, capped badge, tooltip, and same-route focus recovery.</li>
+        <li>Integrated the provider, empty slot, compact title hierarchy, geometry markers, safe shell frame, skip link, and portaled mobile navigation into <code>AppShell.tsx</code>.</li>
+        <li>Defined the four exact environment-backed safe-area variables and shell-scoped consumers in <code>globals.css</code>.</li>
+        <li>Reserved shell-only mobile-navigation layers 1000/1010 through the exact scoped content and direct-body backdrop selectors; Map, Dashboard, lot detail, and the shared Sheet primitive remain unchanged.</li>
+        <li>Created the QA-only Vite fixture and focused Puppeteer runner, and added <code>qa:shell</code>. No production route, feature module, shared primitive, dependency, lockfile, or persisted action state changed.</li>
+      </ul>
+
+      <h3>Automated result</h3>
+      <ul>
+        <li><code>npm run qa:shell</code>: passed 170 checks covering the original action, responsive, safe-area, route, and rail contracts plus the z-999 route-layer fixture, static z-650 lot-detail assertion, 320x568 and 390x844 Map/list collision matrix, hidden/docked/full Dashboard states, pointer hit testing, focus trapping/restoration, scroll lock, every dismissal path, and state preservation.</li>
+        <li><code>npx tsc --noEmit -p tsconfig.app.json</code>, <code>npm run lint</code>, <code>npm run build</code>, and <code>npm run validate:mock</code>: passed. Lint exits zero with warnings; the new mixed-export warning follows the spec-mandated single public contract file.</li>
+        <li>The repository <code>qa:smoke</code> is hardcoded to a macOS Chrome path and cannot launch on this Linux host. A temporary path-and-origin-only adaptation of that unchanged suite passed all 59 role and route checks.</li>
+        <li>After copying the latest root <code>.env</code> into this worktree and restarting Vite, <code>qa:accessibility</code> again passed its first 12 checks, then stopped at its unchanged Map fixture because <code>validate:mock</code> still reports zero lots and therefore no <code>data-lot-list-action</code>. Map, mock data, and that read-only suite are outside this plan.</li>
+        <li>The repository exposes no <code>check:all</code> or <code>check:conventions</code> script. The discovered frontend gates above were used per <code>DISC-1.3</code> and <code>VER-1.2</code>.</li>
+      </ul>
+
+      <h3>Acceptance status</h3>
+      <p><code>test.html</code> and <code>test-results.json</code> now exist. T6–T7 corrected and proved shell layer ownership; the reported <code>/map</code> collision passes all focused cases. The acceptance rollup is Passed because the two remaining failed items now carry explicit written waivers.</p>
+      <h3>Accepted finalization waivers</h3>
+      <ul>
+        <li><strong>T6:</strong> the user accepted the unchanged zero-lot accessibility fixture failure. The suite passes 12 checks before the missing lot-list action; the Map or data owner should restore deterministic lot coverage.</li>
+        <li><strong>T7:</strong> the user accepted deferring actual 200% zoom, assistive-technology, notched-device, and soft-keyboard checks to downstream route and device acceptance.</li>
+        <li>These waivers do not convert either failed item into a pass; <code>test-results.json</code> preserves both as failed with written reasons.</li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="done">
+      <h2>Externally observable Done criteria</h2>
+      <ul class="checklist">
+        <li><span class="box"></span><span>Implementation exists only on <code>jovanie/responsive-shell-foundation</code> in the recorded linked worktree and matches this spec.</span></li>
+        <li><span class="box"></span><span>Routes can register one typed top-bar action without importing feature code into the shell.</span></li>
+        <li><span class="box"></span><span>Routes without an action retain current top-bar spacing and controls.</span></li>
+        <li><span class="box"></span><span>The action is a named native button with a target of at least 44 by 44 CSS pixels.</span></li>
+        <li><span class="box"></span><span>A positive attention count is visible, capped at 99+, and included in the button's accessible name without a live interruption.</span></li>
+        <li><span class="box"></span><span>Navigation immediately hides the previous route's action; stale cleanup never clears or revives another registration.</span></li>
+        <li><span class="box"></span><span>Duplicate registrations never render more than one action, and removing the newest action does not revive the replaced action.</span></li>
+        <li><span class="box"></span><span>Focused action removal restores focus to main, while route navigation retains the existing focus and announcement behavior.</span></li>
+        <li><span class="box"></span><span>The four exact safe-area variables exist and resolve from matching environment insets with zero fallbacks.</span></li>
+        <li><span class="box"></span><span>The authenticated frame, skip link, and portaled mobile navigation consume safe areas once without double-insetting route content.</span></li>
+        <li><span class="box"></span><span>The shell mobile-navigation backdrop and content compute to layers 1000 and 1010 and remain above every route-owned surface at or below the reserved ceiling of 999.</span></li>
+        <li><span class="box"></span><span>On <code>/map</code>, the hamburger always presents visible, pointer-operable, focus-contained navigation above hidden, docked, and full Dashboard states without changing Dashboard or Map state.</span></li>
+        <li><span class="box"></span><span>While navigation is open, hit testing inside resolves to the sheet, hit testing outside resolves to its backdrop, and underlying Map, Dashboard, and lot-detail controls cannot receive input.</span></li>
+        <li><span class="box"></span><span>Escape, backdrop, close-button, and navigation-choice dismissal preserve Radix focus/scroll behavior; route navigation leaves final focus on <code>#main-content</code>.</span></li>
+        <li><span class="box"></span><span><code>#main-content</code> remains the stable, safe-area-adjusted route viewport below the TopBar.</span></li>
+        <li><span class="box"></span><span>No document-level horizontal clipping occurs at 320x568 or with extra-large text; actual 200% browser zoom is an accepted T7 finalization waiver.</span></li>
+        <li><span class="box"></span><span>Mobile navigation, route action, and notifications remain reachable while long route titles yield visual space.</span></li>
+        <li><span class="box"></span><span>Automated viewport-height changes preserve shell and route state; actual orientation, notch, and soft-keyboard device checks are accepted under the T7 waiver.</span></li>
+        <li><span class="box"></span><span>Desktop rail open/collapsed persistence and existing top-bar controls regressions pass at 1280–2000px.</span></li>
+        <li><span class="box"></span><span>No Map, Dashboard, Sales, route registration, nav registration, global primitive, domain, auth, API, database, or dependency implementation changed.</span></li>
+        <li><span class="box"></span><span>Typecheck, lint, build, mock validation, focused shell QA, and route smoke pass; the zero-lot accessibility fixture stop is accepted under the T6 waiver.</span></li>
+        <li><span class="box"></span><span>Post-execution <code>test-results.json</code> and <code>test.html</code> exist and roll up to Passed before <code>-d</code>, unless each remaining failure has a written waiver.</span></li>
+      </ul>
+    </section>
+
+    <section class="spec-card" id="readiness">
+      <h2>Readiness review</h2>
+      <h3>Pass 1 findings and tightening</h3>
+      <ul>
+        <li><strong>Blocker:</strong> “generic action slot” did not define an executable API. <strong>Fix:</strong> recorded the descriptor, hook, provider, slot, route-key, token, replacement, and cleanup contracts.</li>
+        <li><strong>Blocker:</strong> no production consumer exists yet, so registration could not be proved without scope expansion. <strong>Fix:</strong> added a QA-only Vite harness using the real exports and banned a production test route.</li>
+        <li><strong>Concern:</strong> one context carrying controls and active state could make publishers rerender from their own updates. <strong>Fix:</strong> required stable registration controls separated from changing slot state.</li>
+        <li><strong>Concern:</strong> safe-area variables could be applied by both shell and routes. <strong>Fix:</strong> made <code>#main-content</code> already inset and limited downstream variable use to surfaces outside it.</li>
+        <li><strong>Concern:</strong> action removal could strand keyboard focus. <strong>Fix:</strong> assigned same-route fallback to main and preserved Route Accessibility as the navigation owner.</li>
+        <li><strong>Concern:</strong> top-bar growth could hide controls at 320px. <strong>Fix:</strong> set explicit non-shrinking control priority and a semantic-but-visually-yielding title.</li>
+      </ul>
+
+      <h3>Pass 2 result</h3>
+      <p>The scope, API, geometry ownership, focus behavior, affected files, analogs, consumers, task order, risks, verification, and observable Done criteria are implementation-specific and internally consistent.</p>
+      <h3>Pass 3 result — governance recheck</h3>
+      <p>The recheck made compact title wrapping explicit, required a visible tooltip without using it as the accessible name, contained the intentional missing-provider error, and named the repository acceptance-viewer analog. No scope or file ownership changed.</p>
+      <h3>Pass 4 result — observed Map layer failure</h3>
+      <p>The reported hamburger failure was reproduced against the current implementation. The sheet state and focus trap are correct; paint and pointer order are wrong because route layer 630 exceeds the portal's default layer 50. The revision assigns ownership to shell-scoped CSS and focused QA, defines exact variables/selectors, preserves route state, and bans feature-layer or global-primitive workarounds.</p>
+      <p><strong>No finalization blockers remain.</strong> The scoped direct-body selector still matches the inspected Radix portal, the correction stays inside shell-owned CSS, focused acceptance passes, and the two remaining failed acceptance items carry the user's explicit written waivers. The plan is ready for <code>-d</code>.</p>
+    </section>
+
+    <section class="spec-card" id="revision-log">
+      <h2>Revision Log</h2>
+      <ul>
+        <li><strong>Rev 1 — 2026-08-03:</strong> Created the shared responsive-shell foundation spec from fetched <code>origin/main</code> in the dedicated linked worktree. Recorded the exact action API, safe-area ownership, downstream boundaries, QA harness, and readiness tightening.</li>
+        <li><strong>Rev 2 — 2026-08-03:</strong> Governance recheck tightened title wrapping, tooltip presentation, caught error coverage, and the acceptance viewer source. Status remains Pending Execution.</li>
+        <li><strong>Rev 3 — 2026-08-03:</strong> Execution started in the recorded dedicated linked worktree after the branch, HEAD, status, consumers, conventions, and scope gates passed. No feature-owned files entered the write set.</li>
+        <li><strong>Rev 4 — 2026-08-03:</strong> Implemented the scoped shell contract and recorded passing focused QA, typecheck, lint, build, mock validation, and temporary Linux route-smoke evidence. Status remains In Progress because the unchanged baseline accessibility fixture and explicit manual acceptance checks are unresolved.</li>
+        <li><strong>Rev 5 — 2026-08-03:</strong> Reproduced the reported <code>/map</code> hamburger failure as a z-index collision: open navigation and its backdrop are at 50, Dashboard is at 630, and hit testing reaches Dashboard while focus remains trapped in the hidden sheet. Added exact shell layer ownership, scope-preserving T6–T7 tasks, collision acceptance, and a Pending Execution status.</li>
+        <li><strong>Rev 6 — 2026-08-03:</strong> Before T6 execution, reconciled T7 with its deterministic verification contract: use the z-999 route-owned fixture and statically assert the current z-650 lot-detail layer instead of requiring unavailable live lot seed data. Scope and production ownership are unchanged.</li>
+        <li><strong>Rev 7 — 2026-08-03:</strong> Executed T6–T7 in the dedicated worktree after copying the latest root <code>.env</code> and restarting Vite. Shell-scoped layers now compute to backdrop 1000/content 1010; all 170 focused checks and the 59-check role/route regression pass. Status returns to In Progress because the unchanged zero-lot accessibility fixture and manual acceptance items still block finalization.</li>
+        <li><strong>Rev 8 — 2026-08-03:</strong> Recorded the user's explicit T6 zero-lot fixture waiver and T7 manual device/assistive waiver. Preserved both items as failed with written reasons, reconciled the Done criteria, and rolled acceptance to Passed. No application code changed.</li>
+        <li><strong>Rev 9 — 2026-08-03:</strong> Finalized the plan after the Passed acceptance rollup, preserved both explicit waivers, marked the spec Completed, and added the required <code>0.0.2</code> changelog entry.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

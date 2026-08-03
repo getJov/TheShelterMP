@@ -1,0 +1,136 @@
+{
+  "plan": "plans/08032026-responsive-shell-foundation",
+  "generatedAt": "2026-08-03",
+  "status": "Passed",
+  "items": [
+    {
+      "id": "T1",
+      "title": "Route-scoped top-bar action lifecycle is deterministic",
+      "surface": "ui",
+      "precondition": "The isolated Vite server is running from the responsive-shell-foundation worktree.",
+      "steps": [
+        "1. Open the QA-only responsive-shell action fixture.",
+        "2. Exercise Strict Mode registration, descriptor updates, badge bounds, duplicate replacement, stale cleanup, route changes, and missing-provider handling.",
+        "3. Remove the focused action without navigating and inspect the resulting focus target."
+      ],
+      "expected": "Exactly one current action renders; stale registrations cannot clear or revive another action; badge and callback updates preserve ownership; same-route removal restores focus to main.",
+      "status": "pass",
+      "evidence": "npm run qa:shell passed all 170 focused checks, including every action-contract case.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T2",
+      "title": "Responsive top-bar hierarchy and touch targets hold across the matrix",
+      "surface": "ui",
+      "precondition": "The admin fixture is authenticated and extra-large text is active.",
+      "steps": [
+        "1. Verify the action fixture at 320x568 with navigation, long title, route action, and notifications.",
+        "2. Verify the authenticated shell at 320, 360, 390, 430, 640, 768, 960, 1024, 1280, 1440, 1680, and 2000 CSS-pixel widths.",
+        "3. Inspect horizontal overflow and control rectangles."
+      ],
+      "expected": "There is no document-level horizontal clipping and primary shell controls remain at least 44 by 44 CSS pixels.",
+      "status": "pass",
+      "evidence": "npm run qa:shell passed all 170 checks, including the full viewport matrix with 0px horizontal overflow and 44x44 navigation, action, and notification targets.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T3",
+      "title": "Safe-area and viewport-height geometry is consumed once",
+      "surface": "ui",
+      "precondition": "The authenticated shell is open at 390x844.",
+      "steps": [
+        "1. Override all four shell safe-area variables with deterministic non-zero values.",
+        "2. Measure the shell frame, top bar, main content, skip link, and open mobile navigation.",
+        "3. Shrink the viewport height while the mobile navigation remains open."
+      ],
+      "expected": "The shell frame consumes all four values once; the skip link and portaled navigation respect their owned boundaries; route and footer state remain reachable after height change.",
+      "status": "pass",
+      "evidence": "The 170-check qa:shell run measured frame padding 13/19/23/17px, correct top-bar/main boundaries, skip-link offsets 25/29px, and an inset mobile sheet that remained reachable after shrinking to 390x568.",
+      "notes": "",
+      "waiver": ""
+    },
+    {
+      "id": "T4",
+      "title": "Authenticated routes and desktop rail behavior remain healthy",
+      "surface": "ui",
+      "precondition": "The local app uses deterministic demo accounts and the worktree-only server.",
+      "steps": [
+        "1. Sweep every authenticated route at 320x568 using the authorized admin account.",
+        "2. Verify collapsed and expanded desktop rail persistence across constrained and 2000px widths.",
+        "3. Run the existing role-and-route smoke from a temporary Linux-configured copy."
+      ],
+      "expected": "Routes render without shell overflow or uncaught errors, and the existing desktop rail storage contract remains unchanged.",
+      "status": "pass",
+      "evidence": "npm run qa:shell passed the route and rail checks; the temporary path-only Linux adaptation of qa/smoke passed all 59 existing role/route checks.",
+      "notes": "The repository npm run qa:smoke command itself cannot launch here because qa/smoke.mjs hardcodes /Applications/Google Chrome.app/Contents/MacOS/Google Chrome. The tracked suite was not modified.",
+      "waiver": ""
+    },
+    {
+      "id": "T5",
+      "title": "Repository static and build gates pass",
+      "surface": "cli",
+      "precondition": "Dependencies are installed inside the dedicated linked worktree.",
+      "steps": [
+        "1. Run npx tsc --noEmit -p tsconfig.app.json.",
+        "2. Run npm run lint, npm run build, and npm run validate:mock.",
+        "3. Run static feature-import, persistence, safe-variable, and whitespace checks."
+      ],
+      "expected": "All changed source typechecks, lints without errors, builds, preserves mock invariants, and introduces no feature coupling or persisted action state.",
+      "status": "pass",
+      "evidence": "Typecheck, lint, build, validate:mock, node syntax, git diff --check, feature-import search, and action-persistence search passed. Lint retains warnings but exits 0.",
+      "notes": "The repository has no check:all or check:conventions script. npm install reported the baseline Node 20 versus Puppeteer Node 22 engine warning and two existing high-severity audit findings; package-lock.json did not change.",
+      "waiver": ""
+    },
+    {
+      "id": "T6",
+      "title": "Existing accessibility regression reaches its baseline Map fixture",
+      "surface": "ui",
+      "precondition": "The worktree server is running and no Google Maps key is required for the shell-focused path.",
+      "steps": [
+        "1. Run npm run qa:accessibility against the isolated server.",
+        "2. Verify pre-auth typography, form semantics, preference persistence, and route focus checks before the Map fixture.",
+        "3. Record the first unresolved baseline failure without changing the read-only regression suite."
+      ],
+      "expected": "The suite completes, or its baseline fixture prerequisite is restored by the owning feature before finalization.",
+      "status": "fail",
+      "evidence": "After copying the latest root .env and restarting the worktree server, the suite again passed its first 12 checks, then timed out waiting for [data-lot-list-action=true]. npm run validate:mock still reports 0 lots, so no list action can exist. This branch did not modify Map, mock data, or the accessibility suite.",
+      "notes": "This is a baseline fixture prerequisite, not a responsive-shell regression. The owning Map or data refinement should restore deterministic lot coverage.",
+      "waiver": "Explicitly accepted by the user on 2026-08-03: waive the zero-lot accessibility fixture because the deterministic baseline contains no lot-list action."
+    },
+    {
+      "id": "T7",
+      "title": "Manual zoom, assistive technology, and device-safe-area checks",
+      "surface": "ui",
+      "precondition": "A reviewer can use a desktop browser at actual 200% zoom plus a notched-device simulator or device.",
+      "steps": [
+        "1. At actual 200% browser zoom, verify 320-effective-width and representative desktop top bars with keyboard-only operation.",
+        "2. Inspect the route title and route-action names with an accessibility tree or screen reader, with and without a positive badge.",
+        "3. Verify portrait/landscape safe areas, an actual soft keyboard, focus return, and reduced-motion system and in-app preferences."
+      ],
+      "expected": "No clipping, hidden primary control, focus loss, double inset, unreachable mobile-navigation region, or motion-dependent state occurs.",
+      "status": "fail",
+      "evidence": "Automated checks cover extra-large text, 320px layout, keyboard focus restoration, deterministic safe-area overrides, viewport-height shrink, and reduced-motion preference setup. Real zoom, assistive technology, notch, and soft-keyboard checks were not run.",
+      "notes": "The deferred manual checks remain recommended for downstream route and device acceptance.",
+      "waiver": "Explicitly accepted by the user on 2026-08-03: waive the outstanding manual 200% zoom, assistive-technology, notched-device, and soft-keyboard checks for this branch."
+    },
+    {
+      "id": "T8",
+      "title": "Compact navigation remains above every route-owned surface",
+      "surface": "ui",
+      "precondition": "The responsive-shell worktree server is open at 390x844 with an admin session, Map presentation active, and Dashboard state docked.",
+      "steps": [
+        "1. Navigate to /map and confirm the docked Dashboard content is visible.",
+        "2. Activate the top-bar Open navigation hamburger.",
+        "3. Inspect the open sheet, backdrop, Dashboard slot, focus target, and document.elementFromPoint(24, 100).",
+        "4. Repeat after the shell-owned layer correction for hidden, docked, and full Dashboard states plus the reserved route-layer ceiling fixture."
+      ],
+      "expected": "The mobile-navigation backdrop and content paint above route chrome, receive pointer input, contain focus, dismiss correctly, and preserve Dashboard and Map state.",
+      "status": "pass",
+      "evidence": "npm run qa:shell passed all 170 checks. At 320x568 and 390x844, content/backdrop compute to 1010/1000 above the z-999 fixture and z-630 Dashboard; inside/outside hit tests resolve to sheet/backdrop. Map/list plus hidden/docked/full Dashboard states, Tab trapping, scroll lock, Escape/backdrop/close/navigation dismissal, focus restoration, single route transition, and persisted state preservation all passed. The current lot-detail layer is statically confirmed at 650.",
+      "notes": "The correction is limited to shell-owned globals.css and focused QA. Map, Dashboard, lot detail, persisted panel state, and the global Sheet primitive were not modified.",
+      "waiver": ""
+    }
+  ]
+}

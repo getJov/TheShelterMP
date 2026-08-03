@@ -56,6 +56,12 @@
    per-component overrides. */
 :root {
   --a11y-text-scale: 1;
+  --shell-safe-top: env(safe-area-inset-top, 0px);
+  --shell-safe-right: env(safe-area-inset-right, 0px);
+  --shell-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --shell-safe-left: env(safe-area-inset-left, 0px);
+  --shell-layer-mobile-navigation-backdrop: 1000;
+  --shell-layer-mobile-navigation: 1010;
   --type-micro: calc(13px * var(--a11y-text-scale));
   --type-caption: calc(14px * var(--a11y-text-scale));
   --type-body: calc(16px * var(--a11y-text-scale));
@@ -256,6 +262,41 @@ html.dark[data-contrast='enhanced'] {
     font-size: var(--type-display);
     line-height: 1.1;
   }
+}
+
+/* Authenticated shell geometry. Route content inside #main-content is already
+   safe-area adjusted and must not apply these insets a second time. */
+.shell-frame {
+  box-sizing: border-box;
+  padding-block-start: var(--shell-safe-top);
+  padding-inline-end: var(--shell-safe-right);
+  padding-block-end: var(--shell-safe-bottom);
+  padding-inline-start: var(--shell-safe-left);
+}
+
+.shell-skip-link {
+  top: calc(var(--shell-safe-top) + 0.75rem);
+  left: calc(var(--shell-safe-left) + 0.75rem);
+}
+
+/* Radix portals the compact navigation outside .shell-frame, so this shell
+   instance owns its own safe boundaries without changing the shared Sheet. */
+.shell-mobile-navigation {
+  top: var(--shell-safe-top);
+  bottom: var(--shell-safe-bottom);
+  left: var(--shell-safe-left);
+  z-index: var(--shell-layer-mobile-navigation);
+  width: min(
+    90vw,
+    360px,
+    calc(100vw - var(--shell-safe-left) - var(--shell-safe-right))
+  );
+  height: auto;
+}
+
+body:has(> .shell-mobile-navigation[data-state='open'])
+  > [data-slot='sheet-overlay'][data-state='open'] {
+  z-index: var(--shell-layer-mobile-navigation-backdrop);
 }
 
 /* Google Maps container — themed to match the app. */
